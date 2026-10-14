@@ -1,0 +1,169 @@
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  font-family: 'Nunito', sans-serif;
+}
+
+.panel-imagen {
+  flex: 1;
+  background-image:
+    linear-gradient(to bottom, rgba(35, 27, 23, 0.4), rgba(35, 27, 23, 0.85)),
+    url('https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=900&q=80');
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: flex-end;
+  padding: 48px;
+}
+
+.logo-login {
+  width: 160px;
+  height: auto;
+  display: block;
+}
+
+.overlay p {
+  color: #F7E4D3;
+  font-size: 0.95rem;
+  margin: 6px 0 0 0;
+}
+
+.panel-form {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #FDF8F3;
+  padding: 24px;
+  overflow: hidden;
+}
+
+.decoracion {
+  position: absolute;
+  font-size: 3.5rem;
+  opacity: 0.2;
+  pointer-events: none;
+  user-select: none;
+}
+
+.d1 {
+  top: 8%;
+  left: 8%;
+  transform: rotate(-15deg);
+  font-size: 4rem;
+}
+
+.d2 {
+  top: 12%;
+  right: 10%;
+  transform: rotate(12deg);
+}
+
+.d3 {
+  bottom: 12%;
+  left: 12%;
+  transform: rotate(-8deg);
+}
+
+.d4 {
+  bottom: 18%;
+  right: 8%;
+  font-size: 2.8rem;
+  transform: rotate(20deg);
+}
+
+.form-contenedor {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 360px;
+}
+
+.form-contenedor h1 {
+  font-family: 'Baloo 2', 'Nunito', sans-serif;
+  color: #231B17;
+  font-size: 1.6rem;
+  margin: 0 0 4px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.icono-titulo {
+  font-size: 1.8rem;
+}
+
+.subtitulo {
+  color: #6B5B4F;
+  font-size: 0.9rem;
+  margin: 0 0 28px 0;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+
+.field label {
+  font-size: 0.85rem;
+  color: #231B17;
+  font-weight: 600;
+}
+
+.field input {
+  background-color: #FFFFFF;
+  border: 2px solid #E8E0D5;
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 1rem;
+  color: #231B17;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.field input:focus {
+  border-color: #E85A2A;
+}
+
+button[type="submit"] {
+  width: 100%;
+  margin-top: 8px;
+  background-color: #E85A2A;
+  color: #FFF7EE;
+  border: none;
+  border-radius: 10px;
+  padding: 14px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+button[type="submit"]:hover {
+  background-color: #C23A1E;
+}
+
+.error-message {
+  color: #C23A1E;
+  font-size: 0.85rem;
+  text-align: center;
+  margin: 16px 0 0 0;
+}
+
+@media (max-width: 768px) {
+  .login-page {
+    flex-direction: column;
+  }
+  .panel-imagen {
+    min-height: 220px;
+    flex: none;
+  }
+  .panel-form {
+    flex: none;
+    align-items: flex-start;
+    padding-top: 40px;
+  }
+}

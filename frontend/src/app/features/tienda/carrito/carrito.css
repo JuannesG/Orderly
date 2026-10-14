@@ -1,0 +1,222 @@
+.carrito-page {
+  min-height: 100vh;
+  background-color: #FFFFFF;
+  font-family: 'Nunito', sans-serif;
+  color: #1A1A1A;
+  padding-bottom: 110px;
+}
+
+.top-bar-simple {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 20px;
+  border-bottom: 1px solid #F0F0F0;
+}
+
+.btn-atras {
+  background: none;
+  border: none;
+  font-size: 1.3rem;
+  cursor: pointer;
+  color: #1A1A1A;
+}
+
+.top-bar-simple h1 {
+  font-family: 'Baloo 2', 'Nunito', sans-serif;
+  font-size: 1.2rem;
+  margin: 0;
+}
+
+.vacio-wrap {
+  text-align: center;
+  padding: 80px 24px;
+}
+
+.vacio-icono {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 12px;
+}
+
+.vacio-wrap p {
+  color: #6B6B6B;
+  margin-bottom: 20px;
+}
+
+.items-col {
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.item-card {
+  background-color: #F8F8F8;
+  border-radius: 16px;
+  padding: 14px 16px;
+}
+
+.item-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.item-texto h3 {
+  margin: 0 0 3px 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.precio-unit {
+  font-size: 0.75rem;
+  color: #9B9B9B;
+  margin: 0;
+}
+
+.mini-stepper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #FFFFFF;
+  border-radius: 20px;
+  padding: 4px 8px;
+}
+
+.mini-stepper button {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: none;
+  background-color: #E85A2A;
+  color: #FFFFFF;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.mini-stepper span {
+  font-weight: 700;
+  min-width: 14px;
+  text-align: center;
+}
+
+.chips-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.chip {
+  background-color: #FFFFFF;
+  font-size: 0.72rem;
+  padding: 4px 10px;
+  border-radius: 12px;
+  color: #6B6B6B;
+}
+
+.link-adicionales {
+  background: none;
+  border: none;
+  color: #E85A2A;
+  font-size: 0.78rem;
+  font-weight: 700;
+  margin-top: 8px;
+  cursor: pointer;
+  padding: 0;
+}
+
+.lista-adicionales {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed #E0E0E0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.opcion-adicional {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+.opcion-adicional input {
+  accent-color: #E85A2A;
+  width: 16px;
+  height: 16px;
+}
+
+.precio-mini {
+  margin-left: auto;
+  color: #9B9B9B;
+  font-size: 0.78rem;
+}
+
+.item-total {
+  text-align: right;
+  font-weight: 700;
+  color: #E85A2A;
+  margin: 10px 0 0 0;
+}
+
+.resumen-card {
+  margin: 8px 20px;
+  padding: 16px;
+  background-color: #F8F8F8;
+  border-radius: 16px;
+}
+
+.linea {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.nota {
+  font-size: 0.72rem;
+  color: #9B9B9B;
+  text-align: right;
+  margin: 4px 0 0 0;
+}
+
+.barra-inferior {
+  position: relative;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #FFFFFF;
+  padding: 14px 20px;
+  display: flex;
+  gap: 10px;
+  box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.05);
+}
+
+.btn-secundario,
+.btn-primario {
+  flex: 1;
+  padding: 14px;
+  border-radius: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  text-align: center;
+  text-decoration: none;
+  display: block;
+  font-size: 0.9rem;
+}
+
+.btn-secundario {
+  background-color: #F8F8F8;
+  color: #1A1A1A;
+}
+
+.btn-primario {
+  background-color: #E85A2A;
+  color: #FFFFFF;
+}

@@ -1,0 +1,65 @@
+<div class="carrito-page">
+  <header class="top-bar-simple">
+    <h1>Tu pedido</h1>
+  </header>
+
+  @if (carrito.totalItems() === 0) {
+    <div class="vacio-wrap">
+      <span class="vacio-icono">🛒</span>
+      <p>Tu carrito está vacío</p>
+    </div>
+  } @else {
+    <div class="items-col">
+      @for (item of carrito.items$ | async; track item.producto.id) {
+        <div class="item-card">
+          <div class="item-top">
+            <div class="item-texto">
+              <h3>{{ item.producto.nombre }}</h3>
+              <p class="precio-unit">${{ formatPrecio(item.producto.precio) }}</p>
+            </div>
+            <div class="mini-stepper">
+              <button (click)="quitar(item)">−</button>
+              <span>{{ item.cantidad }}</span>
+              <button (click)="agregar(item)">+</button>
+            </div>
+          </div>
+
+          @if (item.adicionales.length > 0) {
+            <div class="chips-wrap">
+              @for (adicional of item.adicionales; track adicional.id) {
+                <span class="chip">{{ adicional.nombre }}</span>
+              }
+            </div>
+          }
+
+          <button class="link-adicionales" (click)="toggleExpandido(item.producto.id)">
+            {{ itemExpandido === item.producto.id ? 'Ocultar adicionales' : '+ Adicionales' }}
+          </button>
+
+          @if (itemExpandido === item.producto.id) {
+            <div class="lista-adicionales">
+              @for (adicional of adicionesDisponibles; track adicional.id) {
+                <label class="opcion-adicional">
+                  <input type="checkbox" [checked]="carrito.tieneAdicional(item, adicional.id)" (change)="toggleAdicional(item, adicional)">
+                  <span>{{ adicional.nombre }}</span>
+                  <span class="precio-mini">+${{ formatPrecio(adicional.precio) }}</span>
+                </label>
+              }
+            </div>
+          }
+
+          <p class="item-total">${{ formatPrecio(subtotalItem(item)) }}</p>
+        </div>
+      }
+    </div>
+
+    <div class="resumen-card">
+      <div class="linea"><span>Subtotal</span><span>${{ formatPrecio(carrito.subtotal()) }}</span></div>
+      <p class="nota">+ domicilio en el siguiente paso</p>
+    </div>
+
+    <div class="barra-inferior">
+      <button class="btn-primario" (click)="irAlCheckout()">Continuar</button>
+    </div>
+  }
+</div>

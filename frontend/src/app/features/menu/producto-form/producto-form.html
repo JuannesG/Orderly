@@ -1,0 +1,40 @@
+<div class="form-page">
+  <div class="fp-head">
+    <h1>{{ productoEditandoId ? 'Editar producto' : 'Nuevo producto' }}</h1>
+  </div>
+
+  <form (ngSubmit)="onSubmit()" class="producto-form">
+    <div class="field">
+      <label>Nombre</label>
+      <input type="text" [(ngModel)]="nombreForm" name="nombreForm" required>
+    </div>
+
+    <div class="field">
+      <label>Descripción</label>
+      <textarea [(ngModel)]="descripcionForm" name="descripcionForm"></textarea>
+    </div>
+
+    <div class="field">
+      <label>Precio</label>
+      <div class="precio-input-wrapper">
+        <span class="simbolo-peso">$</span>
+        <input type="number" [(ngModel)]="precioForm" name="precioForm" required>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Categoría</label>
+      <select [(ngModel)]="categoriaForm" name="categoriaForm" required>
+        <option value="" disabled>Selecciona una categoría</option>
+        @for (categoria of categorias; track categoria.id) {
+          <option [value]="categoria.id">{{ categoria.nombre }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="botones">
+      <button type="button" class="btn-cancelar" (click)="cancelar()">Cancelar</button>
+      <button type="submit" class="btn-guardar">{{ productoEditandoId ? 'Guardar cambios' : 'Agregar producto' }}</button>
+    </div>
+  </form>
+</div>

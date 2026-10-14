@@ -1,0 +1,38 @@
+<div class="mp-page">
+  <header class="top-bar-simple">
+    <div>
+      <h1>Mis pedidos</h1>
+      <p>Últimos 30 días</p>
+    </div>
+  </header>
+
+  @if (cargando) {
+    <p class="mensaje">Cargando...</p>
+  }
+
+  @if (!cargando && pedidos.length === 0) {
+    <div class="vacio">
+      <span>🧾</span>
+      <p>Todavía no has hecho pedidos</p>
+    </div>
+  }
+
+  @for (grupo of grupos; track grupo.titulo) {
+    <h2 class="grupo-titulo">{{ grupo.titulo }}</h2>
+    <div class="lista">
+      @for (pedido of grupo.items; track pedido.token_seguimiento) {
+        <a [routerLink]="['/tienda/seguimiento', pedido.token_seguimiento]" class="pedido-card">
+          <div class="fila-top">
+            <span class="num">Pedido #{{ pedido.token_seguimiento.slice(0, 8) }}</span>
+            <span class="badge" [class]="pedido.estado">{{ etiqueta(pedido.estado) }}</span>
+          </div>
+          <p class="fecha">{{ pedido.creado_en | date:'d MMM, h:mm a' }}</p>
+          <div class="fila-bottom">
+            <span class="items">{{ pedido.detalles.length }} producto(s)</span>
+            <span class="total">${{ formatPrecio(pedido.total) }}</span>
+          </div>
+        </a>
+      }
+    </div>
+  }
+</div>

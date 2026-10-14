@@ -1,0 +1,69 @@
+<div class="checkout-page">
+  <header class="top-bar-simple">
+    <h1>Confirmar pedido</h1>
+  </header>
+
+  <div class="resumen-card">
+    <div class="linea"><span>Subtotal</span><span>${{ formatPrecio(carrito.subtotal()) }}</span></div>
+    <div class="linea"><span>Domicilio</span><span>${{ formatPrecio(costoDomicilio) }}</span></div>
+    <div class="linea total"><span>Total</span><span>${{ formatPrecio(total) }}</span></div>
+  </div>
+
+  <div class="seccion">
+    <label>Observaciones</label>
+    <textarea [(ngModel)]="observaciones" placeholder="Ej: sin cebolla..."></textarea>
+  </div>
+
+  <div class="seccion">
+    <label>Método de pago</label>
+    <div class="opciones-pago">
+      <button class="opcion-pago" [class.activo]="metodoPago === 'nequi'" (click)="metodoPago = 'nequi'">
+        <span class="icono-pago">📱</span>
+        <span class="texto-pago">Nequi</span>
+        <span class="radio" [class.marcado]="metodoPago === 'nequi'"></span>
+      </button>
+      <button class="opcion-pago" [class.activo]="metodoPago === 'bancolombia'" (click)="metodoPago = 'bancolombia'">
+        <span class="icono-pago">🏦</span>
+        <span class="texto-pago">Bancolombia</span>
+        <span class="radio" [class.marcado]="metodoPago === 'bancolombia'"></span>
+      </button>
+      <button class="opcion-pago" [class.activo]="metodoPago === 'efectivo'" (click)="metodoPago = 'efectivo'">
+        <span class="icono-pago">💵</span>
+        <span class="texto-pago">Efectivo (contraentrega)</span>
+        <span class="radio" [class.marcado]="metodoPago === 'efectivo'"></span>
+      </button>
+    </div>
+  </div>
+
+  @if (metodoPago === 'nequi' || metodoPago === 'bancolombia') {
+    <div class="datos-pago">
+      <p class="dp-titulo">Transfiere el total a esta cuenta:</p>
+
+      <div class="cuenta-box">
+        <div>
+          <span class="cuenta-label">{{ metodoPago === 'nequi' ? 'Nequi' : 'Bancolombia (ahorros)' }}</span>
+          <strong class="cuenta-numero">{{ cuentaActual || 'No disponible' }}</strong>
+        </div>
+        @if (cuentaActual) {
+          <button type="button" class="btn-copiar" (click)="copiarCuenta()">
+            {{ copiado ? '¡Copiado!' : 'Copiar' }}
+          </button>
+        }
+      </div>
+
+      <p class="dp-total">Valor a transferir: <strong>${{ formatPrecio(total) }}</strong></p>
+
+      <label class="subir-box" [class.listo]="archivoComprobante">
+        <input type="file" accept="image/*" (change)="onArchivo($event)" hidden>
+        <span class="subir-icono">{{ archivoComprobante ? '✅' : '📷' }}</span>
+        <span class="subir-texto">{{ nombreArchivo || 'Subir foto del comprobante' }}</span>
+      </label>
+    </div>
+  }
+
+  <div class="barra-inferior">
+    <button class="btn-primario" [disabled]="enviando" (click)="confirmarPedido()">
+      {{ enviando ? 'Enviando...' : 'Confirmar pedido' }}
+    </button>
+  </div>
+</div>

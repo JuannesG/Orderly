@@ -1,0 +1,27 @@
+<div class="confirmacion-page">
+  @if (cargando) {
+    <p>Confirmando tu pedido...</p>
+  }
+
+  @if (!cargando && !error) {
+    <div class="confirmacion-card">
+      <div class="check-circulo">✓</div>
+      <h1>¡Pedido confirmado!</h1>
+      <p>Tu pedido fue enviado al restaurante. Te avisaremos por WhatsApp.</p>
+
+      <div class="numero-box">
+        <span>Número de pedido</span>
+        <strong>#{{ token.slice(0, 8) }}</strong>
+      </div>
+
+      <a [routerLink]="['/tienda/seguimiento', token]" class="btn-primario">Ver estado del pedido</a>
+    </div>
+  }
+
+  @if (error) {
+    <div class="confirmacion-card">
+      <h1>No encontramos tu pedido</h1>
+      <p>Contacta al restaurante por WhatsApp.</p>
+    </div>
+  }
+</div>

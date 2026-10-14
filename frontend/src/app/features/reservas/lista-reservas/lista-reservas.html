@@ -1,0 +1,77 @@
+<div class="reservas-content">
+  <div class="encabezado">
+    <h1>Reservas</h1>
+    <button class="btn-agregar" (click)="toggleFormulario()">
+      {{ mostrarFormulario ? 'Cerrar' : '+ Reserva' }}
+    </button>
+  </div>
+
+  @if (mostrarFormulario) {
+    <div class="form-reserva">
+      <div class="field">
+        <label>Nombre del cliente</label>
+        <input type="text" [(ngModel)]="nombreForm" name="nombreForm">
+      </div>
+      <div class="field">
+        <label>Teléfono</label>
+        <input type="tel" [(ngModel)]="telefonoForm" name="telefonoForm">
+      </div>
+      <div class="fila-doble">
+        <div class="field">
+          <label>Fecha</label>
+          <input type="date" [(ngModel)]="fechaForm" name="fechaForm">
+        </div>
+        <div class="field">
+          <label>Hora</label>
+          <input type="time" [(ngModel)]="horaForm" name="horaForm">
+        </div>
+      </div>
+      <div class="field">
+        <label>Número de personas</label>
+        <input type="number" [(ngModel)]="personasForm" name="personasForm">
+      </div>
+      <div class="field">
+        <label>Motivo (opcional)</label>
+        <input type="text" [(ngModel)]="motivoForm" name="motivoForm" placeholder="Cumpleaños, reunión...">
+      </div>
+      <button class="btn-guardar" (click)="guardarReserva()">Guardar reserva</button>
+    </div>
+  }
+
+  <div class="filtros">
+    <button [class.activo]="soloHoy" (click)="soloHoy = true">Hoy</button>
+    <button [class.activo]="!soloHoy" (click)="soloHoy = false">Todas</button>
+  </div>
+
+  @if (cargando) {
+    <p class="mensaje">Cargando reservas...</p>
+  }
+
+  @if (!cargando && reservasVisibles.length === 0) {
+    <p class="mensaje">No hay reservas para mostrar.</p>
+  }
+
+  <div class="reservas-lista">
+    @for (reserva of reservasVisibles; track reserva.id) {
+      <div class="reserva-card">
+        <div class="r-top">
+          <div>
+            <h3>{{ reserva.nombre_cliente }}</h3>
+            <a [href]="'tel:' + reserva.telefono" class="tel">📞 {{ reserva.telefono }}</a>
+          </div>
+          <div class="r-hora">
+            <strong>{{ reserva.hora }}</strong>
+            <span>{{ reserva.fecha }}</span>
+          </div>
+        </div>
+        <div class="r-bottom">
+          <span class="chip">👥 {{ reserva.numero_personas }} personas</span>
+          @if (reserva.motivo) {
+            <span class="motivo">{{ reserva.motivo }}</span>
+          }
+          <button class="btn-eliminar" (click)="eliminarReserva(reserva.id)">Eliminar</button>
+        </div>
+      </div>
+    }
+  </div>
+</div>

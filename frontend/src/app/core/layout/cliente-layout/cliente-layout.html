@@ -1,0 +1,35 @@
+<div class="cliente-layout">
+  <div class="cliente-contenido">
+    <router-outlet></router-outlet>
+  </div>
+
+  <nav class="nav-inferior">
+    <a routerLink="/tienda/menu" routerLinkActive="activo" class="nav-item">
+      <span class="nav-icono">🍔</span>
+      <span>Menú</span>
+    </a>
+    <a routerLink="/tienda/pedidos" routerLinkActive="activo" class="nav-item">
+      <span class="nav-icono">🧾</span>
+      <span>Pedidos</span>
+    </a>
+    @if (pedidoActivoToken) {
+      <a [routerLink]="['/tienda/seguimiento', pedidoActivoToken]" class="nav-item">
+        <span class="nav-icono">🚴</span>
+        <span>En curso</span>
+      </a>
+    }
+    @if (whatsappRestaurante) {
+      <a [href]="whatsappUrl" target="_blank" rel="noopener" class="nav-item">
+        <span class="nav-icono">💬</span>
+        <span>Contacto</span>
+      </a>
+    }
+    <a routerLink="/tienda/carrito" routerLinkActive="activo" class="nav-item">
+      <span class="nav-icono">🛒</span>
+      <span>Carrito</span>
+      @if (carrito.totalItems() > 0) {
+        <span class="nav-badge">{{ carrito.totalItems() }}</span>
+      }
+    </a>
+  </nav>
+</div>

@@ -1,0 +1,18 @@
+<div class="layout">
+  <header class="top-admin">
+    <img src="/assets/logo-mr-lucho.png" alt="Mr Lucho" class="logo-top">
+    <span>Panel de restaurante</span>
+  </header>
+
+  <main class="contenido">
+    <router-outlet></router-outlet>
+  </main>
+
+  <nav class="nav-admin">
+    <a routerLink="/dashboard" routerLinkActive="activo"><span class="ico">🏠</span><span>Inicio</span></a>
+    <a routerLink="/menu" routerLinkActive="activo"><span class="ico">🍔</span><span>Menú</span></a>
+    <a routerLink="/pedidos" routerLinkActive="activo"><span class="ico">🧾</span><span>Pedidos</span></a>
+    <a routerLink="/reservas" routerLinkActive="activo"><span class="ico">📅</span><span>Reservas</span></a>
+    <button (click)="cerrarSesion()"><span class="ico">🚪</span><span>Salir</span></button>
+  </nav>
+</div>

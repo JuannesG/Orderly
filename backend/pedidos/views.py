@@ -1,0 +1,75 @@
+import os
+from datetime import timedelta
+from django.utils import timezone
+from rest_framework import viewsets, permissions
+from rest_framework.decorators import action
+from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.response import Response
+from rest_framework.throttling import ScopedRateThrottle
+from .models import Pedido
+from .serializers import PedidoCreateSerializer, PedidoDetailSerializer, PedidoListSerializer
+
+EXTENSIONES_PERMITIDAS = {'.jpg', '.jpeg', '.png', '.webp', '.heic'}
+
+
+class PedidoViewSet(viewsets.ModelViewSet):
+    queryset = Pedido.objects.all().order_by('-creado_en')
+    lookup_field = 'token_seguimiento'
+
+    def get_serializer_class(self):
+        if self.action == 'create':
+            return PedidoCreateSerializer
+        if self.action == 'list':
+            return PedidoListSerializer
+        return PedidoDetailSerializer
+
+    def get_permissions(self):
+        if self.action in ['create', 'retrieve', 'mios', 'comprobante']:
+            return [permissions.AllowAny()]
+        return [permissions.IsAuthenticated()]
+
+    def get_throttles(self):
+        if self.action == 'create':
+            self.throttle_scope = 'crear_pedido'
+            return [ScopedRateThrottle()]
+        return super().get_throttles()
+
+    @action(detail=False, methods=['get'])
+    def mios(self, request):
+        telefono = request.query_params.get('telefono')
+        if not telefono:
+            return Response([])
+
+        desde = timezone.now() - timedelta(days=30)
+        pedidos = Pedido.objects.filter(
+            cliente__telefono=telefono,
+            creado_en__gte=desde
+        ).order_by('-creado_en')
+
+        return Response(PedidoDetailSerializer(pedidos, many=True).data)
+
+    @action(detail=True, methods=['post'], url_path='comprobante',
+            parser_classes=[MultiPartParser, FormParser])
+    def comprobante(self, request, token_seguimiento=None):
+        pedido = self.get_object()
+        archivo = request.FILES.get('comprobante')
+
+        if not archivo:
+            return Response({'detail': 'Falta el archivo.'}, status=400)
+
+        extension = os.path.splitext(archivo.name)[1].lower()
+        if extension not in EXTENSIONES_PERMITIDAS or not archivo.content_type.startswith('image/'):
+            return Response({'detail': 'Solo se permiten imágenes (jpg, png, webp).'}, status=400)
+        if archivo.size > 5 * 1024 * 1024:
+            return Response({'detail': 'La imagen supera 5 MB.'}, status=400)
+
+        pago = pedido.pago
+        if pago.metodo == 'efectivo':
+            return Response({'detail': 'Este pedido es en efectivo.'}, status=400)
+        if pago.estado_verificacion == 'aceptado':
+            return Response({'detail': 'El pago ya fue confirmado.'}, status=400)
+
+        pago.comprobante = archivo
+        pago.estado_verificacion = 'pendiente_verificacion'
+        pago.save()
+        return Response({'ok': True})

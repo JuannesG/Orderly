@@ -1,0 +1,111 @@
+<div class="inicio-content">
+  <div class="encabezado">
+    <h1>Dashboard</h1>
+    <div class="estado-tienda">
+      <span>Estado de la tienda</span>
+      <button class="switch" [class.activo]="abierto" (click)="toggleAbierto()">
+        <span class="switch-circulo"></span>
+      </button>
+      <span class="estado-texto" [class.abierto]="abierto">{{ abierto ? 'Abierto' : 'Cerrado' }}</span>
+    </div>
+  </div>
+
+  @if (cargando) {
+    <p>Cargando estadísticas...</p>
+  }
+
+  @if (!cargando && resumen) {
+    <div class="tarjetas-grid">
+      <div class="tarjeta">
+        <p class="tarjeta-label">Pedidos hoy</p>
+        <p class="tarjeta-valor">{{ resumen.pedidos_hoy }}</p>
+        <p class="tarjeta-comparativo" [class.positivo]="esPositivo(resumen.pedidos_hoy, resumen.pedidos_ayer)">
+          {{ diferenciaPorcentual(resumen.pedidos_hoy, resumen.pedidos_ayer) }} vs ayer
+        </p>
+      </div>
+
+      <div class="tarjeta">
+        <p class="tarjeta-label">Ingresos hoy</p>
+        <p class="tarjeta-valor">${{ formatPrecio(resumen.ingresos_hoy) }}</p>
+        <p class="tarjeta-comparativo" [class.positivo]="esPositivo(resumen.ingresos_hoy, resumen.ingresos_ayer)">
+          {{ diferenciaPorcentual(resumen.ingresos_hoy, resumen.ingresos_ayer) }} vs ayer
+        </p>
+      </div>
+
+      <div class="tarjeta">
+        <p class="tarjeta-label">Reservas hoy</p>
+        <p class="tarjeta-valor">{{ resumen.reservas_hoy }}</p>
+        <p class="tarjeta-comparativo" [class.positivo]="esPositivo(resumen.reservas_hoy, resumen.reservas_ayer)">
+          {{ diferenciaPorcentual(resumen.reservas_hoy, resumen.reservas_ayer) }} vs ayer
+        </p>
+      </div>
+
+      <div class="tarjeta">
+        <p class="tarjeta-label">En preparación</p>
+        <p class="tarjeta-valor">{{ resumen.por_estado.en_preparacion }}</p>
+      </div>
+    </div>
+
+    <div class="seccion-doble">
+      <div class="bloque-grafica">
+        <h2>Pedidos últimos 7 días</h2>
+        <div class="grafica">
+          @for (dia of resumen.grafica_semana; track dia.fecha) {
+            <div class="barra-columna">
+              <div class="barra" [style.height.%]="alturaBarra(dia.cantidad)">
+                <span class="barra-valor">{{ dia.cantidad }}</span>
+              </div>
+              <span class="barra-label">{{ nombreDia(dia.fecha) }}</span>
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="bloque-estados">
+        <h2>Pedidos por estado hoy</h2>
+        <div class="estados-lista">
+          <div class="estado-fila">
+            <span class="estado-nombre">Pendientes</span>
+            <span class="estado-cantidad">{{ resumen.por_estado.pendiente_verificacion }}</span>
+          </div>
+          <div class="estado-fila">
+            <span class="estado-nombre">Aceptados</span>
+            <span class="estado-cantidad">{{ resumen.por_estado.aceptado }}</span>
+          </div>
+          <div class="estado-fila">
+            <span class="estado-nombre">En preparación</span>
+            <span class="estado-cantidad">{{ resumen.por_estado.en_preparacion }}</span>
+          </div>
+          <div class="estado-fila">
+            <span class="estado-nombre">En camino</span>
+            <span class="estado-cantidad">{{ resumen.por_estado.en_camino }}</span>
+          </div>
+          <div class="estado-fila">
+            <span class="estado-nombre">Entregados</span>
+            <span class="estado-cantidad">{{ resumen.por_estado.entregado }}</span>
+          </div>
+          <div class="estado-fila">
+            <span class="estado-nombre">Rechazados</span>
+            <span class="estado-cantidad">{{ resumen.por_estado.rechazado }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bloque-recientes">
+      <h2>Pedidos recientes</h2>
+      @if (resumen.pedidos_recientes.length === 0) {
+        <p>Todavía no hay pedidos hoy.</p>
+      }
+      <div class="recientes-lista">
+        @for (pedido of resumen.pedidos_recientes; track pedido.id) {
+          <div class="reciente-fila">
+            <span class="reciente-nombre">{{ pedido.cliente_nombre }}</span>
+            <span class="reciente-estado">{{ etiqueta(pedido.estado) }}</span>
+            <span class="reciente-total">${{ formatPrecio(pedido.total) }}</span>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

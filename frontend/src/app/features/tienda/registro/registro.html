@@ -1,0 +1,34 @@
+<div class="reg-page">
+  <div class="reg-hero">
+    <img src="/assets/logo-mr-lucho.png" alt="Mr Lucho" class="reg-logo">
+  </div>
+
+  <div class="reg-body">
+    <h1>Hagamos tu pedido</h1>
+    <p class="sub">Cuéntanos a dónde lo llevamos</p>
+
+    <form (ngSubmit)="onSubmit()">
+      <div class="field">
+        <label>Nombre completo</label>
+        <input type="text" [(ngModel)]="nombre" name="nombre" required>
+      </div>
+
+      <div class="field">
+        <label>Teléfono</label>
+        <input type="tel" [(ngModel)]="telefono" name="telefono" required>
+      </div>
+
+      <div class="field">
+        <label>Dirección</label>
+        <input type="text" [(ngModel)]="direccion" name="direccion" required>
+      </div>
+
+      <div class="field">
+        <label>Referencia (opcional)</label>
+        <input type="text" [(ngModel)]="referencia" name="referencia" placeholder="Casa, apto, etc.">
+      </div>
+
+      <button type="submit">Continuar</button>
+    </form>
+  </div>
+</div>

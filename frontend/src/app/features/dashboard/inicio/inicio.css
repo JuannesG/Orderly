@@ -1,0 +1,237 @@
+.inicio-content {
+  max-width: 1000px;
+  margin: 0 auto;
+  font-family: 'Nunito', sans-serif;
+  color: #1A1A1A;
+}
+
+.encabezado {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.encabezado h1 {
+  font-family: 'Baloo 2', 'Nunito', sans-serif;
+  font-size: 1.4rem;
+  margin: 0;
+}
+
+.estado-tienda {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background-color: #FFFFFF;
+  padding: 8px 14px;
+  border-radius: 14px;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
+  font-size: 0.8rem;
+  color: #6B6B6B;
+  font-weight: 600;
+}
+
+.switch {
+  width: 44px;
+  height: 24px;
+  background-color: #EF4444;
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  transition: background-color 0.2s ease;
+}
+
+.switch.activo {
+  background-color: #22C55E;
+}
+
+.switch-circulo {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  background-color: #FFFFFF;
+  border-radius: 50%;
+  transition: left 0.2s ease;
+}
+
+.switch.activo .switch-circulo {
+  left: 23px;
+}
+
+.estado-texto {
+  font-weight: 700;
+  color: #EF4444;
+}
+
+.estado-texto.abierto {
+  color: #22C55E;
+}
+
+.tarjetas-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.tarjeta {
+  background-color: #FFFFFF;
+  border-radius: 16px;
+  padding: 14px;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
+}
+
+.tarjeta-label {
+  font-size: 0.74rem;
+  color: #9B9B9B;
+  margin: 0 0 4px;
+  font-weight: 700;
+}
+
+.tarjeta-valor {
+  font-size: 1.4rem;
+  font-weight: 800;
+  margin: 0 0 4px;
+}
+
+.tarjeta-comparativo {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #EF4444;
+  margin: 0;
+}
+
+.tarjeta-comparativo.positivo {
+  color: #22C55E;
+}
+
+.seccion-doble {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.bloque-grafica,
+.bloque-estados,
+.bloque-recientes {
+  background-color: #FFFFFF;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
+}
+
+.bloque-grafica h2,
+.bloque-estados h2,
+.bloque-recientes h2 {
+  font-family: 'Baloo 2', 'Nunito', sans-serif;
+  font-size: 1rem;
+  margin: 0 0 14px;
+}
+
+.grafica {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  height: 130px;
+  padding-top: 20px;
+}
+
+.barra-columna {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.barra {
+  width: 100%;
+  background-color: #E85A2A;
+  border-radius: 6px 6px 0 0;
+  min-height: 4px;
+  position: relative;
+  transition: height 0.3s ease;
+}
+
+.barra-valor {
+  position: absolute;
+  top: -18px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #6B6B6B;
+}
+
+.barra-label {
+  font-size: 0.66rem;
+  color: #9B9B9B;
+  font-weight: 700;
+}
+
+.estados-lista {
+  display: flex;
+  flex-direction: column;
+}
+
+.estado-fila {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  padding: 9px 0;
+  border-bottom: 1px solid #F3F3F3;
+}
+
+.estado-fila:last-child {
+  border-bottom: none;
+}
+
+.estado-cantidad {
+  font-weight: 800;
+  color: #E85A2A;
+}
+
+.recientes-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.reciente-fila {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr auto;
+  gap: 8px;
+  font-size: 0.82rem;
+  padding: 10px 12px;
+  background-color: #F8F8F8;
+  border-radius: 12px;
+}
+
+.reciente-estado {
+  color: #9B9B9B;
+  font-weight: 600;
+}
+
+.reciente-total {
+  text-align: right;
+  font-weight: 800;
+  color: #E85A2A;
+}
+
+@media (min-width: 700px) {
+  .tarjetas-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .seccion-doble {
+    grid-template-columns: 1.4fr 1fr;
+  }
+}

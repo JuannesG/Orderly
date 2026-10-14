@@ -1,0 +1,101 @@
+<div class="ped-page">
+  <h1>Pedidos</h1>
+
+  <div class="filtros-chips">
+    <button [class.activo]="filtro === 'activos'" (click)="filtro = 'activos'">Activos ({{ contarActivos }})</button>
+    <button [class.activo]="filtro === 'hoy'" (click)="filtro = 'hoy'">Hoy</button>
+    <button [class.activo]="filtro === 'todos'" (click)="filtro = 'todos'">Todos</button>
+  </div>
+
+  @if (cargando) {
+    <p class="mensaje">Cargando pedidos...</p>
+  }
+
+  @if (!cargando && pedidosVisibles.length === 0) {
+    <p class="mensaje">No hay pedidos para mostrar.</p>
+  }
+
+  <div class="ped-lista">
+    @for (pedido of pedidosVisibles; track pedido.token_seguimiento) {
+      <div class="ped-card">
+        <div class="ped-head">
+          <div>
+            <h3>{{ pedido.cliente_nombre }}</h3>
+            <a [href]="'tel:' + pedido.cliente_telefono" class="tel">📞 {{ pedido.cliente_telefono }}</a>
+          </div>
+          <div class="head-der">
+            <span class="badge" [class]="pedido.estado">{{ etiqueta(pedido.estado) }}</span>
+            <span class="hora">{{ pedido.creado_en | date:'h:mm a' }}</span>
+          </div>
+        </div>
+
+        <div class="direccion-box">
+          <span>📍 {{ pedido.cliente_direccion }}</span>
+          @if (pedido.cliente_referencia) {
+            <span class="ref">Ref: {{ pedido.cliente_referencia }}</span>
+          }
+        </div>
+
+        <div class="items">
+          @for (item of pedido.detalles; track item.producto_nombre) {
+            <div class="item-linea">
+              <span>{{ item.cantidad }}x {{ item.producto_nombre }}</span>
+              <span>${{ formatPrecio(item.precio_unitario * item.cantidad) }}</span>
+            </div>
+            @for (adicion of item.adiciones; track adicion.id) {
+              <div class="item-linea adicion">
+                <span>+ {{ adicion.nombre }}</span>
+                <span>${{ formatPrecio(adicion.precio * item.cantidad) }}</span>
+              </div>
+            }
+          }
+          @if (pedido.observaciones) {
+            <p class="obs">"{{ pedido.observaciones }}"</p>
+          }
+        </div>
+
+        <div class="pago-row">
+          <span class="metodo">{{ metodoLabel(pedido.pago?.metodo) }}</span>
+          <strong class="total">${{ formatPrecio(pedido.total) }}</strong>
+        </div>
+
+        @if (pedido.pago?.metodo !== 'efectivo' && pedido.pago?.estado_verificacion === 'pendiente_verificacion') {
+          <div class="verificar">
+            @if (pedido.pago.comprobante) {
+              <button class="btn-ver" (click)="verComprobante(pedido.pago.comprobante)">🧾 Ver comprobante</button>
+            } @else {
+              <p class="sin-comp">El cliente aún no subió el comprobante</p>
+            }
+            <div class="botones-verificar">
+              <button class="btn-rechazar" (click)="verificarPago(pedido, false)">Rechazar</button>
+              <button class="btn-aceptar" [disabled]="!pedido.pago.comprobante" (click)="verificarPago(pedido, true)">Aceptar pago</button>
+            </div>
+          </div>
+        }
+
+        @if (pedido.estado === 'pendiente_verificacion' && pedido.pago?.metodo === 'efectivo') {
+          <button class="btn-aceptar-pedido" (click)="verificarPago(pedido, true)">✓ Aceptar pedido</button>
+        }
+
+        @if (pedido.estado !== 'pendiente_verificacion' && pedido.estado !== 'rechazado') {
+          <div class="botones-estado">
+            @for (estado of estadosBotones; track estado) {
+              <button [class]="pedido.estado === estado ? 'activo ' + estado : ''" (click)="cambiarAEstado(pedido, estado)">
+                {{ etiqueta(estado) }}
+              </button>
+            }
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+  @if (comprobanteAbierto) {
+    <div class="overlay" (click)="comprobanteAbierto = null">
+      <div class="visor" (click)="$event.stopPropagation()">
+        <button class="cerrar-x" (click)="comprobanteAbierto = null">✕</button>
+        <img [src]="comprobanteAbierto" alt="Comprobante de pago">
+      </div>
+    </div>
+  }
+</div>

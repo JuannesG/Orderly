@@ -1,0 +1,17 @@
+# Entorno virtual y secretos del backend
+backend/venv/
+backend/.env
+backend/media/
+
+# Archivos generados de Python
+__pycache__/
+*.pyc
+
+# Dependencias y caché del frontend
+frontend/node_modules/
+frontend/.angular/
+frontend/dist/
+
+# Sistema y editor
+.DS_Store
+Thumbs.db

@@ -1,0 +1,114 @@
+<div class="catalogo-page">
+  <header class="top-bar">
+    <div class="marca-mini">
+      <img src="/assets/logo-mr-lucho.png" alt="Mr Lucho" class="logo-mini">
+      <div>
+        <p class="nombre-rest">Mr Lucho</p>
+        <span class="badge-estado" [class.cerrado]="!tiendaAbierta">
+          {{ tiendaAbierta ? '● Abierto ahora' : '● Cerrado' }}
+        </span>
+      </div>
+    </div>
+    <div class="direccion-chip" (click)="toggleEditarDireccion()">
+      <span class="pin">📍</span>
+      <span class="texto-direccion">{{ direccionCliente }}</span>
+    </div>
+  </header>
+
+  @if (editandoDireccion) {
+    <div class="editar-direccion-panel">
+      <input type="text" [(ngModel)]="direccionEditada" class="input-direccion" placeholder="Nueva dirección">
+      <button class="btn-guardar-mini" (click)="guardarDireccion()">Guardar</button>
+    </div>
+  }
+
+  @if (!tiendaAbierta) {
+    <div class="banner-cerrado">Estamos cerrados en este momento. Vuelve más tarde.</div>
+  }
+
+  <div class="buscador-wrap">
+    <input type="text" [(ngModel)]="busqueda" (ngModelChange)="onBuscar()" placeholder="¿Qué se te antoja hoy?" class="input-buscar">
+  </div>
+
+  <div class="filtros-scroll">
+    <button [class.activo]="filtroActivo === null" (click)="setFiltro(null)">Todo</button>
+    @for (categoria of categorias; track categoria.id) {
+      <button [class.activo]="filtroActivo === categoria.id" (click)="setFiltro(categoria.id ?? null)">
+        {{ categoria.nombre }}
+      </button>
+    }
+  </div>
+
+  @if (cargando) {
+    <p class="mensaje-carga">Cargando menú...</p>
+  }
+
+  <div class="categorias-wrap">
+    @for (categoria of categoriasVisibles; track categoria.id) {
+      <section class="categoria-sec">
+        <h2>{{ categoria.nombre }}</h2>
+        <div class="productos-col">
+          @for (producto of categoria.productos; track producto.id) {
+            <div class="producto-row" (click)="abrirDetalle(producto)">
+              <div class="producto-texto">
+                <h3>{{ producto.nombre }}</h3>
+                @if (producto.descripcion) {
+                  <p class="desc">{{ producto.descripcion }}</p>
+                }
+                <p class="precio">${{ formatPrecio(producto.precio) }}</p>
+              </div>
+              <div class="producto-accion" (click)="$event.stopPropagation()">
+                @if (carrito.obtenerCantidad(producto.id) === 0) {
+                  <button class="btn-mas" [disabled]="!tiendaAbierta" (click)="agregar(producto)">+</button>
+                } @else {
+                  <div class="mini-stepper">
+                    <button [disabled]="!tiendaAbierta" (click)="quitar(producto)">−</button>
+                    <span>{{ carrito.obtenerCantidad(producto.id) }}</span>
+                    <button [disabled]="!tiendaAbierta" (click)="agregar(producto)">+</button>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      </section>
+    }
+  </div>
+
+  @if (productoDetalle) {
+    <div class="overlay" (click)="cerrarDetalle()">
+      <div class="sheet" (click)="$event.stopPropagation()">
+        <button class="cerrar-x" (click)="cerrarDetalle()">✕</button>
+        <h2>{{ productoDetalle.nombre }}</h2>
+        <p class="sheet-precio">${{ formatPrecio(productoDetalle.precio) }}</p>
+        @if (productoDetalle.descripcion) {
+          <p class="sheet-desc">{{ productoDetalle.descripcion }}</p>
+        }
+
+        @if (adiciones.length > 0) {
+          <h3 class="sheet-sub">Adicionales</h3>
+          <div class="sheet-adiciones">
+            @for (a of adiciones; track a.id) {
+              <label class="opcion-adicional">
+                <input type="checkbox" [checked]="tieneAdicionDetalle(a.id)" (change)="toggleAdicionDetalle(a)">
+                <span>{{ a.nombre }}</span>
+                <span class="precio-mini">+${{ formatPrecio(a.precio) }}</span>
+              </label>
+            }
+          </div>
+        }
+
+        <div class="sheet-footer">
+          <div class="mini-stepper grande">
+            <button (click)="cambiarCantidad(-1)">−</button>
+            <span>{{ cantidadDetalle }}</span>
+            <button (click)="cambiarCantidad(1)">+</button>
+          </div>
+          <button class="btn-agregar-total" [disabled]="!tiendaAbierta" (click)="agregarDesdeDetalle()">
+            Agregar ${{ formatPrecio(totalDetalle) }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

@@ -1,0 +1,66 @@
+<div class="menu-content">
+  <div class="encabezado">
+    <h1>Menú</h1>
+    <button class="btn-agregar" (click)="irANuevoProducto()">+ Producto</button>
+  </div>
+
+  <div class="filtros">
+    <button [class.activo]="filtroActivo === null" (click)="setFiltro(null)">Todos</button>
+    @for (categoria of categorias; track categoria.id) {
+    <button [class.activo]="filtroActivo === categoria.id" (click)="setFiltro(categoria.id ?? null)">
+      {{ categoria.nombre }}
+    </button>
+    }
+  </div>
+
+  <div class="nueva-categoria">
+    @if (!mostrarFormCategoria) {
+    <button class="btn-nueva-categoria" (click)="toggleFormCategoria()">+ Nueva categoría</button>
+    } @else {
+    <div class="form-categoria-inline">
+      <input type="text" [(ngModel)]="nombreCategoriaNueva" name="nombreCategoriaNueva"
+        placeholder="Nombre de la categoría">
+      <button class="ok" (click)="crearCategoria()">Guardar</button>
+      <button class="no" (click)="toggleFormCategoria()">Cancelar</button>
+    </div>
+    }
+  </div>
+
+  @if (cargando) {
+  <p class="mensaje">Cargando menú...</p>
+  }
+
+  @for (categoria of categoriasVisibles; track categoria.id) {
+  <section class="categoria-bloque">
+    <div class="cat-head">
+      <h2>{{ categoria.nombre }}</h2>
+      <button class="btn-borrar-cat" (click)="eliminarCategoria(categoria)">Eliminar categoría</button>
+    </div>
+
+    @if (categoria.productos && categoria.productos.length > 0) {
+    <div class="productos-grid">
+      @for (producto of categoria.productos; track producto.id) {
+      <div class="producto-card">
+        <div class="pc-top">
+          <h3>{{ producto.nombre }}</h3>
+          @if (!producto.disponible) {
+          <span class="agotado">Agotado</span>
+          }
+        </div>
+        @if (producto.descripcion) {
+        <p class="descripcion">{{ producto.descripcion }}</p>
+        }
+        <p class="precio">${{ formatPrecio(producto.precio) }}</p>
+        <div class="acciones">
+          <button class="editar" (click)="irAEditar(producto.id)">Editar</button>
+          <button class="eliminar" (click)="eliminarProducto(producto.id)">Eliminar</button>
+        </div>
+      </div>
+      }
+    </div>
+    } @else {
+    <p class="vacio">Sin productos en esta categoría todavía.</p>
+    }
+  </section>
+  }
+</div>

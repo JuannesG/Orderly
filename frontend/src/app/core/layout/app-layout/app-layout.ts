@@ -1,0 +1,18 @@
+import { Component } from '@angular/core';
+import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router';
+import { Auth } from '../../services/auth';
+
+@Component({
+  selector: 'app-app-layout',
+  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  templateUrl: './app-layout.html',
+  styleUrl: './app-layout.css'
+})
+export class AppLayout {
+  constructor(private auth: Auth, private router: Router) {}
+
+  cerrarSesion() {
+    this.auth.logout();
+    this.router.navigate(['/login']);
+  }
+}
