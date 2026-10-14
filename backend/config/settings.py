@@ -16,9 +16,13 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 import os
+import sys
 from dotenv import load_dotenv
 
 load_dotenv(BASE_DIR / '.env')
+
+# Se importa después de load_dotenv para que lea CLOUDINARY_URL del .env
+import cloudinary
 
 
 # Quick-start development settings - unsuitable for production
@@ -169,3 +173,14 @@ MAILERS = {
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+
+# Comprobantes de pago
+# Días que se conservan los comprobantes de pagos ya resueltos antes de borrarlos
+COMPROBANTES_DIAS = int(os.environ.get('COMPROBANTES_DIAS', '2'))
+
+# Cloudinary solo se usa si existe CLOUDINARY_URL y nunca durante las pruebas
+USAR_CLOUDINARY = bool(os.environ.get('CLOUDINARY_URL')) and 'test' not in sys.argv
+
+if USAR_CLOUDINARY:
+    cloudinary.config(secure=True)

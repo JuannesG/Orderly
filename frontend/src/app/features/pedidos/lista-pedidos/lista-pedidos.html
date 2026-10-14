@@ -61,14 +61,14 @@
 
         @if (pedido.pago?.metodo !== 'efectivo' && pedido.pago?.estado_verificacion === 'pendiente_verificacion') {
           <div class="verificar">
-            @if (pedido.pago.comprobante) {
-              <button class="btn-ver" (click)="verComprobante(pedido.pago.comprobante)">🧾 Ver comprobante</button>
+            @if (urlComprobante(pedido)) {
+              <button class="btn-ver" (click)="verComprobante(urlComprobante(pedido)!)">🧾 Ver comprobante</button>
             } @else {
               <p class="sin-comp">El cliente aún no subió el comprobante</p>
             }
             <div class="botones-verificar">
               <button class="btn-rechazar" (click)="verificarPago(pedido, false)">Rechazar</button>
-              <button class="btn-aceptar" [disabled]="!pedido.pago.comprobante" (click)="verificarPago(pedido, true)">Aceptar pago</button>
+              <button class="btn-aceptar" [disabled]="!urlComprobante(pedido)" (click)="verificarPago(pedido, true)">Aceptar pago</button>
             </div>
           </div>
         }

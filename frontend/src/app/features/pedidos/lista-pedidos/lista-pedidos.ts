@@ -95,6 +95,13 @@ export class ListaPedidos implements OnInit, OnDestroy {
     return new Intl.NumberFormat('es-CO', { maximumFractionDigits: 0 }).format(precio);
   }
 
+  // Devuelve la dirección del comprobante: primero la de Cloudinary,
+  // y si no existe, la del archivo guardado en la carpeta media del servidor.
+  urlComprobante(pedido: any): string | null {
+    const pago = pedido.pago;
+    return pago?.comprobante_url || pago?.comprobante || null;
+  }
+
   verComprobante(url: string) {
     this.comprobanteAbierto = url;
   }

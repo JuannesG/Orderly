@@ -1,5 +1,9 @@
+import logging
 import os
 from datetime import timedelta
+
+import cloudinary.uploader
+from django.conf import settings
 from django.utils import timezone
 from rest_framework import viewsets, permissions
 from rest_framework.decorators import action
@@ -8,6 +12,8 @@ from rest_framework.response import Response
 from rest_framework.throttling import ScopedRateThrottle
 from .models import Pedido
 from .serializers import PedidoCreateSerializer, PedidoDetailSerializer, PedidoListSerializer
+
+logger = logging.getLogger(__name__)
 
 EXTENSIONES_PERMITIDAS = {'.jpg', '.jpeg', '.png', '.webp', '.heic'}
 
@@ -69,7 +75,29 @@ class PedidoViewSet(viewsets.ModelViewSet):
         if pago.estado_verificacion == 'aceptado':
             return Response({'detail': 'El pago ya fue confirmado.'}, status=400)
 
-        pago.comprobante = archivo
+        if settings.USAR_CLOUDINARY:
+            # El nombre en Cloudinary es comprobantes/<id del pago>; así el
+            # comando de limpieza sabe qué borrar sin guardar nada más.
+            try:
+                archivo.seek(0)
+                resultado = cloudinary.uploader.upload(
+                    archivo.read(),
+                    folder='comprobantes',
+                    public_id=str(pago.id),
+                    overwrite=True,
+                    resource_type='image',
+                    format='jpg',
+                )
+            except Exception:
+                logger.exception('Error al subir el comprobante a Cloudinary')
+                return Response(
+                    {'detail': 'No se pudo guardar el comprobante. Intenta de nuevo.'},
+                    status=502,
+                )
+            pago.comprobante_url = resultado['secure_url']
+        else:
+            pago.comprobante = archivo
+
         pago.estado_verificacion = 'pendiente_verificacion'
         pago.save()
         return Response({'ok': True})
