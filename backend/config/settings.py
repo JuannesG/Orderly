@@ -17,6 +17,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 import os
 import sys
+import dj_database_url
 from dotenv import load_dotenv
 
 load_dotenv(BASE_DIR / '.env')
@@ -34,7 +35,11 @@ SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DJANGO_DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+# En producción: DJANGO_ALLOWED_HOSTS=mi-backend.onrender.com (separados por coma si son varios)
+ALLOWED_HOSTS = [
+    h.strip() for h in os.environ.get('DJANGO_ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+    if h.strip()
+]
 
 
 # Application definition
@@ -61,6 +66,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -69,7 +75,17 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CORS_ALLOWED_ORIGINS = os.environ.get('CORS_ORIGINS', 'http://localhost:4200').split(',')
+# En producción: CORS_ORIGINS=https://mi-frontend.vercel.app (separados por coma si son varios)
+CORS_ALLOWED_ORIGINS = [
+    o.strip() for o in os.environ.get('CORS_ORIGINS', 'http://localhost:4200').split(',')
+    if o.strip()
+]
+
+# Necesario para entrar al admin de Django por HTTPS desde otro dominio
+CSRF_TRUSTED_ORIGINS = [
+    o.strip() for o in os.environ.get('CSRF_TRUSTED_ORIGINS', '').split(',')
+    if o.strip()
+]
 
 AUTH_USER_MODEL = 'usuarios.Usuario'
 
@@ -113,16 +129,23 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'Orderly',
-        'USER': 'postgres',
-        'PASSWORD': os.environ['DB_PASSWORD'],
-        'HOST': 'localhost',
-        'PORT': '5432',
+if os.environ.get('DATABASE_URL'):
+    # Producción: la base de datos en la nube entrega una sola dirección
+    DATABASES = {
+        'default': dj_database_url.config(conn_max_age=600),
     }
-}
+else:
+    # Desarrollo local
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'Orderly',
+            'USER': 'postgres',
+            'PASSWORD': os.environ['DB_PASSWORD'],
+            'HOST': 'localhost',
+            'PORT': '5432',
+        }
+    }
 
 
 # Password validation
@@ -160,14 +183,30 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.1/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+STORAGES = {
+    'default': {
+        'BACKEND': 'django.core.files.storage.FileSystemStorage',
+    },
+    'staticfiles': {
+        'BACKEND': 'whitenoise.storage.CompressedStaticFilesStorage',
+    },
+}
 
 
 # Email
 # https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
+# Orderly no envía correos todavía. En desarrollo se imprimen en la consola;
+# en producción se declara el backend SMTP (se configuraría aquí si algún día se usa).
 
 MAILERS = {
     'default': {
-        'BACKEND': 'django.core.mail.backends.console.EmailBackend',
+        'BACKEND': (
+            'django.core.mail.backends.console.EmailBackend'
+            if DEBUG
+            else 'django.core.mail.backends.smtp.EmailBackend'
+        ),
     },
 }
 
@@ -177,10 +216,24 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 # Comprobantes de pago
 # Días que se conservan los comprobantes de pagos ya resueltos antes de borrarlos
-COMPROBANTES_DIAS = int(os.environ.get('COMPROBANTES_DIAS', '2'))
+COMPROBANTES_DIAS = int(os.environ.get('COMPROBANTES_DIAS', '3'))
 
 # Cloudinary solo se usa si existe CLOUDINARY_URL y nunca durante las pruebas
 USAR_CLOUDINARY = bool(os.environ.get('CLOUDINARY_URL')) and 'test' not in sys.argv
 
 if USAR_CLOUDINARY:
     cloudinary.config(secure=True)
+
+
+# Seguridad en producción (solo con DJANGO_DEBUG distinto de True)
+if not DEBUG:
+    # El servidor en la nube termina el HTTPS y reenvía la petición; esto le dice
+    # a Django que confíe en esa cabecera para saber que la conexión es segura.
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    # Redirigir http a https; se puede apagar con SECURE_SSL_REDIRECT=False si da problemas
+    SECURE_SSL_REDIRECT = os.environ.get('SECURE_SSL_REDIRECT', 'True') == 'True'
+    # HSTS: apagado (0) hasta comprobar que el sitio desplegado funciona bien con HTTPS.
+    # Después se activa con un valor pequeño (por ejemplo 3600) y más adelante se sube.
+    SECURE_HSTS_SECONDS = int(os.environ.get('SECURE_HSTS_SECONDS', '0'))
