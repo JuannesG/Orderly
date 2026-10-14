@@ -3,7 +3,6 @@ import { ActivatedRoute } from '@angular/router';
 import { Pedido as PedidoService } from '../../../core/services/pedido';
 
 const ESTADOS_ORDEN = ['pendiente_verificacion', 'aceptado', 'en_preparacion', 'en_camino', 'entregado'];
-const ESTADOS_FINALES = ['entregado', 'rechazado'];
 
 const PASOS = [
   { estado: 'pendiente_verificacion', etiqueta: 'Recibido', icono: '🧾' },
@@ -64,13 +63,14 @@ export class Seguimiento implements OnInit, OnDestroy {
       next: (data) => {
         this.pedido = data;
 
+        // Solo se deja de consultar al entregar. Un pedido rechazado se sigue
+        // consultando por si el restaurante lo reactiva.
         if (data.estado === 'entregado') {
           localStorage.removeItem('pedido_activo_token');
-        }
-
-        if (ESTADOS_FINALES.includes(data.estado) && this.intervalId) {
-          clearInterval(this.intervalId);
-          this.intervalId = null;
+          if (this.intervalId) {
+            clearInterval(this.intervalId);
+            this.intervalId = null;
+          }
         }
 
         this.cargando = false;

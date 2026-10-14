@@ -1,7 +1,10 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { Router, NavigationEnd, RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { filter } from 'rxjs/operators';
 import { Carrito } from '../../services/carrito';
 import { Menu } from '../../services/menu';
+import { Pedido as PedidoService } from '../../services/pedido';
 
 @Component({
   selector: 'app-cliente-layout',
@@ -9,12 +12,21 @@ import { Menu } from '../../services/menu';
   templateUrl: './cliente-layout.html',
   styleUrl: './cliente-layout.css',
 })
-export class ClienteLayout implements OnInit {
+export class ClienteLayout implements OnInit, OnDestroy {
   whatsappRestaurante = '';
+
+  // Token del pedido que se muestra en "En curso". Es null cuando no hay pedido
+  // activo, o cuando el pedido fue rechazado o entregado.
+  enCursoToken: string | null = null;
+
+  private intervalId: any;
+  private navSub?: Subscription;
 
   constructor(
     public carrito: Carrito,
     private menuService: Menu,
+    private pedidoService: PedidoService,
+    private router: Router,
     private cdr: ChangeDetectorRef,
   ) {}
 
@@ -27,10 +39,59 @@ export class ClienteLayout implements OnInit {
         }
       },
     });
+
+    // Revisa el pedido al abrir la tienda, cada vez que el cliente cambia de pantalla
+    // (por ejemplo, justo después de hacer un pedido) y cada 6 segundos.
+    this.revisarPedidoEnCurso();
+    this.navSub = this.router.events
+      .pipe(filter((evento) => evento instanceof NavigationEnd))
+      .subscribe(() => this.revisarPedidoEnCurso());
+    this.intervalId = setInterval(() => this.revisarPedidoEnCurso(), 6000);
   }
 
-  get pedidoActivoToken(): string | null {
-    return localStorage.getItem('pedido_activo_token');
+  ngOnDestroy() {
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+    }
+    this.navSub?.unsubscribe();
+  }
+
+  private revisarPedidoEnCurso() {
+    const token = localStorage.getItem('pedido_activo_token');
+
+    if (!token) {
+      this.actualizarEnCurso(null);
+      return;
+    }
+
+    this.pedidoService.obtenerPorToken(token).subscribe({
+      next: (pedido) => {
+        if (pedido.estado === 'entregado') {
+          localStorage.removeItem('pedido_activo_token');
+          this.actualizarEnCurso(null);
+        } else if (pedido.estado === 'rechazado') {
+          // No se borra el token: si el restaurante reactiva el pedido, "En curso" vuelve.
+          this.actualizarEnCurso(null);
+        } else {
+          this.actualizarEnCurso(token);
+        }
+      },
+      error: (err) => {
+        // Si el pedido ya no existe, se limpia. Ante otros errores (sin conexión,
+        // servidor dormido) no se cambia nada.
+        if (err.status === 404) {
+          localStorage.removeItem('pedido_activo_token');
+          this.actualizarEnCurso(null);
+        }
+      },
+    });
+  }
+
+  private actualizarEnCurso(valor: string | null) {
+    if (this.enCursoToken !== valor) {
+      this.enCursoToken = valor;
+      this.cdr.detectChanges();
+    }
   }
 
   get whatsappUrl(): string {

@@ -86,6 +86,10 @@
             }
           </div>
         }
+
+        @if (pedido.estado === 'rechazado') {
+          <button class="btn-aceptar-pedido" (click)="reactivar(pedido)">↻ Reactivar pedido</button>
+        }
       </div>
     }
   </div>

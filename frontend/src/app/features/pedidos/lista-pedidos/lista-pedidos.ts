@@ -123,4 +123,19 @@ export class ListaPedidos implements OnInit, OnDestroy {
       }
     });
   }
+
+  // Vuelve a dejar el pedido como al inicio, para que el restaurante lo revise de nuevo.
+  // Transferencia: el pago queda pendiente de verificación (con su comprobante).
+  // Efectivo: el pago queda aceptado y el pedido espera la aceptación del restaurante.
+  reactivar(pedido: any) {
+    const estadoPago = pedido.pago?.metodo === 'efectivo' ? 'aceptado' : 'pendiente_verificacion';
+
+    this.pedidoService.verificarPago(pedido.pago.id, estadoPago).subscribe({
+      next: () => {
+        this.pedidoService.cambiarEstado(pedido.token_seguimiento, 'pendiente_verificacion').subscribe({
+          next: () => this.cargarPedidos(true)
+        });
+      }
+    });
+  }
 }

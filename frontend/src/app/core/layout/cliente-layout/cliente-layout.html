@@ -12,8 +12,8 @@
       <span class="nav-icono">🧾</span>
       <span>Pedidos</span>
     </a>
-    @if (pedidoActivoToken) {
-      <a [routerLink]="['/tienda/seguimiento', pedidoActivoToken]" class="nav-item">
+    @if (enCursoToken) {
+      <a [routerLink]="['/tienda/seguimiento', enCursoToken]" class="nav-item">
         <span class="nav-icono">🚴</span>
         <span>En curso</span>
       </a>
