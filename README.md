@@ -25,7 +25,20 @@ Tiene dos interfaces:
 
 ## Capturas
 
-_Próximamente._
+### Tienda del cliente
+
+<p>
+  <img src="docs/capturas/tienda-catalogo.png" alt="Catálogo de la tienda" width="230">
+  <img src="docs/capturas/tienda-checkout.png" alt="Checkout" width="230">
+  <img src="docs/capturas/tienda-seguimiento.png" alt="Seguimiento del pedido" width="230">
+</p>
+
+### Panel del restaurante
+
+<p>
+  <img src="docs/capturas/panel-inicio.png" alt="Inicio del panel con dashboard" width="230">
+  <img src="docs/capturas/panel-pedidos.png" alt="Lista de pedidos" width="230">
+</p>
 
 ## Cómo ejecutarlo en local
 
