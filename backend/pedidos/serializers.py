@@ -27,11 +27,12 @@ class AdicionDetailSerializer(serializers.ModelSerializer):
 
 class DetallePedidoDetailSerializer(serializers.ModelSerializer):
     producto_nombre = serializers.CharField(source='producto.nombre', read_only=True)
+    categoria_nombre = serializers.CharField(source='producto.categoria.nombre', read_only=True)
     adiciones = AdicionDetailSerializer(many=True, read_only=True)
 
     class Meta:
         model = DetallePedido
-        fields = ['producto_nombre', 'cantidad', 'precio_unitario', 'adiciones']
+        fields = ['producto_nombre', 'categoria_nombre', 'cantidad', 'precio_unitario', 'adiciones']
 
 
 class PedidoCreateSerializer(serializers.ModelSerializer):
