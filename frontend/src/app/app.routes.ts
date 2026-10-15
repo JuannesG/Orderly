@@ -17,11 +17,13 @@ import { ClienteLayout } from './core/layout/cliente-layout/cliente-layout';
 import { authGuard } from './core/guards/auth-guard';
 
 export const routes: Routes = [
-  { path: 'login', component: Login },
+  // Panel del restaurante: el login y todas las pantallas del administrador
+  { path: 'login', component: Login, title: 'Mr Lucho Panel' },
   {
     path: '',
     component: AppLayout,
     canActivate: [authGuard],
+    title: 'Mr Lucho Panel',
     children: [
       { path: 'dashboard', component: Inicio },
       { path: 'menu', component: ListaProductos },
@@ -31,10 +33,13 @@ export const routes: Routes = [
       { path: 'reservas', component: ListaReservas },
     ]
   },
-  { path: 'tienda', component: Registro, pathMatch: 'full' },
+
+  // Tienda del cliente: el registro y todas las pantallas de la tienda
+  { path: 'tienda', component: Registro, pathMatch: 'full', title: 'Mr Lucho Pedidos' },
   {
     path: 'tienda',
     component: ClienteLayout,
+    title: 'Mr Lucho Pedidos',
     children: [
       { path: 'menu', component: Catalogo },
       { path: 'pedidos', component: MisPedidos },
