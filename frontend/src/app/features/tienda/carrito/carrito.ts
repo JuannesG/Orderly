@@ -4,6 +4,9 @@ import { Router } from '@angular/router';
 import { Carrito as CarritoService, ItemCarrito } from '../../../core/services/carrito';
 import { Menu, Adicion, Categoria } from '../../../core/services/menu';
 
+// Las categorías cuyo nombre contenga alguno de estos textos no ofrecen adicionales.
+// Se compara sin tildes y sin distinguir mayúsculas.
+const CATEGORIAS_SIN_ADICIONALES = ['bebida'];
 
 @Component({
   selector: 'app-carrito',
@@ -14,6 +17,7 @@ import { Menu, Adicion, Categoria } from '../../../core/services/menu';
 export class Carrito implements OnInit {
   adicionesDisponibles: Adicion[] = [];
   categorias: Categoria[] = [];
+  categoriasCargadas = false;
   itemExpandido: string | null = null;
 
   constructor(
@@ -34,6 +38,12 @@ export class Carrito implements OnInit {
     this.menuService.getCategorias().subscribe({
       next: (data) => {
         this.categorias = data;
+        this.categoriasCargadas = true;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        // Si no se pudieron cargar las categorías, se ofrecen adicionales como siempre.
+        this.categoriasCargadas = true;
         this.cdr.detectChanges();
       }
     });
@@ -43,6 +53,18 @@ export class Carrito implements OnInit {
   nombreCategoria(categoriaId: string | undefined): string {
     if (!categoriaId) return '';
     return this.categorias.find((c) => c.id === categoriaId)?.nombre ?? '';
+  }
+
+  // Las bebidas (y las categorías de la lista de arriba) no ofrecen adicionales.
+  permiteAdicionales(item: ItemCarrito): boolean {
+    if (!this.categoriasCargadas) return false;
+
+    const nombre = this.nombreCategoria(item.producto.categoria)
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase();
+
+    return !CATEGORIAS_SIN_ADICIONALES.some((texto) => nombre.includes(texto));
   }
 
   formatPrecio(precio: number | string): string {

@@ -35,20 +35,22 @@
             </div>
           }
 
-          <button class="link-adicionales" (click)="toggleExpandido(item.producto.id)">
-            {{ itemExpandido === item.producto.id ? 'Ocultar adicionales' : '+ Adicionales' }}
-          </button>
+          @if (permiteAdicionales(item)) {
+            <button class="link-adicionales" (click)="toggleExpandido(item.producto.id)">
+              {{ itemExpandido === item.producto.id ? 'Ocultar adicionales' : '+ Adicionales' }}
+            </button>
 
-          @if (itemExpandido === item.producto.id) {
-            <div class="lista-adicionales">
-              @for (adicional of adicionesDisponibles; track adicional.id) {
-                <label class="opcion-adicional">
-                  <input type="checkbox" [checked]="carrito.tieneAdicional(item, adicional.id)" (change)="toggleAdicional(item, adicional)">
-                  <span>{{ adicional.nombre }}</span>
-                  <span class="precio-mini">+${{ formatPrecio(adicional.precio) }}</span>
-                </label>
-              }
-            </div>
+            @if (itemExpandido === item.producto.id) {
+              <div class="lista-adicionales">
+                @for (adicional of adicionesDisponibles; track adicional.id) {
+                  <label class="opcion-adicional">
+                    <input type="checkbox" [checked]="carrito.tieneAdicional(item, adicional.id)" (change)="toggleAdicional(item, adicional)">
+                    <span>{{ adicional.nombre }}</span>
+                    <span class="precio-mini">+${{ formatPrecio(adicional.precio) }}</span>
+                  </label>
+                }
+              </div>
+            }
           }
 
           <p class="item-total">${{ formatPrecio(subtotalItem(item)) }}</p>

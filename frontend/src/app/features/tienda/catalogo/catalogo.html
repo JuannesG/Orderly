@@ -85,7 +85,7 @@
           <p class="sheet-desc">{{ productoDetalle.descripcion }}</p>
         }
 
-        @if (adiciones.length > 0) {
+        @if (adiciones.length > 0 && detallePermiteAdicionales) {
           <h3 class="sheet-sub">Adicionales</h3>
           <div class="sheet-adiciones">
             @for (a of adiciones; track a.id) {

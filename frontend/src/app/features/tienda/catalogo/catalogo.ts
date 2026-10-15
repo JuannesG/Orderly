@@ -5,6 +5,10 @@ import { Menu, Categoria, Producto, Adicion } from '../../../core/services/menu'
 import { Carrito } from '../../../core/services/carrito';
 import { ClienteService } from '../../../core/services/cliente';
 
+// Las categorías cuyo nombre contenga alguno de estos textos no ofrecen adicionales.
+// Se compara sin tildes y sin distinguir mayúsculas.
+const CATEGORIAS_SIN_ADICIONALES = ['bebida'];
+
 @Component({
   selector: 'app-catalogo',
   imports: [FormsModule],
@@ -166,6 +170,24 @@ export class Catalogo implements OnInit {
 
   cerrarDetalle() {
     this.productoDetalle = null;
+  }
+
+  // Las bebidas (y las categorías de la lista de arriba) no ofrecen adicionales.
+  // La categoría del producto se busca en la lista que ya cargó el catálogo.
+  get detallePermiteAdicionales(): boolean {
+    if (!this.productoDetalle) return false;
+
+    const categoria = this.categorias.find(
+      (c) => c.productos?.some((p) => p.id === this.productoDetalle!.id)
+    );
+    if (!categoria) return true;
+
+    const nombre = categoria.nombre
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase();
+
+    return !CATEGORIAS_SIN_ADICIONALES.some((texto) => nombre.includes(texto));
   }
 
   cambiarCantidad(delta: number) {
