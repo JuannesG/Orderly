@@ -133,6 +133,17 @@
   padding: 3px 0;
 }
 
+.item-linea.producto {
+  align-items: flex-end;
+}
+
+.categoria {
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: #9B9B9B;
+}
+
 .item-linea.adicion {
   padding-left: 12px;
   font-size: 0.75rem;

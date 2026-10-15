@@ -64,6 +64,14 @@
   gap: 12px;
 }
 
+.item-categoria {
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: #9B9B9B;
+  margin-bottom: 2px;
+}
+
 .item-texto h3 {
   margin: 0 0 3px 0;
   font-size: 0.95rem;

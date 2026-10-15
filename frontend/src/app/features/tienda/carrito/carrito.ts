@@ -2,7 +2,7 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Carrito as CarritoService, ItemCarrito } from '../../../core/services/carrito';
-import { Menu, Adicion } from '../../../core/services/menu';
+import { Menu, Adicion, Categoria } from '../../../core/services/menu';
 
 
 @Component({
@@ -13,6 +13,7 @@ import { Menu, Adicion } from '../../../core/services/menu';
 })
 export class Carrito implements OnInit {
   adicionesDisponibles: Adicion[] = [];
+  categorias: Categoria[] = [];
   itemExpandido: string | null = null;
 
   constructor(
@@ -29,6 +30,19 @@ export class Carrito implements OnInit {
         this.cdr.detectChanges();
       }
     });
+
+    this.menuService.getCategorias().subscribe({
+      next: (data) => {
+        this.categorias = data;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  // El producto guarda el id de su categoría; aquí se convierte en el nombre.
+  nombreCategoria(categoriaId: string | undefined): string {
+    if (!categoriaId) return '';
+    return this.categorias.find((c) => c.id === categoriaId)?.nombre ?? '';
   }
 
   formatPrecio(precio: number | string): string {

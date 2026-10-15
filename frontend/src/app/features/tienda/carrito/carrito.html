@@ -14,6 +14,9 @@
         <div class="item-card">
           <div class="item-top">
             <div class="item-texto">
+              @if (nombreCategoria(item.producto.categoria)) {
+                <span class="item-categoria">{{ nombreCategoria(item.producto.categoria) }}</span>
+              }
               <h3>{{ item.producto.nombre }}</h3>
               <p class="precio-unit">${{ formatPrecio(item.producto.precio) }}</p>
             </div>

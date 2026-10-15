@@ -82,8 +82,13 @@
         @if (seccionAbierta === 'productos') {
           <div class="detalle">
             @for (item of pedido.detalles; track item.producto_nombre) {
-              <div class="dl">
-                <span>{{ item.cantidad }}x {{ item.producto_nombre }}</span>
+              <div class="dl producto">
+                <span>
+                  @if (item.categoria_nombre) {
+                    <small class="categoria">{{ item.categoria_nombre }}</small>
+                  }
+                  {{ item.cantidad }}x {{ item.producto_nombre }}
+                </span>
                 <span>${{ formatPrecio(item.precio_unitario * item.cantidad) }}</span>
               </div>
               @for (adicion of item.adiciones; track adicion.id) {
