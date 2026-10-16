@@ -6,6 +6,7 @@ class Usuario(AbstractUser):
     ROLES=[
         ('dueño', 'Dueño'),
         ('empleado', 'Empleado'),
+        ('mesera', 'Mesera'),
     ]
     restaurante = models.ForeignKey(Restaurante, on_delete=models.CASCADE, related_name='usuarios', null=True, blank=True)
     rol = models.CharField(max_length=20, choices=ROLES)
