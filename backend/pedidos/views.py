@@ -11,6 +11,7 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 from rest_framework.throttling import ScopedRateThrottle
 from .models import Pedido
+from core.permissions import EsPersonalDelPanel
 from .serializers import PedidoCreateSerializer, PedidoDetailSerializer, PedidoListSerializer
 
 logger = logging.getLogger(__name__)
@@ -32,7 +33,7 @@ class PedidoViewSet(viewsets.ModelViewSet):
     def get_permissions(self):
         if self.action in ['create', 'retrieve', 'mios', 'comprobante']:
             return [permissions.AllowAny()]
-        return [permissions.IsAuthenticated()]
+        return [EsPersonalDelPanel()]
 
     def get_throttles(self):
         if self.action == 'create':

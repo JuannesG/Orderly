@@ -2,14 +2,14 @@ from datetime import date, timedelta
 from django.db.models import Sum, Count
 from django.db.models.functions import TruncDate
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
+from core.permissions import EsPersonalDelPanel
 from rest_framework.response import Response
 from restaurantes.models import Restaurante
 from pedidos.models import Pedido
 from reservas.models import Reserva
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([EsPersonalDelPanel])
 
 def dashboard_resumen(request):
     restaurante = Restaurante.objects.first()
@@ -40,7 +40,7 @@ def dashboard_resumen(request):
     recientes_data = [
         {
             'id': str(p.id),
-            'cliente_nombre': p.cliente.nombre,
+            'cliente_nombre': p.cliente.nombre if p.cliente else 'En el local',
             'total': p.total,
             'estado': p.estado,
             'creado_en': p.creado_en,
