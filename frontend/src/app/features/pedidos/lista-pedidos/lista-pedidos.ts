@@ -2,6 +2,8 @@ import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Pedido as PedidoService } from '../../../core/services/pedido';
 import { AvisoSonoro } from '../../../core/services/aviso-sonoro';
+import { Auth } from '../../../core/services/auth';
+import { ConfirmarAccion } from '../../../shared/confirmar-accion/confirmar-accion';
 
 const ETIQUETAS: { [key: string]: string } = {
   pendiente_verificacion: 'Pendiente',
@@ -23,7 +25,7 @@ const FINALES = ['entregado', 'rechazado'];
 
 @Component({
   selector: 'app-lista-pedidos',
-  imports: [CommonModule],
+  imports: [CommonModule, ConfirmarAccion],
   templateUrl: './lista-pedidos.html',
   styleUrl: './lista-pedidos.css'
 })
@@ -33,6 +35,7 @@ export class ListaPedidos implements OnInit, OnDestroy {
   filtro: 'activos' | 'hoy' | 'todos' = 'activos';
   estadosBotones = ESTADOS_BOTONES;
   comprobanteAbierto: string | null = null;
+  pedidoPorEntregar: any | null = null;
 
   private intervalId: any;
 
@@ -42,8 +45,13 @@ export class ListaPedidos implements OnInit, OnDestroy {
     constructor(
     private pedidoService: PedidoService,
     public aviso: AvisoSonoro,
+    private auth: Auth,
     private cdr: ChangeDetectorRef
   ) {}
+
+  get esDueno(): boolean {
+    return this.auth.rol() === 'dueño';
+  }
 
   ngOnInit() {
     this.cargarPedidos();
@@ -113,14 +121,33 @@ export class ListaPedidos implements OnInit, OnDestroy {
     this.comprobanteAbierto = url;
   }
 
-    cambiarAEstado(pedido: any, estado: string) {
-    if (estado === 'entregado' && !window.confirm('¿Marcar como entregado? Ya no se podrá cambiar.')) {
+  cambiarAEstado(pedido: any, estado: string) {
+    if (estado === 'entregado') {
+      this.pedidoPorEntregar = pedido;
       return;
     }
     this.pedidoService.cambiarEstado(pedido.token_seguimiento, estado).subscribe({
       next: () => this.cargarPedidos(true),
       error: () => this.cargarPedidos(true)
     });
+  }
+
+  confirmarEntrega() {
+    const pedido = this.pedidoPorEntregar;
+    this.pedidoPorEntregar = null;
+    if (!pedido) return;
+    this.pedidoService.cambiarEstado(pedido.token_seguimiento, 'entregado').subscribe({
+      next: () => this.cargarPedidos(true),
+      error: () => this.cargarPedidos(true)
+    });
+  }
+
+  alternarSonido() {
+    if (this.aviso.activo && this.aviso.listo) {
+      this.aviso.desactivar();
+    } else {
+      this.aviso.activar();
+    }
   }
 
   imprimir(pedido: any) {
@@ -130,17 +157,9 @@ export class ListaPedidos implements OnInit, OnDestroy {
     });
   }
 
-  alternarSonido() {
-    if (this.aviso.activo) {
-      this.aviso.desactivar();
-    } else {
-      this.aviso.activar();
-    }
-  }
-
   private avisarNuevos(data: any[]) {
     const hayNuevos = data.some((p) => !this.conocidos.has(p.token_seguimiento));
-    if (hayNuevos && !this.primeraCarga && this.aviso.activo) {
+    if (hayNuevos && !this.primeraCarga && this.esDueno && this.aviso.activo) {
       this.aviso.sonar();
     }
     data.forEach((p) => this.conocidos.add(p.token_seguimiento));

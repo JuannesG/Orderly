@@ -7,9 +7,11 @@
     <button [class.activo]="filtro === 'todos'" (click)="filtro = 'todos'">Todos</button>
   </div>
 
-  <button class="btn-sonido" [class.activo]="aviso.activo" (click)="alternarSonido()">
-    {{ aviso.activo ? 'Sonido activado' : 'Activar sonido' }}
+  @if (esDueno) {
+  <button class="btn-sonido" [class.activo]="aviso.activo && aviso.listo" (click)="alternarSonido()">
+    {{ aviso.texto }}
   </button>
+  }
 
   @if (cargando) {
   <p class="mensaje">Cargando pedidos...</p>
@@ -120,5 +122,10 @@
       <img [src]="comprobanteAbierto" alt="Comprobante de pago">
     </div>
   </div>
+  }
+  @if (pedidoPorEntregar) {
+  <app-confirmar-accion titulo="¿Marcar como entregado?"
+    [mensaje]="'Pedido de ' + pedidoPorEntregar.cliente_nombre + ' · Ya no se podrá cambiar.'"
+    textoConfirmar="Sí, entregado" (confirmar)="confirmarEntrega()" (cancelar)="pedidoPorEntregar = null" />
   }
 </div>

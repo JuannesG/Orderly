@@ -82,13 +82,10 @@ class PedidoViewSet(viewsets.ModelViewSet):
         serializer.save()
         return Response(serializer.data, status=201)
 
-    def _validar_rol_para(self, pedido):
+    def _validar_rol_para(self, pedido, permitidos_local):
         usuario = self.request.user
         rol = 'dueño' if usuario.is_superuser else usuario.rol
-        if pedido.tipo == 'local':
-            permitidos = ('dueño', 'mesera')
-        else:
-            permitidos = ('dueño', 'domicilios')
+        permitidos = permitidos_local if pedido.tipo == 'local' else ('dueño', 'domicilios')
         if rol not in permitidos:
             raise PermissionDenied()
 
@@ -120,7 +117,7 @@ class PedidoViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['post'])
     def imprimir(self, request, token_seguimiento=None):
         pedido = self.get_object()
-        self._validar_rol_para(pedido)
+        self._validar_rol_para(pedido, ('dueño',))
         if pedido.estado == 'aceptado':
             pedido.estado = 'en_preparacion'
             pedido.save(update_fields=['estado'])
@@ -129,7 +126,7 @@ class PedidoViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['post'])
     def entregado(self, request, token_seguimiento=None):
         pedido = self.get_object()
-        self._validar_rol_para(pedido)
+        self._validar_rol_para(pedido, ('dueño', 'mesera'))
         if pedido.tipo != 'local':
             return Response(
                 {'detail': 'Los domicilios se marcan desde el seguimiento del panel.'},

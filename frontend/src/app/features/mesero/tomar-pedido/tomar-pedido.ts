@@ -7,7 +7,6 @@ import { Pedido, PedidoLocalPayload } from '../../../core/services/pedido';
 type Zona = 'salon' | 'terraza' | 'para_llevar';
 type MetodoPago = 'efectivo' | 'nequi' | 'bancolombia';
 
-// Las categorías cuyo nombre contenga alguno de estos textos no ofrecen adicionales.
 const CATEGORIAS_SIN_ADICIONALES = ['bebida'];
 
 @Component({
@@ -25,7 +24,6 @@ export class TomarPedido implements OnInit {
   readonly mesasSalon = Array.from({ length: 17 }, (_, i) => String(i + 1));
   readonly mesasTerraza = Array.from({ length: 11 }, (_, i) => `A${i + 1}`);
 
-  // Paso 3: menú
   categorias: Categoria[] = [];
   categoriasVisibles: Categoria[] = [];
   adiciones: Adicion[] = [];
@@ -34,13 +32,11 @@ export class TomarPedido implements OnInit {
   cargandoMenu = true;
   errorMenu = '';
 
-  // Ventana de detalle del producto
   productoDetalle: Producto | null = null;
   permiteAdicionales = true;
   cantidadDetalle = 1;
   adicionesDetalle: Adicion[] = [];
 
-  // Paso 4 y 5: resumen, pago y envío
   observaciones = '';
   metodoPago: MetodoPago | null = null;
   enviando = false;
@@ -61,7 +57,6 @@ export class TomarPedido implements OnInit {
   ) {}
 
   ngOnInit() {
-    // Cada vez que se abre la pantalla se empieza un pedido limpio.
     this.carrito.vaciar();
 
     this.menuService.getCategorias().subscribe({
@@ -206,10 +201,13 @@ export class TomarPedido implements OnInit {
     this.cerrarDetalle();
   }
 
-  // ---------- Resumen y envío ----------
-
   nombresAdicionales(linea: LineaMesera): string {
     return linea.adicionales.map((a) => a.nombre).join(', ');
+  }
+
+  nombreCategoria(producto: Producto): string {
+    const categoria = this.categorias.find((c) => c.productos?.some((p) => p.id === producto.id));
+    return categoria?.nombre ?? '';
   }
 
   elegirPago(metodo: MetodoPago) {

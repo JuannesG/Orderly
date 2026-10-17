@@ -9,9 +9,11 @@
 
   <div class="opciones">
     <button class="chip-opcion" [class.activo]="soloMios" (click)="alternarMios()">Solo los míos</button>
-    <button class="chip-opcion" [class.activo]="aviso.activo" (click)="alternarSonido()">
-      {{ aviso.activo ? 'Sonido activado' : 'Activar sonido' }}
-    </button>
+    @if (esDueno) {
+      <button class="chip-opcion" [class.activo]="aviso.activo && aviso.listo" (click)="alternarSonido()">
+        {{ aviso.texto }}
+      </button>
+    }
   </div>
 
   @if (error) {
@@ -45,7 +47,12 @@
         <div class="items">
           @for (item of pedido.detalles; track $index) {
             <div class="item-linea producto">
-              <span>{{ item.cantidad }}x {{ item.producto_nombre }}</span>
+              <span>
+                @if (item.categoria_nombre) {
+                  <small class="categoria">{{ item.categoria_nombre }}</small>
+                }
+                {{ item.cantidad }}x {{ item.producto_nombre }}
+              </span>
             </div>
             @for (adicion of item.adiciones; track $index) {
               <div class="item-linea adicion">
@@ -65,12 +72,12 @@
 
         @if (pedido.estado !== 'entregado') {
           <div class="botones">
-            @if (pedido.estado === 'aceptado') {
+            @if (esDueno && pedido.estado === 'aceptado') {
               <button class="btn-imprimir" [disabled]="ocupado === pedido.token_seguimiento" (click)="imprimir(pedido)">
                 Imprimir recibo
               </button>
             }
-            <button class="btn-entregado" [disabled]="ocupado === pedido.token_seguimiento" (click)="marcarEntregado(pedido)">
+            <button class="btn-entregado" [disabled]="ocupado === pedido.token_seguimiento" (click)="pedidoPorEntregar = pedido">
               Entregado
             </button>
           </div>
@@ -78,4 +85,13 @@
       </div>
     }
   </div>
+
+  @if (pedidoPorEntregar) {
+    <app-confirmar-accion
+      titulo="¿Marcar como entregado?"
+      [mensaje]="destino(pedidoPorEntregar) + ' · Ya no se podrá cambiar.'"
+      textoConfirmar="Sí, entregado"
+      (confirmar)="confirmarEntrega()"
+      (cancelar)="pedidoPorEntregar = null" />
+  }
 </div>

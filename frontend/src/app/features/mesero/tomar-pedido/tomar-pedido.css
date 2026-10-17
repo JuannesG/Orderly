@@ -474,3 +474,10 @@ h1 {
   font-size: 0.95rem;
   cursor: pointer;
 }
+
+.linea-cat {
+  margin: 0;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #9B9B9B;
+}

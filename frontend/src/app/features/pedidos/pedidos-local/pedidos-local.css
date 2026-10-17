@@ -195,3 +195,10 @@
   opacity: 0.4;
   cursor: not-allowed;
 }
+
+.categoria {
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: #9B9B9B;
+}

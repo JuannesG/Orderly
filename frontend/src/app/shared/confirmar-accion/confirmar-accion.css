@@ -1,0 +1,70 @@
+.fondo {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 200;
+  animation: aparecer 0.15s ease-out;
+}
+
+.tarjeta {
+  width: 100%;
+  max-width: 520px;
+  background-color: #FFFFFF;
+  border-radius: 24px 24px 0 0;
+  padding: 24px 22px calc(22px + env(safe-area-inset-bottom, 0px));
+  font-family: 'Nunito', sans-serif;
+  color: #1A1A1A;
+  animation: subir 0.2s ease-out;
+}
+
+h3 {
+  font-family: 'Baloo 2', 'Nunito', sans-serif;
+  font-size: 1.25rem;
+  margin: 0 0 6px;
+}
+
+p {
+  margin: 0 0 20px;
+  font-size: 0.92rem;
+  color: #6B6B6B;
+  line-height: 1.4;
+}
+
+.acciones {
+  display: flex;
+  gap: 10px;
+}
+
+.acciones button {
+  flex: 1;
+  border: none;
+  border-radius: 14px;
+  padding: 15px 8px;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.btn-cancelar {
+  background-color: #F3F3F3;
+  color: #6B6B6B;
+}
+
+.btn-confirmar {
+  background-color: #22C55E;
+  color: #FFFFFF;
+}
+
+@keyframes subir {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+@keyframes aparecer {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

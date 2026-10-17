@@ -2,6 +2,8 @@ import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Pedido as PedidoService } from '../../../core/services/pedido';
 import { AvisoSonoro } from '../../../core/services/aviso-sonoro';
+import { Auth } from '../../../core/services/auth';
+import { ConfirmarAccion } from '../../../shared/confirmar-accion/confirmar-accion';
 
 const ETIQUETAS: { [key: string]: string } = {
   aceptado: 'Nuevo · sin imprimir',
@@ -25,7 +27,7 @@ type Filtro = 'activos' | 'hoy' | 'todos';
 
 @Component({
   selector: 'app-pedidos-local',
-  imports: [CommonModule],
+  imports: [CommonModule, ConfirmarAccion],
   templateUrl: './pedidos-local.html',
   styleUrl: './pedidos-local.css'
 })
@@ -36,6 +38,7 @@ export class PedidosLocal implements OnInit, OnDestroy {
   filtro: Filtro = 'activos';
   soloMios = false;
   ocupado: string | null = null;
+  pedidoPorEntregar: any | null = null;
 
   private intervalId: any;
   private conocidos = new Set<string>();
@@ -44,8 +47,13 @@ export class PedidosLocal implements OnInit, OnDestroy {
   constructor(
     private pedidoService: PedidoService,
     public aviso: AvisoSonoro,
+    private auth: Auth,
     private cdr: ChangeDetectorRef
   ) {}
+
+  get esDueno(): boolean {
+    return this.auth.rol() === 'dueño';
+  }
 
   ngOnInit() {
     this.cargarPedidos();
@@ -69,7 +77,7 @@ export class PedidosLocal implements OnInit, OnDestroy {
   }
 
   alternarSonido() {
-    if (this.aviso.activo) {
+    if (this.aviso.activo && this.aviso.listo) {
       this.aviso.desactivar();
     } else {
       this.aviso.activar();
@@ -104,7 +112,7 @@ export class PedidosLocal implements OnInit, OnDestroy {
 
   private avisarNuevos(data: any[]) {
     const hayNuevos = data.some((p) => !this.conocidos.has(p.token_seguimiento));
-    if (hayNuevos && !this.primeraCarga && this.aviso.activo) {
+    if (hayNuevos && !this.primeraCarga && this.esDueno && this.aviso.activo) {
       this.aviso.sonar();
     }
     data.forEach((p) => this.conocidos.add(p.token_seguimiento));
@@ -125,6 +133,7 @@ export class PedidosLocal implements OnInit, OnDestroy {
     return `${zona} · Mesa ${pedido.mesa}`;
   }
 
+  // Tolera el nombre del campo, venga como mesera_nombre o mesero_nombre.
   nombreMesera(pedido: any): string {
     return pedido.mesera_nombre ?? pedido.mesero_nombre ?? '';
   }
@@ -142,11 +151,10 @@ export class PedidosLocal implements OnInit, OnDestroy {
     });
   }
 
-  marcarEntregado(pedido: any) {
-    const seguro = window.confirm(
-      `¿Marcar "${this.destino(pedido)}" como entregado? Ya no se podrá cambiar.`
-    );
-    if (!seguro) return;
+  confirmarEntrega() {
+    const pedido = this.pedidoPorEntregar;
+    this.pedidoPorEntregar = null;
+    if (!pedido) return;
 
     this.ocupado = pedido.token_seguimiento;
     this.pedidoService.marcarEntregado(pedido.token_seguimiento).subscribe({

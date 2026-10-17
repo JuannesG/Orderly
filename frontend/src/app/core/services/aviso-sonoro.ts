@@ -1,27 +1,56 @@
 import { Injectable } from '@angular/core';
 
+const CLAVE = 'sonido_activo';
+const EVENTOS = ['click', 'keydown'];
+
 @Injectable({
   providedIn: 'root',
 })
 export class AvisoSonoro {
-  activo = false;
+  activo = localStorage.getItem(CLAVE) === '1';
+  listo = false;
   private contexto: AudioContext | null = null;
 
-  // Hay que llamarlo desde un toque del usuario: el navegador no deja sonar antes.
-  activar() {
+  constructor() {
+    if (this.activo) {
+      this.esperarPrimerToque();
+    }
+  }
+
+  get texto(): string {
+    if (!this.activo) return 'Activar sonido';
+    return this.listo ? 'Sonido activado' : 'Toca aquí para activar el sonido';
+  }
+
+  private esperarPrimerToque() {
+    const iniciar = () => {
+      EVENTOS.forEach((e) => document.removeEventListener(e, iniciar));
+      this.prepararContexto();
+    };
+    EVENTOS.forEach((e) => document.addEventListener(e, iniciar));
+  }
+
+  private prepararContexto(): Promise<void> {
     this.contexto = this.contexto ?? new AudioContext();
-    this.contexto.resume();
+    return this.contexto.resume().then(() => {
+      this.listo = this.contexto?.state === 'running';
+    });
+  }
+
+  activar() {
+    localStorage.setItem(CLAVE, '1');
     this.activo = true;
-    this.sonar();
+    this.prepararContexto().then(() => this.sonar());
   }
 
   desactivar() {
+    localStorage.removeItem(CLAVE);
     this.activo = false;
   }
 
   sonar() {
     const ctx = this.contexto;
-    if (!ctx) return;
+    if (!ctx || ctx.state !== 'running') return;
 
     const tono = (frecuencia: number, inicio: number) => {
       const oscilador = ctx.createOscillator();

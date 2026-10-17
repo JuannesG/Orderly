@@ -48,10 +48,16 @@ class PanelLocalTests(BaseAPITestCase):
         self.salir()
         self.assertSinAcceso(self.client.get('/api/pedidos/en-local/'))
 
-    def test_imprimir_pasa_a_preparacion_y_reimprimir_no_cambia_nada(self):
+    def test_solo_el_dueno_imprime_pedidos_del_local(self):
         pedido = self.tomar_pedido(self.mesera1)
-        self.client.force_authenticate(self.mesera1)
         ruta = f'/api/pedidos/{pedido.token_seguimiento}/imprimir/'
+
+        self.client.force_authenticate(self.mesera1)
+        self.assertEqual(self.client.post(ruta).status_code, 403)
+        pedido.refresh_from_db()
+        self.assertEqual(pedido.estado, 'aceptado')
+
+        self.entrar_como_dueno()
         self.assertEqual(self.client.post(ruta).status_code, 200)
         pedido.refresh_from_db()
         self.assertEqual(pedido.estado, 'en_preparacion')
@@ -59,18 +65,20 @@ class PanelLocalTests(BaseAPITestCase):
         pedido.refresh_from_db()
         self.assertEqual(pedido.estado, 'en_preparacion')
 
-    def test_entregado_cierra_el_pedido_del_local(self):
+    def test_la_mesera_marca_entregado_y_el_pedido_se_cierra(self):
         pedido = self.tomar_pedido(self.mesera1)
-        self.client.force_authenticate(self.mesera1)
         base = f'/api/pedidos/{pedido.token_seguimiento}/'
+        self.entrar_como_dueno()
         self.assertEqual(self.client.post(base + 'imprimir/').status_code, 200)
+
+        self.client.force_authenticate(self.mesera1)
         self.assertEqual(self.client.post(base + 'entregado/').status_code, 200)
-        self.assertEqual(self.client.post(base + 'entregado/').status_code, 200)  # doble toque
-        self.assertEqual(self.client.post(base + 'imprimir/').status_code, 200)   # reimprimir
+        self.assertEqual(self.client.post(base + 'entregado/').status_code, 200)
         pedido.refresh_from_db()
         self.assertEqual(pedido.estado, 'entregado')
 
         self.entrar_como_dueno()
+        self.assertEqual(self.client.post(base + 'imprimir/').status_code, 200)
         respuesta = self.client.patch(base, {'estado': 'aceptado'}, format='json')
         self.assertEqual(respuesta.status_code, 409)
 
