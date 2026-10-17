@@ -17,7 +17,6 @@ import { ClienteLayout } from './core/layout/cliente-layout/cliente-layout';
 import { authGuard } from './core/guards/auth-guard';
 
 export const routes: Routes = [
-  // Panel del restaurante: el login y todas las pantallas del administrador
   { path: 'login', component: Login, title: 'Mr Lucho Panel' },
   {
     path: '',
@@ -34,7 +33,6 @@ export const routes: Routes = [
     ]
   },
 
-  // Tienda del cliente: el registro y todas las pantallas de la tienda
   { path: 'tienda', component: Registro, pathMatch: 'full', title: 'Mr Lucho Pedidos' },
   {
     path: 'tienda',

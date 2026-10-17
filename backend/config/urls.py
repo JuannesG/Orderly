@@ -2,7 +2,8 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from core.views import ping
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from rest_framework_simplejwt.views import TokenRefreshView
+from core.tokens import TokenConRolView
 from menu.views import CategoriaViewSet, ProductoViewSet, AdicionViewSet
 from clientes.views import ClienteViewSet
 from pedidos.views import PedidoViewSet
@@ -26,7 +27,7 @@ router.register(r'reservas', ReservaViewSet)
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/ping/', ping),
-    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/', TokenConRolView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
         path('api/dashboard/resumen/', dashboard_resumen),
     path('api/', include(router.urls)),
