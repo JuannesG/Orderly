@@ -45,7 +45,7 @@ class Pedido(models.Model):
     mesa = models.CharField(max_length=10, blank=True)
     nota = models.CharField(max_length=100, blank=True)
     metodo_pago_local = models.CharField(max_length=20, choices=METODOS_PAGO_LOCAL, blank=True)
-    mesero = models.ForeignKey(Usuario, on_delete=models.SET_NULL, null=True, blank=True, related_name='pedidos_tomados')
+    mesera = models.ForeignKey(Usuario, on_delete=models.SET_NULL, null=True, blank=True, related_name='pedidos_tomados')
 
     def __str__(self):
         nombre = self.cliente.nombre if self.cliente else self.get_zona_display() or 'Local'

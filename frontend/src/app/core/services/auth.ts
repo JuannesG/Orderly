@@ -62,8 +62,8 @@ export class Auth {
         return '/dashboard';
       case 'domicilios':
         return '/pedidos';
-      case 'mesero':
-        return '/mesero';
+      case 'mesera':
+        return '/mesera';
       default:
         return '/login';
     }

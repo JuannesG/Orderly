@@ -1,0 +1,34 @@
+<div class="tomar-pedido">
+  <h1>Tomar pedido</h1>
+
+  <p class="paso">1. ¿Dónde es el pedido?</p>
+  <div class="zonas">
+    <button [class.activo]="zona === 'salon'" (click)="elegirZona('salon')">🍽️ Salón</button>
+    <button [class.activo]="zona === 'terraza'" (click)="elegirZona('terraza')">🌿 Terraza</button>
+    <button [class.activo]="zona === 'para_llevar'" (click)="elegirZona('para_llevar')">🥡 Para llevar</button>
+  </div>
+
+  @if (zona === 'salon' || zona === 'terraza') {
+    <p class="paso">2. Elige la mesa</p>
+    <div class="mesas">
+      @for (m of mesas; track m) {
+        <button [class.activo]="mesa === m" (click)="elegirMesa(m)">{{ m }}</button>
+      }
+    </div>
+  }
+
+  @if (zona === 'para_llevar') {
+    <p class="paso">2. ¿Para quién es?</p>
+    <input
+      type="text"
+      class="input-nota"
+      maxlength="100"
+      [(ngModel)]="nota"
+      placeholder="Ej: Carlos, moto roja">
+    <p class="ayuda">Obligatorio: escribe un nombre o referencia para entregarlo.</p>
+  }
+
+  @if (listoParaPedir) {
+    <div class="listo">✔ {{ destino }}</div>
+  }
+</div>

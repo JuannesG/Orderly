@@ -10,12 +10,12 @@ class LoginConRolTests(BaseAPITestCase):
         self.assertEqual(r.data['rol'], 'dueño')
         self.assertIn('access', r.data)
 
-    def test_el_login_informa_el_rol_del_mesero(self):
+    def test_el_login_informa_el_rol_del_mesera(self):
         get_user_model().objects.create_user(
-            username='mesero1', password='clave-segura-123',
-            restaurante=self.restaurante, rol='mesero',
+            username='mesera1', password='clave-segura-123',
+            restaurante=self.restaurante, rol='mesera',
             first_name='Laura', last_name='Pérez'
         )
-        r = self.client.post('/api/token/', {'username': 'mesero1', 'password': 'clave-segura-123'})
-        self.assertEqual(r.data['rol'], 'mesero')
+        r = self.client.post('/api/token/', {'username': 'mesera1', 'password': 'clave-segura-123'})
+        self.assertEqual(r.data['rol'], 'mesera')
         self.assertEqual(r.data['nombre'], 'Laura Pérez')

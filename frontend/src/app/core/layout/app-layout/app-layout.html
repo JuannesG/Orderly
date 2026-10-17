@@ -13,7 +13,12 @@
     <a routerLink="/dashboard" routerLinkActive="activo"><span class="ico">🏠</span><span>Inicio</span></a>
     <a routerLink="/menu" routerLinkActive="activo"><span class="ico">🍔</span><span>Menú</span></a>
     }
+    @if (veDomicilios) {
     <a routerLink="/pedidos" routerLinkActive="activo"><span class="ico">🧾</span><span>Pedidos</span></a>
+    }
+    @if (veLocal) {
+    <a routerLink="/mesera" routerLinkActive="activo"><span class="ico">📝</span><span>Tomar pedido</span></a>
+    }
     @if (esDueno) {
     <a routerLink="/reservas" routerLinkActive="activo"><span class="ico">📅</span><span>Reservas</span></a>
     }

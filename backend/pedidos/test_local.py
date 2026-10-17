@@ -7,9 +7,9 @@ from pedidos.models import Pedido
 class PedidoLocalTests(BaseAPITestCase):
     def setUp(self):
         super().setUp()
-        self.mesero = get_user_model().objects.create_user(
-            username='mesero1', password='clave-segura-123',
-            restaurante=self.restaurante, rol='mesero'
+        self.mesera = get_user_model().objects.create_user(
+            username='mesera1', password='clave-segura-123',
+            restaurante=self.restaurante, rol='mesera'
         )
 
     def datos(self, **cambios):
@@ -30,12 +30,12 @@ class PedidoLocalTests(BaseAPITestCase):
     def crear(self, **cambios):
         return self.client.post('/api/pedidos/local/', self.datos(**cambios), format='json')
 
-    def test_mesero_crea_pedido_en_el_salon(self):
-        self.client.force_authenticate(self.mesero)
+    def test_mesera_crea_pedido_en_el_salon(self):
+        self.client.force_authenticate(self.mesera)
         self.assertEqual(self.crear().status_code, 201)
         pedido = Pedido.objects.get()
         self.assertEqual(pedido.tipo, 'local')
-        self.assertEqual(pedido.mesero, self.mesero)
+        self.assertEqual(pedido.mesera, self.mesera)
         self.assertIsNone(pedido.cliente)
         self.assertEqual(pedido.estado, 'aceptado')
         self.assertEqual(pedido.costo_domicilio, 0)
@@ -55,14 +55,14 @@ class PedidoLocalTests(BaseAPITestCase):
         self.assertEqual(self.crear().status_code, 403)
 
     def test_para_llevar_exige_referencia(self):
-        self.client.force_authenticate(self.mesero)
+        self.client.force_authenticate(self.mesera)
         self.assertEqual(self.crear(zona='para_llevar', mesa='').status_code, 400)
         r = self.crear(zona='para_llevar', mesa='', nota='Carlos moto roja')
         self.assertEqual(r.status_code, 201)
         self.assertEqual(Pedido.objects.get().mesa, '')
 
     def test_la_mesa_debe_existir_en_la_zona(self):
-        self.client.force_authenticate(self.mesero)
+        self.client.force_authenticate(self.mesera)
         self.assertEqual(self.crear(zona='salon', mesa='18').status_code, 400)
         self.assertEqual(self.crear(zona='terraza', mesa='A12').status_code, 400)
         self.assertEqual(self.crear(zona='salon', mesa='A3').status_code, 400)
@@ -72,13 +72,13 @@ class PedidoLocalTests(BaseAPITestCase):
     def test_se_puede_tomar_pedido_con_la_tienda_cerrada(self):
         self.restaurante.abierto = False
         self.restaurante.save()
-        self.client.force_authenticate(self.mesero)
+        self.client.force_authenticate(self.mesera)
         self.assertEqual(self.crear().status_code, 201)
 
-    def test_el_servidor_decide_el_precio_y_el_mesero(self):
-        self.client.force_authenticate(self.mesero)
-        r = self.crear(total=1, subtotal=1, mesero=str(self.dueno.id))
+    def test_el_servidor_decide_el_precio_y_el_mesera(self):
+        self.client.force_authenticate(self.mesera)
+        r = self.crear(total=1, subtotal=1, mesera=str(self.dueno.id))
         self.assertEqual(r.status_code, 201)
         pedido = Pedido.objects.get()
         self.assertEqual(pedido.total, 68000)
-        self.assertEqual(pedido.mesero, self.mesero)
+        self.assertEqual(pedido.mesera, self.mesera)

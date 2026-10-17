@@ -13,7 +13,7 @@ from rest_framework.throttling import ScopedRateThrottle
 from .models import Pedido
 from core.permissions import EsPersonalDelPanel, EsDueno
 from .serializers import PedidoCreateSerializer, PedidoDetailSerializer, PedidoListSerializer, PedidoLocalCreateSerializer, PedidoLocalListSerializer
-from core.permissions import EsPersonalDelPanel, EsDueno, EsDuenoOMesero
+from core.permissions import EsPersonalDelPanel, EsDueno, EsDuenoOMesera
 from core.exceptions import PedidoCerrado
 from rest_framework.exceptions import PermissionDenied
 
@@ -48,7 +48,7 @@ class PedidoViewSet(viewsets.ModelViewSet):
         if self.action in ['create', 'retrieve', 'mios', 'comprobante']:
             return [permissions.AllowAny()]
         if self.action in ['crear_local', 'en_local']:
-            return [EsDuenoOMesero()]
+            return [EsDuenoOMesera()]
         if self.action in ['imprimir', 'entregado']:
             return [permissions.IsAuthenticated()]
         if self.action == 'destroy':
@@ -86,7 +86,7 @@ class PedidoViewSet(viewsets.ModelViewSet):
         usuario = self.request.user
         rol = 'dueño' if usuario.is_superuser else usuario.rol
         if pedido.tipo == 'local':
-            permitidos = ('dueño', 'mesero')
+            permitidos = ('dueño', 'mesera')
         else:
             permitidos = ('dueño', 'domicilios')
         if rol not in permitidos:
@@ -100,7 +100,7 @@ class PedidoViewSet(viewsets.ModelViewSet):
     def en_local(self, request):
         pedidos = (
             Pedido.objects.filter(tipo='local')
-            .select_related('mesero')
+            .select_related('mesera')
             .prefetch_related('detalles__producto__categoria', 'detalles__adiciones')
             .order_by('-creado_en')
         )
@@ -113,7 +113,7 @@ class PedidoViewSet(viewsets.ModelViewSet):
             return Response({'detail': 'Filtro no válido.'}, status=400)
 
         if request.query_params.get('mios') == '1':
-            pedidos = pedidos.filter(mesero=request.user)
+            pedidos = pedidos.filter(mesera=request.user)
 
         return Response(PedidoLocalListSerializer(pedidos[:200], many=True).data)
 

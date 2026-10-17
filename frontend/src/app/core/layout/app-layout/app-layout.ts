@@ -15,6 +15,14 @@ export class AppLayout {
     return this.auth.rol() === 'dueño';
   }
 
+  get veDomicilios(): boolean {
+    return ['dueño', 'domicilios'].includes(this.auth.rol() ?? '');
+  }
+
+  get veLocal(): boolean {
+    return ['dueño', 'mesera'].includes(this.auth.rol() ?? '');
+  }
+
   cerrarSesion() {
     this.auth.logout();
     this.router.navigate(['/login']);
