@@ -12,7 +12,8 @@ from rest_framework.response import Response
 from rest_framework.throttling import ScopedRateThrottle
 from .models import Pedido
 from core.permissions import EsPersonalDelPanel, EsDueno
-from .serializers import PedidoCreateSerializer, PedidoDetailSerializer, PedidoListSerializer
+from .serializers import PedidoCreateSerializer, PedidoDetailSerializer, PedidoListSerializer, PedidoLocalCreateSerializer
+from core.permissions import EsPersonalDelPanel, EsDueno, EsDuenoOMesero
 
 logger = logging.getLogger(__name__)
 
@@ -24,6 +25,8 @@ class PedidoViewSet(viewsets.ModelViewSet):
     lookup_field = 'token_seguimiento'
 
     def get_serializer_class(self):
+        if self.action == 'crear_local':
+            return PedidoLocalCreateSerializer
         if self.action == 'create':
             return PedidoCreateSerializer
         if self.action == 'list':
@@ -40,6 +43,8 @@ class PedidoViewSet(viewsets.ModelViewSet):
     def get_permissions(self):
         if self.action in ['create', 'retrieve', 'mios', 'comprobante']:
             return [permissions.AllowAny()]
+        if self.action == 'crear_local':
+            return [EsDuenoOMesero()]
         if self.action == 'destroy':
             return [EsDueno()]
         return [EsPersonalDelPanel()]
@@ -63,6 +68,13 @@ class PedidoViewSet(viewsets.ModelViewSet):
         ).order_by('-creado_en')
 
         return Response(PedidoDetailSerializer(pedidos, many=True).data)
+
+    @action(detail=False, methods=['post'], url_path='local')
+    def crear_local(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=201)
 
     @action(detail=True, methods=['post'], url_path='comprobante',
             parser_classes=[MultiPartParser, FormParser])

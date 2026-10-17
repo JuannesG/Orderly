@@ -34,3 +34,14 @@ class EsDueno(BasePermission):
             and usuario.is_authenticated
             and (usuario.is_superuser or usuario.rol == 'dueño')
         )    
+
+class EsDuenoOMesero(BasePermission):
+    """Dueño (o superusuario) y mesero: pedidos del local."""
+
+    def has_permission(self, request, view):
+        usuario = request.user
+        return bool(
+            usuario
+            and usuario.is_authenticated
+            and (usuario.is_superuser or usuario.rol in ('dueño', 'mesero'))
+        )    
