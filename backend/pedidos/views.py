@@ -14,6 +14,7 @@ from .models import Pedido
 from core.permissions import EsPersonalDelPanel, EsDueno
 from .serializers import PedidoCreateSerializer, PedidoDetailSerializer, PedidoListSerializer, PedidoLocalCreateSerializer
 from core.permissions import EsPersonalDelPanel, EsDueno, EsDuenoOMesero
+from core.exceptions import PedidoCerrado
 
 logger = logging.getLogger(__name__)
 
@@ -75,6 +76,11 @@ class PedidoViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=201)
+
+    def perform_update(self, serializer):
+        if serializer.instance.estado == 'entregado':
+            raise PedidoCerrado()
+        serializer.save()
 
     @action(detail=True, methods=['post'], url_path='comprobante',
             parser_classes=[MultiPartParser, FormParser])
