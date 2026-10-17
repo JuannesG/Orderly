@@ -1,0 +1,30 @@
+.panel-pedidos {
+  max-width: 720px;
+  margin: 0 auto;
+  font-family: 'Nunito', sans-serif;
+}
+
+.pestanas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.pestanas button {
+  background-color: #FFFFFF;
+  border: 2px solid #E8E8E8;
+  color: #6B6B6B;
+  border-radius: 14px;
+  padding: 13px;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.pestanas button.activo {
+  background-color: #E85A2A;
+  border-color: #E85A2A;
+  color: #FFFFFF;
+}

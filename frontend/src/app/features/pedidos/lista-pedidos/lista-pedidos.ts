@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Pedido as PedidoService } from '../../../core/services/pedido';
+import { AvisoSonoro } from '../../../core/services/aviso-sonoro';
 
 const ETIQUETAS: { [key: string]: string } = {
   pendiente_verificacion: 'Pendiente',
@@ -35,7 +36,14 @@ export class ListaPedidos implements OnInit, OnDestroy {
 
   private intervalId: any;
 
-  constructor(private pedidoService: PedidoService, private cdr: ChangeDetectorRef) {}
+  private conocidos = new Set<string>();
+  private primeraCarga = true;
+
+    constructor(
+    private pedidoService: PedidoService,
+    public aviso: AvisoSonoro,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit() {
     this.cargarPedidos();
@@ -55,6 +63,7 @@ export class ListaPedidos implements OnInit, OnDestroy {
 
     this.pedidoService.listar().subscribe({
       next: (data) => {
+        this.avisarNuevos(data);
         this.pedidos = data;
         this.cargando = false;
         this.cdr.detectChanges();
@@ -95,8 +104,6 @@ export class ListaPedidos implements OnInit, OnDestroy {
     return new Intl.NumberFormat('es-CO', { maximumFractionDigits: 0 }).format(precio);
   }
 
-  // Devuelve la dirección del comprobante: primero la de Cloudinary,
-  // y si no existe, la del archivo guardado en la carpeta media del servidor.
   urlComprobante(pedido: any): string | null {
     const pago = pedido.pago;
     return pago?.comprobante_url || pago?.comprobante || null;
@@ -106,10 +113,38 @@ export class ListaPedidos implements OnInit, OnDestroy {
     this.comprobanteAbierto = url;
   }
 
-  cambiarAEstado(pedido: any, estado: string) {
+    cambiarAEstado(pedido: any, estado: string) {
+    if (estado === 'entregado' && !window.confirm('¿Marcar como entregado? Ya no se podrá cambiar.')) {
+      return;
+    }
     this.pedidoService.cambiarEstado(pedido.token_seguimiento, estado).subscribe({
-      next: () => this.cargarPedidos(true)
+      next: () => this.cargarPedidos(true),
+      error: () => this.cargarPedidos(true)
     });
+  }
+
+  imprimir(pedido: any) {
+    this.pedidoService.imprimir(pedido.token_seguimiento).subscribe({
+      next: () => this.cargarPedidos(true),
+      error: () => this.cargarPedidos(true)
+    });
+  }
+
+  alternarSonido() {
+    if (this.aviso.activo) {
+      this.aviso.desactivar();
+    } else {
+      this.aviso.activar();
+    }
+  }
+
+  private avisarNuevos(data: any[]) {
+    const hayNuevos = data.some((p) => !this.conocidos.has(p.token_seguimiento));
+    if (hayNuevos && !this.primeraCarga && this.aviso.activo) {
+      this.aviso.sonar();
+    }
+    data.forEach((p) => this.conocidos.add(p.token_seguimiento));
+    this.primeraCarga = false;
   }
 
   verificarPago(pedido: any, aprobado: boolean) {
@@ -124,9 +159,6 @@ export class ListaPedidos implements OnInit, OnDestroy {
     });
   }
 
-  // Vuelve a dejar el pedido como al inicio, para que el restaurante lo revise de nuevo.
-  // Transferencia: el pago queda pendiente de verificación (con su comprobante).
-  // Efectivo: el pago queda aceptado y el pedido espera la aceptación del restaurante.
   reactivar(pedido: any) {
     const estadoPago = pedido.pago?.metodo === 'efectivo' ? 'aceptado' : 'pendiente_verificacion';
 

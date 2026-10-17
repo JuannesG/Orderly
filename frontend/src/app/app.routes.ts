@@ -17,6 +17,7 @@ import { ClienteLayout } from './core/layout/cliente-layout/cliente-layout';
 import { authGuard } from './core/guards/auth-guard';
 import { rolGuard } from './core/guards/rol-guard';
 import { TomarPedido } from './features/mesero/tomar-pedido/tomar-pedido';
+import { PedidosPanel } from './features/pedidos/pedidos-panel/pedidos-panel';
 
 export const routes: Routes = [
   { path: 'login', component: Login, title: 'Mr Lucho Panel' },
@@ -30,7 +31,7 @@ export const routes: Routes = [
       { path: 'menu', component: ListaProductos, canActivate: [rolGuard], data: { roles: ['dueño'] } },
       { path: 'menu/nuevo', component: ProductoForm, canActivate: [rolGuard], data: { roles: ['dueño'] } },
       { path: 'menu/editar/:id', component: ProductoForm, canActivate: [rolGuard], data: { roles: ['dueño'] } },
-      { path: 'pedidos', component: ListaPedidos, canActivate: [rolGuard], data: { roles: ['dueño', 'domicilios'] } },
+      { path: 'pedidos', component: PedidosPanel, canActivate: [rolGuard], data: { roles: ['dueño', 'domicilios', 'mesera'] } },
       { path: 'reservas', component: ListaReservas, canActivate: [rolGuard], data: { roles: ['dueño'] } },
       { path: 'mesera', component: TomarPedido, canActivate: [rolGuard], data: { roles: ['dueño', 'mesera'] } },
     ]

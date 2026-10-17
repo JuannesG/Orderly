@@ -1,0 +1,197 @@
+.local-page {
+  max-width: 720px;
+  margin: 0 auto;
+  font-family: 'Nunito', sans-serif;
+  color: #1A1A1A;
+}
+
+.local-page h1 {
+  font-family: 'Baloo 2', 'Nunito', sans-serif;
+  font-size: 1.4rem;
+  margin: 0 0 12px;
+}
+
+.filtros-chips,
+.opciones {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  margin-bottom: 12px;
+  scrollbar-width: none;
+}
+
+.filtros-chips button,
+.chip-opcion {
+  background-color: #FFFFFF;
+  border: 2px solid #E8E8E8;
+  color: #6B6B6B;
+  padding: 9px 16px;
+  border-radius: 20px;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 0.82rem;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.filtros-chips button.activo,
+.chip-opcion.activo {
+  background-color: #E85A2A;
+  border-color: #E85A2A;
+  color: #FFFFFF;
+}
+
+.mensaje {
+  text-align: center;
+  color: #9B9B9B;
+  margin-top: 30px;
+}
+
+.mensaje.error {
+  color: #991B1B;
+  background-color: #FEE2E2;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-weight: 700;
+}
+
+.ped-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ped-card {
+  background-color: #FFFFFF;
+  border-radius: 18px;
+  padding: 16px;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
+}
+
+.ped-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.ped-head h3 {
+  margin: 0 0 2px;
+  font-size: 1.05rem;
+}
+
+.mesera {
+  margin: 0;
+  font-size: 0.78rem;
+  color: #9B9B9B;
+}
+
+.head-der {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.hora {
+  font-size: 0.72rem;
+  color: #9B9B9B;
+}
+
+.badge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 12px;
+  background-color: #F3F3F3;
+  color: #6B6B6B;
+}
+
+.badge.aceptado { background-color: #FEF3C7; color: #92400E; }
+.badge.en_preparacion { background-color: #FFE4D6; color: #C2410C; }
+.badge.entregado { background-color: #DCFCE7; color: #166534; }
+
+.items {
+  border-top: 1px solid #F0F0F0;
+  padding-top: 10px;
+}
+
+.item-linea {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  padding: 3px 0;
+}
+
+.item-linea.adicion {
+  padding-left: 12px;
+  font-size: 0.78rem;
+  color: #9B9B9B;
+}
+
+.obs {
+  font-size: 0.8rem;
+  color: #6B6B6B;
+  font-style: italic;
+  margin: 8px 0 0;
+  background-color: #FFF8E1;
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+
+.pago-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 12px 0 4px;
+}
+
+.metodo {
+  font-size: 0.75rem;
+  font-weight: 700;
+  background-color: #F3F3F3;
+  color: #6B6B6B;
+  padding: 4px 10px;
+  border-radius: 8px;
+}
+
+.total {
+  font-size: 1.1rem;
+  color: #E85A2A;
+}
+
+.botones {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.btn-imprimir,
+.btn-entregado {
+  flex: 1;
+  border: none;
+  border-radius: 12px;
+  padding: 14px 8px;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.btn-imprimir {
+  background-color: #E85A2A;
+  color: #FFFFFF;
+}
+
+.btn-entregado {
+  background-color: #22C55E;
+  color: #FFFFFF;
+}
+
+.btn-imprimir:disabled,
+.btn-entregado:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}

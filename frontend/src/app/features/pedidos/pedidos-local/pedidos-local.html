@@ -1,0 +1,81 @@
+<div class="local-page">
+  <h1>En el local</h1>
+
+  <div class="filtros-chips">
+    <button [class.activo]="filtro === 'activos'" (click)="cambiarFiltro('activos')">Activos</button>
+    <button [class.activo]="filtro === 'hoy'" (click)="cambiarFiltro('hoy')">Hoy</button>
+    <button [class.activo]="filtro === 'todos'" (click)="cambiarFiltro('todos')">Todos</button>
+  </div>
+
+  <div class="opciones">
+    <button class="chip-opcion" [class.activo]="soloMios" (click)="alternarMios()">Solo los míos</button>
+    <button class="chip-opcion" [class.activo]="aviso.activo" (click)="alternarSonido()">
+      {{ aviso.activo ? 'Sonido activado' : 'Activar sonido' }}
+    </button>
+  </div>
+
+  @if (error) {
+    <p class="mensaje error">{{ error }}</p>
+  }
+
+  @if (cargando) {
+    <p class="mensaje">Cargando pedidos...</p>
+  }
+
+  @if (!cargando && pedidos.length === 0) {
+    <p class="mensaje">No hay pedidos para mostrar.</p>
+  }
+
+  <div class="ped-lista">
+    @for (pedido of pedidos; track pedido.token_seguimiento) {
+      <div class="ped-card">
+        <div class="ped-head">
+          <div>
+            <h3>{{ destino(pedido) }}</h3>
+            @if (nombreMesera(pedido)) {
+              <p class="mesera">Tomó el pedido: {{ nombreMesera(pedido) }}</p>
+            }
+          </div>
+          <div class="head-der">
+            <span class="badge" [class]="pedido.estado">{{ etiqueta(pedido.estado) }}</span>
+            <span class="hora">{{ pedido.creado_en | date:'h:mm a' }}</span>
+          </div>
+        </div>
+
+        <div class="items">
+          @for (item of pedido.detalles; track $index) {
+            <div class="item-linea producto">
+              <span>{{ item.cantidad }}x {{ item.producto_nombre }}</span>
+            </div>
+            @for (adicion of item.adiciones; track $index) {
+              <div class="item-linea adicion">
+                <span>+ {{ adicion.nombre }}</span>
+              </div>
+            }
+          }
+          @if (pedido.observaciones) {
+            <p class="obs">"{{ pedido.observaciones }}"</p>
+          }
+        </div>
+
+        <div class="pago-row">
+          <span class="metodo">{{ metodoLabel(pedido.metodo_pago_local) }}</span>
+          <strong class="total">${{ formatPrecio(pedido.total) }}</strong>
+        </div>
+
+        @if (pedido.estado !== 'entregado') {
+          <div class="botones">
+            @if (pedido.estado === 'aceptado') {
+              <button class="btn-imprimir" [disabled]="ocupado === pedido.token_seguimiento" (click)="imprimir(pedido)">
+                Imprimir recibo
+              </button>
+            }
+            <button class="btn-entregado" [disabled]="ocupado === pedido.token_seguimiento" (click)="marcarEntregado(pedido)">
+              Entregado
+            </button>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>
