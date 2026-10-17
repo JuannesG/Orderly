@@ -11,6 +11,10 @@ import { Auth } from '../../services/auth';
 export class AppLayout {
   constructor(private auth: Auth, private router: Router) {}
 
+  get esDueno(): boolean {
+    return this.auth.rol() === 'dueño';
+  }
+
   cerrarSesion() {
     this.auth.logout();
     this.router.navigate(['/login']);

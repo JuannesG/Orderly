@@ -7,6 +7,8 @@ import { environment } from '../../../environments/environment';
 interface TokenResponse {
   access: string;
   refresh: string;
+  rol: string;
+  nombre: string;
 }
 
 @Injectable({
@@ -22,6 +24,8 @@ export class Auth {
       tap((respuesta) => {
         localStorage.setItem('access_token', respuesta.access);
         localStorage.setItem('refresh_token', respuesta.refresh);
+        localStorage.setItem('rol', respuesta.rol);
+        localStorage.setItem('nombre', respuesta.nombre);
       }),
     );
   }
@@ -36,9 +40,32 @@ export class Auth {
   logout(): void {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
+    localStorage.removeItem('rol');
+    localStorage.removeItem('nombre');
   }
 
   isAuthenticated(): boolean {
     return !!localStorage.getItem('access_token');
+  }
+
+  rol(): string | null {
+    return localStorage.getItem('rol');
+  }
+
+  nombre(): string {
+    return localStorage.getItem('nombre') ?? '';
+  }
+
+  rutaInicio(): string {
+    switch (this.rol()) {
+      case 'dueño':
+        return '/dashboard';
+      case 'domicilios':
+        return '/pedidos';
+      case 'mesero':
+        return '/mesero';
+      default:
+        return '/login';
+    }
   }
 }

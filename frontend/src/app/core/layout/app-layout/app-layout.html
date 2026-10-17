@@ -9,10 +9,14 @@
   </main>
 
   <nav class="nav-admin">
+    @if (esDueno) {
     <a routerLink="/dashboard" routerLinkActive="activo"><span class="ico">🏠</span><span>Inicio</span></a>
     <a routerLink="/menu" routerLinkActive="activo"><span class="ico">🍔</span><span>Menú</span></a>
+    }
     <a routerLink="/pedidos" routerLinkActive="activo"><span class="ico">🧾</span><span>Pedidos</span></a>
+    @if (esDueno) {
     <a routerLink="/reservas" routerLinkActive="activo"><span class="ico">📅</span><span>Reservas</span></a>
+    }
     <button (click)="cerrarSesion()"><span class="ico">🚪</span><span>Salir</span></button>
   </nav>
 </div>

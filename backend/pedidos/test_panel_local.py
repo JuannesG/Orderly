@@ -102,3 +102,12 @@ class PanelLocalTests(BaseAPITestCase):
         self.assertEqual(respuesta.status_code, 403)
         pedido.refresh_from_db()
         self.assertEqual(pedido.estado, 'aceptado')
+
+    def test_la_lista_general_solo_trae_domicilios(self):
+        self.tomar_pedido(self.mesero1)
+        self.crear_pedido()
+        self.entrar_como_dueno()
+        r = self.client.get('/api/pedidos/')
+        self.assertEqual(r.status_code, 200)
+        datos = r.data['results'] if isinstance(r.data, dict) else r.data
+        self.assertEqual(len(datos), 1)    

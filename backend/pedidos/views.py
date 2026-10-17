@@ -40,6 +40,8 @@ class PedidoViewSet(viewsets.ModelViewSet):
         usuario = self.request.user
         if usuario.is_authenticated and not usuario.is_superuser and usuario.rol == 'domicilios':
             queryset = queryset.filter(tipo='domicilio')
+        if self.action == 'list':
+            queryset = queryset.filter(tipo='domicilio')    
         return queryset
 
     def get_permissions(self):

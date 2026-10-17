@@ -19,11 +19,14 @@ export class Login {
   onSubmit() {
     this.auth.login(this.username, this.password).subscribe({
       next: () => {
-        this.router.navigate(['/dashboard']);
+        const destino = this.auth.rutaInicio();
+        if (destino === '/login') {
+          this.auth.logout();
+          this.error = 'Tu usuario no tiene un rol asignado. Avísale al administrador.';
+          return;
+        }
+        this.router.navigate([destino]);
       },
-      error: () => {
-        this.error = 'Usuario o contraseña incorrectos';
-      }
     });
   }
 }

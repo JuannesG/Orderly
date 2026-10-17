@@ -15,6 +15,7 @@ import { MisPedidos } from './features/tienda/mis-pedidos/mis-pedidos';
 import { AppLayout } from './core/layout/app-layout/app-layout';
 import { ClienteLayout } from './core/layout/cliente-layout/cliente-layout';
 import { authGuard } from './core/guards/auth-guard';
+import { rolGuard } from './core/guards/rol-guard';
 
 export const routes: Routes = [
   { path: 'login', component: Login, title: 'Mr Lucho Panel' },
@@ -24,12 +25,12 @@ export const routes: Routes = [
     canActivate: [authGuard],
     title: 'Mr Lucho Panel',
     children: [
-      { path: 'dashboard', component: Inicio },
-      { path: 'menu', component: ListaProductos },
-      { path: 'menu/nuevo', component: ProductoForm },
-      { path: 'menu/editar/:id', component: ProductoForm },
-      { path: 'pedidos', component: ListaPedidos },
-      { path: 'reservas', component: ListaReservas },
+      { path: 'dashboard', component: Inicio, canActivate: [rolGuard], data: { roles: ['dueño'] } },
+      { path: 'menu', component: ListaProductos, canActivate: [rolGuard], data: { roles: ['dueño'] } },
+      { path: 'menu/nuevo', component: ProductoForm, canActivate: [rolGuard], data: { roles: ['dueño'] } },
+      { path: 'menu/editar/:id', component: ProductoForm, canActivate: [rolGuard], data: { roles: ['dueño'] } },
+      { path: 'pedidos', component: ListaPedidos, canActivate: [rolGuard], data: { roles: ['dueño', 'domicilios'] } },
+      { path: 'reservas', component: ListaReservas, canActivate: [rolGuard], data: { roles: ['dueño'] } },
     ]
   },
 
