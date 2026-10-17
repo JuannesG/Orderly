@@ -1,7 +1,7 @@
 .tomar-pedido {
   max-width: 640px;
   margin: 0 auto;
-  padding: 20px 16px 32px;
+  padding: 20px 16px 100px;
   font-family: 'Nunito', sans-serif;
   color: #1A1A1A;
 }
@@ -33,8 +33,15 @@ h1 {
   gap: 10px;
 }
 
+.pagos {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
 .zonas button,
-.mesas button {
+.mesas button,
+.pagos button {
   background-color: #FFFFFF;
   color: #1A1A1A;
   border: 2px solid #E8E8E8;
@@ -54,18 +61,27 @@ h1 {
   line-height: 1.3;
 }
 
+.pagos button {
+  min-height: 60px;
+  padding: 8px 4px;
+  font-size: 0.85rem;
+  line-height: 1.3;
+}
+
 .mesas button {
   min-height: 60px;
   font-size: 1.1rem;
 }
 
 .zonas button:active,
-.mesas button:active {
+.mesas button:active,
+.pagos button:active {
   transform: scale(0.96);
 }
 
 .zonas button.activo,
-.mesas button.activo {
+.mesas button.activo,
+.pagos button.activo {
   background-color: #E85A2A;
   border-color: #E85A2A;
   color: #FFFFFF;
@@ -94,6 +110,11 @@ h1 {
   color: #A8A8A8;
 }
 
+.observaciones {
+  margin-top: 14px;
+  resize: vertical;
+}
+
 .ayuda {
   font-size: 0.78rem;
   color: #8A8A8A;
@@ -108,4 +129,348 @@ h1 {
   color: #166534;
   border-radius: 14px;
   font-weight: 700;
+}
+
+.mensaje {
+  text-align: center;
+  color: #8A8A8A;
+  font-size: 0.9rem;
+  padding: 14px 0;
+}
+
+.mensaje.error {
+  color: #991B1B;
+  background-color: #FEE2E2;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-weight: 700;
+  text-align: left;
+}
+
+/* ---------- Menú ---------- */
+
+.filtros-scroll {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 12px 0 10px;
+  scrollbar-width: thin;
+  scrollbar-color: #E85A2A #EEEEEE;
+}
+
+.filtros-scroll button {
+  background-color: #FFFFFF;
+  border: 2px solid #E8E8E8;
+  color: #6B6B6B;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.filtros-scroll button.activo {
+  background-color: #E85A2A;
+  border-color: #E85A2A;
+  color: #FFFFFF;
+}
+
+.categoria-sec {
+  margin-top: 10px;
+}
+
+.categoria-sec h2 {
+  font-family: 'Baloo 2', 'Nunito', sans-serif;
+  font-size: 1.1rem;
+  margin: 12px 0 8px;
+}
+
+.productos-col {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.producto-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  background-color: #FFFFFF;
+  border: 2px solid #E8E8E8;
+  border-radius: 14px;
+  padding: 12px 14px;
+  cursor: pointer;
+}
+
+.producto-row.agotado {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.producto-texto h3 {
+  margin: 0 0 2px;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.producto-texto .precio {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #E85A2A;
+  margin: 0;
+}
+
+.btn-mas {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: none;
+  background-color: #E85A2A;
+  color: #FFFFFF;
+  font-size: 1.4rem;
+  font-weight: 700;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* ---------- Resumen ---------- */
+
+.resumen {
+  background-color: #FFFFFF;
+  border: 2px solid #E8E8E8;
+  border-radius: 16px;
+  padding: 6px 14px;
+}
+
+.linea {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 0;
+  border-bottom: 1px solid #F0F0F0;
+}
+
+.linea-nombre {
+  margin: 0;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.linea-adic {
+  margin: 2px 0 0;
+  font-size: 0.78rem;
+  color: #8A8A8A;
+}
+
+.linea-precio {
+  margin: 2px 0 0;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #E85A2A;
+}
+
+.total-fila {
+  display: flex;
+  justify-content: space-between;
+  padding: 14px 0 8px;
+  font-size: 1.1rem;
+}
+
+.mini-stepper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #F3F3F3;
+  border-radius: 20px;
+  padding: 4px 8px;
+}
+
+.mini-stepper button {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: none;
+  background-color: #E85A2A;
+  color: #FFFFFF;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.mini-stepper span {
+  font-weight: 700;
+  min-width: 16px;
+  text-align: center;
+}
+
+.mini-stepper.grande {
+  padding: 6px 10px;
+}
+
+.mini-stepper.grande button {
+  width: 34px;
+  height: 34px;
+}
+
+/* ---------- Botón principal y éxito ---------- */
+
+.btn-principal {
+  width: 100%;
+  margin-top: 20px;
+  background-color: #E85A2A;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 16px;
+  padding: 18px;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 1.05rem;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(232, 90, 42, 0.3);
+}
+
+.btn-principal:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.exito {
+  text-align: center;
+  padding: 40px 10px;
+}
+
+.exito-icono {
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 14px;
+  border-radius: 50%;
+  background-color: #ECFDF5;
+  color: #166534;
+  font-size: 2.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.exito-destino {
+  font-weight: 700;
+  font-size: 1.05rem;
+  margin: 8px 0 4px;
+}
+
+.exito-total {
+  color: #6B6B6B;
+  margin: 0 0 10px;
+}
+
+/* ---------- Ventana de detalle ---------- */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 100;
+}
+
+.sheet {
+  position: relative;
+  background-color: #FFFFFF;
+  width: 100%;
+  max-width: 520px;
+  max-height: 85vh;
+  overflow-y: auto;
+  border-radius: 24px 24px 0 0;
+  padding: 28px 22px 20px;
+}
+
+.cerrar-x {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: none;
+  background-color: #F3F3F3;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.sheet h2 {
+  font-family: 'Baloo 2', 'Nunito', sans-serif;
+  font-size: 1.35rem;
+  margin: 0 40px 4px 0;
+}
+
+.sheet-precio {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #E85A2A;
+  margin: 0 0 14px;
+}
+
+.sheet-sub {
+  font-size: 0.9rem;
+  margin: 0 0 8px;
+}
+
+.sheet-adiciones {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 18px;
+}
+
+.opcion-adicional {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.92rem;
+  padding: 10px 0;
+  border-bottom: 1px solid #F3F3F3;
+  cursor: pointer;
+}
+
+.opcion-adicional input {
+  accent-color: #E85A2A;
+  width: 20px;
+  height: 20px;
+}
+
+.precio-mini {
+  margin-left: auto;
+  color: #9B9B9B;
+  font-size: 0.82rem;
+}
+
+.sheet-footer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: sticky;
+  bottom: 0;
+  background-color: #FFFFFF;
+  padding-top: 10px;
+}
+
+.btn-agregar-total {
+  flex: 1;
+  background-color: #E85A2A;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 14px;
+  padding: 15px;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
 }

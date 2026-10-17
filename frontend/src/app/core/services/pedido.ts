@@ -28,6 +28,15 @@ export interface PedidoCreado {
   estado: string;
 }
 
+export interface PedidoLocalPayload {
+  zona: string;
+  mesa: string;
+  nota: string;
+  metodo_pago_local: string;
+  observaciones: string;
+  detalles: { producto: string; cantidad: number; adiciones: string[] }[];
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -38,6 +47,23 @@ export class Pedido {
 
   crear(payload: PedidoPayload): Observable<PedidoCreado> {
     return this.http.post<PedidoCreado>(`${this.apiUrl}/pedidos/`, payload);
+  }
+
+  crearLocal(payload: PedidoLocalPayload): Observable<any> {
+    return this.http.post(`${this.apiUrl}/pedidos/local/`, payload);
+  }
+
+  listarLocal(filtro: string, mios: boolean): Observable<any[]> {
+    const extra = mios ? '&mios=1' : '';
+    return this.http.get<any[]>(`${this.apiUrl}/pedidos/en-local/?filtro=${filtro}${extra}`);
+  }
+
+  imprimir(token: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/pedidos/${token}/imprimir/`, {});
+  }
+
+  marcarEntregado(token: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/pedidos/${token}/entregado/`, {});
   }
 
   obtenerPorToken(token: string): Observable<any> {
