@@ -268,6 +268,12 @@ export class TomarPedido implements OnInit {
       const primero: any = Object.values(cuerpo)[0];
       if (Array.isArray(primero) && typeof primero[0] === 'string') return primero[0];
     }
+    if (err?.status === 0) {
+      return 'No hay conexión con el servidor. Revisa el internet e intenta de nuevo.';
+    }
+    if (err?.status >= 500) {
+      return 'El servidor tuvo un problema. Avísale al administrador.';
+    }
     return 'No se pudo enviar el pedido. Revisa la conexión e intenta de nuevo.';
   }
 
