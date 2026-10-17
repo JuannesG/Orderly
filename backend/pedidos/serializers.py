@@ -251,4 +251,22 @@ class PedidoLocalCreateSerializer(serializers.ModelSerializer):
             )
             detalle_obj.adiciones.set(adiciones)
 
-        return pedido        
+        return pedido    
+
+class PedidoLocalListSerializer(serializers.ModelSerializer):
+    detalles = DetallePedidoDetailSerializer(many=True, read_only=True)
+    mesero_nombre = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Pedido
+        fields = [
+            'id', 'token_seguimiento', 'tipo', 'estado', 'zona', 'mesa', 'nota',
+            'metodo_pago_local', 'observaciones', 'subtotal', 'total',
+            'creado_en', 'mesero_nombre', 'detalles',
+        ]
+
+    def get_mesero_nombre(self, pedido):
+        mesero = pedido.mesero
+        if not mesero:
+            return ''
+        return mesero.get_full_name() or mesero.username        

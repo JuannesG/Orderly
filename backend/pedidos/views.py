@@ -12,9 +12,10 @@ from rest_framework.response import Response
 from rest_framework.throttling import ScopedRateThrottle
 from .models import Pedido
 from core.permissions import EsPersonalDelPanel, EsDueno
-from .serializers import PedidoCreateSerializer, PedidoDetailSerializer, PedidoListSerializer, PedidoLocalCreateSerializer
+from .serializers import PedidoCreateSerializer, PedidoDetailSerializer, PedidoListSerializer, PedidoLocalCreateSerializer, PedidoLocalListSerializer
 from core.permissions import EsPersonalDelPanel, EsDueno, EsDuenoOMesero
 from core.exceptions import PedidoCerrado
+from rest_framework.exceptions import PermissionDenied
 
 logger = logging.getLogger(__name__)
 
@@ -44,8 +45,10 @@ class PedidoViewSet(viewsets.ModelViewSet):
     def get_permissions(self):
         if self.action in ['create', 'retrieve', 'mios', 'comprobante']:
             return [permissions.AllowAny()]
-        if self.action == 'crear_local':
+        if self.action in ['crear_local', 'en_local']:
             return [EsDuenoOMesero()]
+        if self.action in ['imprimir', 'entregado']:
+            return [permissions.IsAuthenticated()]
         if self.action == 'destroy':
             return [EsDueno()]
         return [EsPersonalDelPanel()]
@@ -76,6 +79,64 @@ class PedidoViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=201)
+
+    def _validar_rol_para(self, pedido):
+        usuario = self.request.user
+        rol = 'dueño' if usuario.is_superuser else usuario.rol
+        if pedido.tipo == 'local':
+            permitidos = ('dueño', 'mesero')
+        else:
+            permitidos = ('dueño', 'domicilios')
+        if rol not in permitidos:
+            raise PermissionDenied()
+
+    def _serializar(self, pedido):
+        clase = PedidoLocalListSerializer if pedido.tipo == 'local' else PedidoListSerializer
+        return clase(pedido, context=self.get_serializer_context()).data
+
+    @action(detail=False, methods=['get'], url_path='en-local')
+    def en_local(self, request):
+        pedidos = (
+            Pedido.objects.filter(tipo='local')
+            .select_related('mesero')
+            .prefetch_related('detalles__producto__categoria', 'detalles__adiciones')
+            .order_by('-creado_en')
+        )
+        filtro = request.query_params.get('filtro', 'activos')
+        if filtro == 'activos':
+            pedidos = pedidos.exclude(estado='entregado').order_by('creado_en')
+        elif filtro == 'hoy':
+            pedidos = pedidos.filter(creado_en__date=timezone.localdate())
+        elif filtro != 'todos':
+            return Response({'detail': 'Filtro no válido.'}, status=400)
+
+        if request.query_params.get('mios') == '1':
+            pedidos = pedidos.filter(mesero=request.user)
+
+        return Response(PedidoLocalListSerializer(pedidos[:200], many=True).data)
+
+    @action(detail=True, methods=['post'])
+    def imprimir(self, request, token_seguimiento=None):
+        pedido = self.get_object()
+        self._validar_rol_para(pedido)
+        if pedido.estado == 'aceptado':
+            pedido.estado = 'en_preparacion'
+            pedido.save(update_fields=['estado'])
+        return Response(self._serializar(pedido))
+
+    @action(detail=True, methods=['post'])
+    def entregado(self, request, token_seguimiento=None):
+        pedido = self.get_object()
+        self._validar_rol_para(pedido)
+        if pedido.tipo != 'local':
+            return Response(
+                {'detail': 'Los domicilios se marcan desde el seguimiento del panel.'},
+                status=400,
+            )
+        if pedido.estado != 'entregado':
+            pedido.estado = 'entregado'
+            pedido.save(update_fields=['estado'])
+        return Response(self._serializar(pedido))
 
     def perform_update(self, serializer):
         if serializer.instance.estado == 'entregado':
