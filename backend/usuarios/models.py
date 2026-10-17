@@ -5,7 +5,7 @@ from restaurantes.models import Restaurante
 class Usuario(AbstractUser):
     ROLES=[
         ('dueño', 'Dueño'),
-        ('empleado', 'Empleado'),
+        ('domicilios', 'Domicilios'),
         ('mesera', 'Mesera'),
     ]
     restaurante = models.ForeignKey(Restaurante, on_delete=models.CASCADE, related_name='usuarios', null=True, blank=True)

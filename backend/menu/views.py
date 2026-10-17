@@ -3,13 +3,14 @@ from rest_framework import viewsets, permissions, status
 from rest_framework.response import Response
 from .models import Categoria, Producto, Adicion
 from .serializers import CategoriaSerializer, ProductoSerializer, AdicionSerializer
+from core.permissions import EsDueno
 
 
 class LecturaPublicaMixin:
     def get_permissions(self):
         if self.action in ['list', 'retrieve']:
             return [permissions.AllowAny()]
-        return [permissions.IsAuthenticated()]
+        return [EsDueno()]
 
 
 class CategoriaViewSet(LecturaPublicaMixin, viewsets.ModelViewSet):

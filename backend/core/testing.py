@@ -10,7 +10,7 @@ from restaurantes.models import Restaurante
 
 class BaseAPITestCase(APITestCase):
     def setUp(self):
-        cache.clear()  # reinicia el límite de pedidos por hora
+        cache.clear()  
         self.restaurante = Restaurante.objects.create(
             nombre='Mr Lucho', direccion='Calle 1', latitud=10.9, longitud=-74.8,
             whatsapp_numero='3001234567', abierto=True
@@ -25,9 +25,9 @@ class BaseAPITestCase(APITestCase):
         self.cliente = Cliente.objects.create(
             telefono='3001112233', nombre='Ana', direccion='Calle 5 #6-7'
         )
-        self.empleado = get_user_model().objects.create_user(
-            username='empleado', password='clave-segura-123',
-            restaurante=self.restaurante, rol='empleado'
+        self.dueno = get_user_model().objects.create_user(
+            username='dueno', password='clave-segura-123',
+            restaurante=self.restaurante, rol='dueño'
         )
 
     def payload(self, **cambios):
@@ -48,8 +48,8 @@ class BaseAPITestCase(APITestCase):
     def crear_pedido(self, **cambios):
         return self.client.post('/api/pedidos/', self.payload(**cambios), format='json')
 
-    def entrar_como_empleado(self):
-        self.client.force_authenticate(self.empleado)
+    def entrar_como_dueno(self):
+        self.client.force_authenticate(self.dueno)
 
     def salir(self):
         self.client.force_authenticate(None)

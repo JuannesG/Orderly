@@ -11,7 +11,7 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 from rest_framework.throttling import ScopedRateThrottle
 from .models import Pedido
-from core.permissions import EsPersonalDelPanel
+from core.permissions import EsPersonalDelPanel, EsDueno
 from .serializers import PedidoCreateSerializer, PedidoDetailSerializer, PedidoListSerializer
 
 logger = logging.getLogger(__name__)
@@ -30,9 +30,18 @@ class PedidoViewSet(viewsets.ModelViewSet):
             return PedidoListSerializer
         return PedidoDetailSerializer
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        usuario = self.request.user
+        if usuario.is_authenticated and not usuario.is_superuser and usuario.rol == 'domicilios':
+            queryset = queryset.filter(tipo='domicilio')
+        return queryset
+
     def get_permissions(self):
         if self.action in ['create', 'retrieve', 'mios', 'comprobante']:
             return [permissions.AllowAny()]
+        if self.action == 'destroy':
+            return [EsDueno()]
         return [EsPersonalDelPanel()]
 
     def get_throttles(self):

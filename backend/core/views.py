@@ -2,14 +2,14 @@ from datetime import date, timedelta
 from django.db.models import Sum, Count
 from django.db.models.functions import TruncDate
 from rest_framework.decorators import api_view, permission_classes
-from core.permissions import EsPersonalDelPanel
+from core.permissions import EsDueno
 from rest_framework.response import Response
 from restaurantes.models import Restaurante
 from pedidos.models import Pedido
 from reservas.models import Reserva
 
 @api_view(['GET'])
-@permission_classes([EsPersonalDelPanel])
+@permission_classes([EsDueno])
 
 def dashboard_resumen(request):
     restaurante = Restaurante.objects.first()

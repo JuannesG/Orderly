@@ -2,14 +2,14 @@ from rest_framework.permissions import BasePermission
 
 
 class EsPersonalDelPanel(BasePermission):
-    """Solo dueño, empleado o superusuario (el panel y la cocina)."""
+    """Solo dueño, domicilio o superusuario (el panel y la cocina)."""
 
     def has_permission(self, request, view):
         usuario = request.user
         return bool(
             usuario
             and usuario.is_authenticated
-            and (usuario.is_superuser or usuario.rol in ('dueño', 'empleado'))
+            and (usuario.is_superuser or usuario.rol in ('dueño', 'domicilios'))
         )
 
 
@@ -23,3 +23,14 @@ class EsMesero(BasePermission):
             and usuario.is_authenticated
             and usuario.rol == 'mesero'
         )
+
+class EsDueno(BasePermission):
+    """Solo el dueño (o el superusuario): menú, reservas, dashboard y ajustes."""
+
+    def has_permission(self, request, view):
+        usuario = request.user
+        return bool(
+            usuario
+            and usuario.is_authenticated
+            and (usuario.is_superuser or usuario.rol == 'dueño')
+        )    
