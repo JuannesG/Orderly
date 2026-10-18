@@ -4,6 +4,7 @@ import { Pedido as PedidoService } from '../../../core/services/pedido';
 import { AvisoSonoro } from '../../../core/services/aviso-sonoro';
 import { Auth } from '../../../core/services/auth';
 import { ConfirmarAccion } from '../../../shared/confirmar-accion/confirmar-accion';
+import { Recibo } from '../../../core/services/recibo';
 
 const ETIQUETAS: { [key: string]: string } = {
   pendiente_verificacion: 'Pendiente',
@@ -11,13 +12,13 @@ const ETIQUETAS: { [key: string]: string } = {
   en_preparacion: 'En preparación',
   en_camino: 'En camino',
   entregado: 'Entregado',
-  rechazado: 'Rechazado'
+  rechazado: 'Rechazado',
 };
 
 const METODOS: { [key: string]: string } = {
   nequi: 'Nequi',
   bancolombia: 'Bancolombia',
-  efectivo: 'Efectivo'
+  efectivo: 'Efectivo',
 };
 
 const ESTADOS_BOTONES = ['aceptado', 'en_preparacion', 'en_camino', 'entregado'];
@@ -27,7 +28,7 @@ const FINALES = ['entregado', 'rechazado'];
   selector: 'app-lista-pedidos',
   imports: [CommonModule, ConfirmarAccion],
   templateUrl: './lista-pedidos.html',
-  styleUrl: './lista-pedidos.css'
+  styleUrl: './lista-pedidos.css',
 })
 export class ListaPedidos implements OnInit, OnDestroy {
   pedidos: any[] = [];
@@ -42,15 +43,20 @@ export class ListaPedidos implements OnInit, OnDestroy {
   private conocidos = new Set<string>();
   private primeraCarga = true;
 
-    constructor(
+  constructor(
     private pedidoService: PedidoService,
     public aviso: AvisoSonoro,
     private auth: Auth,
-    private cdr: ChangeDetectorRef
+    private recibo: Recibo,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   get esDueno(): boolean {
     return this.auth.rol() === 'dueño';
+  }
+
+  get recibeAvisos(): boolean {
+    return ['dueño', 'domicilios'].includes(this.auth.rol() ?? '');
   }
 
   ngOnInit() {
@@ -81,21 +87,21 @@ export class ListaPedidos implements OnInit, OnDestroy {
           this.cargando = false;
           this.cdr.detectChanges();
         }
-      }
+      },
     });
   }
 
   get contarActivos(): number {
-    return this.pedidos.filter(p => !FINALES.includes(p.estado)).length;
+    return this.pedidos.filter((p) => !FINALES.includes(p.estado)).length;
   }
 
   get pedidosVisibles(): any[] {
     if (this.filtro === 'activos') {
-      return this.pedidos.filter(p => !FINALES.includes(p.estado));
+      return this.pedidos.filter((p) => !FINALES.includes(p.estado));
     }
     if (this.filtro === 'hoy') {
       const hoy = new Date().toDateString();
-      return this.pedidos.filter(p => new Date(p.creado_en).toDateString() === hoy);
+      return this.pedidos.filter((p) => new Date(p.creado_en).toDateString() === hoy);
     }
     return this.pedidos;
   }
@@ -128,7 +134,7 @@ export class ListaPedidos implements OnInit, OnDestroy {
     }
     this.pedidoService.cambiarEstado(pedido.token_seguimiento, estado).subscribe({
       next: () => this.cargarPedidos(true),
-      error: () => this.cargarPedidos(true)
+      error: () => this.cargarPedidos(true),
     });
   }
 
@@ -138,7 +144,7 @@ export class ListaPedidos implements OnInit, OnDestroy {
     if (!pedido) return;
     this.pedidoService.cambiarEstado(pedido.token_seguimiento, 'entregado').subscribe({
       next: () => this.cargarPedidos(true),
-      error: () => this.cargarPedidos(true)
+      error: () => this.cargarPedidos(true),
     });
   }
 
@@ -152,14 +158,21 @@ export class ListaPedidos implements OnInit, OnDestroy {
 
   imprimir(pedido: any) {
     this.pedidoService.imprimir(pedido.token_seguimiento).subscribe({
-      next: () => this.cargarPedidos(true),
-      error: () => this.cargarPedidos(true)
+      next: () => {
+        this.recibo.imprimir(pedido);
+        this.cargarPedidos(true);
+      },
+      error: () => this.cargarPedidos(true),
     });
+  }
+
+  reimprimir(pedido: any) {
+    this.recibo.imprimir(pedido);
   }
 
   private avisarNuevos(data: any[]) {
     const hayNuevos = data.some((p) => !this.conocidos.has(p.token_seguimiento));
-    if (hayNuevos && !this.primeraCarga && this.esDueno && this.aviso.activo) {
+    if (hayNuevos && !this.primeraCarga && this.recibeAvisos && this.aviso.activo) {
       this.aviso.sonar();
     }
     data.forEach((p) => this.conocidos.add(p.token_seguimiento));
@@ -172,9 +185,9 @@ export class ListaPedidos implements OnInit, OnDestroy {
     this.pedidoService.verificarPago(pedido.pago.id, nuevoEstado).subscribe({
       next: () => {
         this.pedidoService.cambiarEstado(pedido.token_seguimiento, nuevoEstado).subscribe({
-          next: () => this.cargarPedidos(true)
+          next: () => this.cargarPedidos(true),
         });
-      }
+      },
     });
   }
 
@@ -183,10 +196,12 @@ export class ListaPedidos implements OnInit, OnDestroy {
 
     this.pedidoService.verificarPago(pedido.pago.id, estadoPago).subscribe({
       next: () => {
-        this.pedidoService.cambiarEstado(pedido.token_seguimiento, 'pendiente_verificacion').subscribe({
-          next: () => this.cargarPedidos(true)
-        });
-      }
+        this.pedidoService
+          .cambiarEstado(pedido.token_seguimiento, 'pendiente_verificacion')
+          .subscribe({
+            next: () => this.cargarPedidos(true),
+          });
+      },
     });
   }
 }

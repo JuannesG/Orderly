@@ -4,23 +4,24 @@ import { Pedido as PedidoService } from '../../../core/services/pedido';
 import { AvisoSonoro } from '../../../core/services/aviso-sonoro';
 import { Auth } from '../../../core/services/auth';
 import { ConfirmarAccion } from '../../../shared/confirmar-accion/confirmar-accion';
+import { Recibo } from '../../../core/services/recibo';
 
 const ETIQUETAS: { [key: string]: string } = {
   aceptado: 'Nuevo · sin imprimir',
   en_preparacion: 'En preparación',
-  entregado: 'Entregado'
+  entregado: 'Entregado',
 };
 
 const ZONAS: { [key: string]: string } = {
   salon: 'Salón',
   terraza: 'Terraza',
-  para_llevar: 'Para llevar'
+  para_llevar: 'Para llevar',
 };
 
 const METODOS: { [key: string]: string } = {
   efectivo: 'Efectivo',
   nequi: 'Nequi',
-  bancolombia: 'Bancolombia'
+  bancolombia: 'Bancolombia',
 };
 
 type Filtro = 'activos' | 'hoy' | 'todos';
@@ -29,7 +30,7 @@ type Filtro = 'activos' | 'hoy' | 'todos';
   selector: 'app-pedidos-local',
   imports: [CommonModule, ConfirmarAccion],
   templateUrl: './pedidos-local.html',
-  styleUrl: './pedidos-local.css'
+  styleUrl: './pedidos-local.css',
 })
 export class PedidosLocal implements OnInit, OnDestroy {
   pedidos: any[] = [];
@@ -48,7 +49,8 @@ export class PedidosLocal implements OnInit, OnDestroy {
     private pedidoService: PedidoService,
     public aviso: AvisoSonoro,
     private auth: Auth,
-    private cdr: ChangeDetectorRef
+    private recibo: Recibo,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   get esDueno(): boolean {
@@ -106,7 +108,7 @@ export class PedidosLocal implements OnInit, OnDestroy {
           this.error = 'No se pudieron cargar los pedidos.';
           this.cdr.detectChanges();
         }
-      }
+      },
     });
   }
 
@@ -144,11 +146,17 @@ export class PedidosLocal implements OnInit, OnDestroy {
 
   imprimir(pedido: any) {
     this.ocupado = pedido.token_seguimiento;
-    // Paso 7: aquí se abrirá también la impresión del recibo.
     this.pedidoService.imprimir(pedido.token_seguimiento).subscribe({
-      next: () => this.terminar(),
-      error: () => this.terminar('No se pudo imprimir el pedido. Intenta de nuevo.')
+      next: () => {
+        this.recibo.imprimir(pedido);
+        this.terminar();
+      },
+      error: () => this.terminar('No se pudo imprimir el pedido. Intenta de nuevo.'),
     });
+  }
+
+  reimprimir(pedido: any) {
+    this.recibo.imprimir(pedido);
   }
 
   confirmarEntrega() {
@@ -159,7 +167,7 @@ export class PedidosLocal implements OnInit, OnDestroy {
     this.ocupado = pedido.token_seguimiento;
     this.pedidoService.marcarEntregado(pedido.token_seguimiento).subscribe({
       next: () => this.terminar(),
-      error: () => this.terminar('No se pudo marcar como entregado. Intenta de nuevo.')
+      error: () => this.terminar('No se pudo marcar como entregado. Intenta de nuevo.'),
     });
   }
 

@@ -148,7 +148,7 @@ class PedidoListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Pedido
         fields = [
-            'id', 'token_seguimiento', 'estado', 'cliente_nombre', 'cliente_telefono',
+            'id', 'token_seguimiento', 'estado','tipo', 'cliente_nombre', 'cliente_telefono',
             'cliente_direccion', 'cliente_referencia', 'subtotal', 'costo_domicilio',
             'total', 'observaciones', 'detalles', 'pago', 'creado_en'
         ]

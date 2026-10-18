@@ -202,3 +202,17 @@
   font-weight: 600;
   color: #9B9B9B;
 }
+
+.btn-reimprimir {
+  width: 100%;
+  margin-top: 8px;
+  background-color: #FFFFFF;
+  border: 2px solid #E85A2A;
+  color: #E85A2A;
+  border-radius: 12px;
+  padding: 11px;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+}

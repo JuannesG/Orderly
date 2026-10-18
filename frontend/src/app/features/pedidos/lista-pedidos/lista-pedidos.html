@@ -7,7 +7,7 @@
     <button [class.activo]="filtro === 'todos'" (click)="filtro = 'todos'">Todos</button>
   </div>
 
-  @if (esDueno) {
+  @if (recibeAvisos) {
   <button class="btn-sonido" [class.activo]="aviso.activo && aviso.listo" (click)="alternarSonido()">
     {{ aviso.texto }}
   </button>
@@ -91,6 +91,10 @@
 
       @if (pedido.estado === 'aceptado') {
       <button class="btn-imprimir" (click)="imprimir(pedido)">Imprimir y enviar a cocina</button>
+      }
+
+      @if (pedido.estado === 'en_preparacion' || pedido.estado === 'en_camino' || pedido.estado === 'entregado') {
+      <button class="btn-reimprimir" (click)="reimprimir(pedido)">Reimprimir recibo</button>
       }
 
       @if (pedido.estado !== 'pendiente_verificacion' && pedido.estado !== 'rechazado' && pedido.estado !== 'entregado')

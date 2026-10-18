@@ -10,88 +10,89 @@
   <div class="opciones">
     <button class="chip-opcion" [class.activo]="soloMios" (click)="alternarMios()">Solo los míos</button>
     @if (esDueno) {
-      <button class="chip-opcion" [class.activo]="aviso.activo && aviso.listo" (click)="alternarSonido()">
-        {{ aviso.texto }}
-      </button>
+    <button class="chip-opcion" [class.activo]="aviso.activo && aviso.listo" (click)="alternarSonido()">
+      {{ aviso.texto }}
+    </button>
     }
   </div>
 
   @if (error) {
-    <p class="mensaje error">{{ error }}</p>
+  <p class="mensaje error">{{ error }}</p>
   }
 
   @if (cargando) {
-    <p class="mensaje">Cargando pedidos...</p>
+  <p class="mensaje">Cargando pedidos...</p>
   }
 
   @if (!cargando && pedidos.length === 0) {
-    <p class="mensaje">No hay pedidos para mostrar.</p>
+  <p class="mensaje">No hay pedidos para mostrar.</p>
   }
 
   <div class="ped-lista">
     @for (pedido of pedidos; track pedido.token_seguimiento) {
-      <div class="ped-card">
-        <div class="ped-head">
-          <div>
-            <h3>{{ destino(pedido) }}</h3>
-            @if (nombreMesera(pedido)) {
-              <p class="mesera">Tomó el pedido: {{ nombreMesera(pedido) }}</p>
-            }
-          </div>
-          <div class="head-der">
-            <span class="badge" [class]="pedido.estado">{{ etiqueta(pedido.estado) }}</span>
-            <span class="hora">{{ pedido.creado_en | date:'h:mm a' }}</span>
-          </div>
-        </div>
-
-        <div class="items">
-          @for (item of pedido.detalles; track $index) {
-            <div class="item-linea producto">
-              <span>
-                @if (item.categoria_nombre) {
-                  <small class="categoria">{{ item.categoria_nombre }}</small>
-                }
-                {{ item.cantidad }}x {{ item.producto_nombre }}
-              </span>
-            </div>
-            @for (adicion of item.adiciones; track $index) {
-              <div class="item-linea adicion">
-                <span>+ {{ adicion.nombre }}</span>
-              </div>
-            }
-          }
-          @if (pedido.observaciones) {
-            <p class="obs">"{{ pedido.observaciones }}"</p>
+    <div class="ped-card">
+      <div class="ped-head">
+        <div>
+          <h3>{{ destino(pedido) }}</h3>
+          @if (nombreMesera(pedido)) {
+          <p class="mesera">Tomó el pedido: {{ nombreMesera(pedido) }}</p>
           }
         </div>
-
-        <div class="pago-row">
-          <span class="metodo">{{ metodoLabel(pedido.metodo_pago_local) }}</span>
-          <strong class="total">${{ formatPrecio(pedido.total) }}</strong>
+        <div class="head-der">
+          <span class="badge" [class]="pedido.estado">{{ etiqueta(pedido.estado) }}</span>
+          <span class="hora">{{ pedido.creado_en | date:'h:mm a' }}</span>
         </div>
+      </div>
 
-        @if (pedido.estado !== 'entregado') {
-          <div class="botones">
-            @if (esDueno && pedido.estado === 'aceptado') {
-              <button class="btn-imprimir" [disabled]="ocupado === pedido.token_seguimiento" (click)="imprimir(pedido)">
-                Imprimir recibo
-              </button>
+      <div class="items">
+        @for (item of pedido.detalles; track $index) {
+        <div class="item-linea producto">
+          <span>
+            @if (item.categoria_nombre) {
+            <small class="categoria">{{ item.categoria_nombre }}</small>
             }
-            <button class="btn-entregado" [disabled]="ocupado === pedido.token_seguimiento" (click)="pedidoPorEntregar = pedido">
-              Entregado
-            </button>
-          </div>
+            {{ item.cantidad }}x {{ item.producto_nombre }}
+          </span>
+        </div>
+        @for (adicion of item.adiciones; track $index) {
+        <div class="item-linea adicion">
+          <span>+ {{ adicion.nombre }}</span>
+        </div>
+        }
+        }
+        @if (pedido.observaciones) {
+        <p class="obs">"{{ pedido.observaciones }}"</p>
         }
       </div>
+
+      <div class="pago-row">
+        <span class="metodo">{{ metodoLabel(pedido.metodo_pago_local) }}</span>
+        <strong class="total">${{ formatPrecio(pedido.total) }}</strong>
+      </div>
+
+      @if (pedido.estado !== 'entregado') {
+      @if (esDueno && pedido.estado !== 'aceptado') {
+      <button class="btn-reimprimir" (click)="reimprimir(pedido)">Reimprimir recibo</button>
+      }
+      <div class="botones">
+        @if (esDueno && pedido.estado === 'aceptado') {
+        <button class="btn-imprimir" [disabled]="ocupado === pedido.token_seguimiento" (click)="imprimir(pedido)">
+          Imprimir recibo
+        </button>
+        }
+        <button class="btn-entregado" [disabled]="ocupado === pedido.token_seguimiento"
+          (click)="pedidoPorEntregar = pedido">
+          Entregado
+        </button>
+      </div>
+      }
+    </div>
     }
   </div>
 
   @if (pedidoPorEntregar) {
-    <app-confirmar-accion
-      titulo="¿Marcar como entregado?"
-      [mensaje]="destino(pedidoPorEntregar) + ' · Ya no se podrá cambiar.'"
-      textoConfirmar="Sí, entregado"
-      (confirmar)="confirmarEntrega()"
-      (cancelar)="pedidoPorEntregar = null" />
+  <app-confirmar-accion titulo="¿Marcar como entregado?"
+    [mensaje]="destino(pedidoPorEntregar) + ' · Ya no se podrá cambiar.'" textoConfirmar="Sí, entregado"
+    (confirmar)="confirmarEntrega()" (cancelar)="pedidoPorEntregar = null" />
   }
 </div>
