@@ -1,10 +1,18 @@
 import { Component } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { Auth } from '../../services/auth';
+import {
+  LucideHouse,
+  LucideBookOpen,
+  LucideClipboardList,
+  LucideUtensils,
+  LucideCalendarDays,
+  LucideLogOut
+} from '@lucide/angular';
 
 @Component({
   selector: 'app-app-layout',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, LucideHouse, LucideBookOpen, LucideClipboardList, LucideUtensils, LucideCalendarDays, LucideLogOut],
   templateUrl: './app-layout.html',
   styleUrl: './app-layout.css'
 })
