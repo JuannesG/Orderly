@@ -36,29 +36,57 @@
   </div>
 
   @if (metodoPago === 'nequi' || metodoPago === 'bancolombia') {
-    <div class="datos-pago">
-      <p class="dp-titulo">Transfiere el total a esta cuenta:</p>
+  <div class="datos-pago">
+    <p class="dp-titulo">Transfiere el total a esta cuenta:</p>
 
-      <div class="cuenta-box">
-        <div>
-          <span class="cuenta-label">{{ metodoPago === 'nequi' ? 'Nequi' : 'Bancolombia (ahorros)' }}</span>
-          <strong class="cuenta-numero">{{ cuentaActual || 'No disponible' }}</strong>
-        </div>
-        @if (cuentaActual) {
-          <button type="button" class="btn-copiar" (click)="copiarCuenta()">
-            {{ copiado ? '¡Copiado!' : 'Copiar' }}
-          </button>
-        }
+    <div class="cuenta-box">
+      <div>
+        <span class="cuenta-label">{{ metodoPago === 'nequi' ? 'Nequi' : 'Bancolombia (ahorros)' }}</span>
+        <strong class="cuenta-numero">{{ cuentaActual || 'No disponible' }}</strong>
       </div>
-
-      <p class="dp-total">Valor a transferir: <strong>${{ formatPrecio(total) }}</strong></p>
-
-      <label class="subir-box" [class.listo]="archivoComprobante">
-        <input type="file" accept="image/*" (change)="onArchivo($event)" hidden>
-        <span class="subir-icono">{{ archivoComprobante ? '✅' : '📷' }}</span>
-        <span class="subir-texto">{{ nombreArchivo || 'Subir foto del comprobante' }}</span>
-      </label>
+      @if (cuentaActual) {
+      <button type="button" class="btn-copiar" (click)="copiarCuenta()">
+        {{ copiado ? '¡Copiado!' : 'Copiar' }}
+      </button>
+      }
     </div>
+    <p class="dp-total">Valor a transferir: <strong>${{ formatPrecio(total) }}</strong></p>
+
+    <label class="subir-box" [class.listo]="archivoComprobante">
+      <input type="file" accept="image/*" (change)="onArchivo($event)" hidden>
+      <span class="subir-icono">{{ archivoComprobante ? '✅' : '📷' }}</span>
+      <span class="subir-texto">{{ nombreArchivo || 'Subir foto del comprobante' }}</span>
+    </label>
+  </div>
+  }
+
+  @if (metodoPago === 'efectivo') {
+  <div class="datos-pago">
+    <p class="dp-titulo">¿Con qué billete vas a pagar?</p>
+    <p class="dp-ayuda">Así el domiciliario lleva el cambio listo.</p>
+
+    <div class="billetes">
+      <button type="button" class="chip-billete" [class.activo]="efectivoOpcion === 'exacto'" (click)="elegirExacto()">
+        Pago exacto
+      </button>
+      @for (b of billetes; track b) {
+      <button type="button" class="chip-billete" [class.activo]="efectivoOpcion === b" [disabled]="b < total"
+        (click)="elegirBillete(b)">
+        ${{ formatPrecio(b) }}
+      </button>
+      }
+    </div>
+
+    <input type="text" inputmode="numeric" class="input-billete" [class.activo]="efectivoOpcion === 'otro'"
+      placeholder="Otro valor (ej: 150000)" [ngModel]="otroValor" (ngModelChange)="onOtroValor($event)">
+
+    @if (efectivoOpcion === 'otro' && otroValor && !efectivoValido) {
+    <p class="dp-error">El valor debe ser igual o mayor al total (${{ formatPrecio(total) }}).</p>
+    }
+    @if (efectivoValido && efectivoOpcion !== 'exacto' && cambio > 0) {
+    <p class="dp-cambio">Te devolveremos <strong>${{ formatPrecio(cambio) }}</strong> de cambio.</p>
+    }
+  </div>
   }
 
   <div class="barra-inferior">

@@ -16,7 +16,6 @@ class PedidoLocalTests(BaseAPITestCase):
         datos = {
             'zona': 'salon',
             'mesa': '5',
-            'metodo_pago_local': 'efectivo',
             'observaciones': 'sin cebolla',
             'detalles': [{
                 'producto': str(self.producto.id),

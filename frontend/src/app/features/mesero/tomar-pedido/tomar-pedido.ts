@@ -5,7 +5,6 @@ import { CarritoMesera, LineaMesera } from '../../../core/services/carrito-meser
 import { Pedido, PedidoLocalPayload } from '../../../core/services/pedido';
 
 type Zona = 'salon' | 'terraza' | 'para_llevar';
-type MetodoPago = 'efectivo' | 'nequi' | 'bancolombia';
 
 const CATEGORIAS_SIN_ADICIONALES = ['bebida'];
 
@@ -38,16 +37,9 @@ export class TomarPedido implements OnInit {
   adicionesDetalle: Adicion[] = [];
 
   observaciones = '';
-  metodoPago: MetodoPago | null = null;
   enviando = false;
   error = '';
   pedidoEnviado: { destino: string; total: number } | null = null;
-
-  readonly metodosPago: { valor: MetodoPago; texto: string }[] = [
-    { valor: 'efectivo', texto: '💵 Efectivo' },
-    { valor: 'nequi', texto: '📱 Nequi' },
-    { valor: 'bancolombia', texto: '🏦 Bancolombia' },
-  ];
 
   constructor(
     private menuService: Menu,
@@ -210,21 +202,17 @@ export class TomarPedido implements OnInit {
     return categoria?.nombre ?? '';
   }
 
-  elegirPago(metodo: MetodoPago) {
-    this.metodoPago = metodo;
-  }
 
   get puedeEnviar(): boolean {
     return (
       this.listoParaPedir &&
       this.carrito.lineasActuales.length > 0 &&
-      this.metodoPago !== null &&
       !this.enviando
     );
   }
 
   enviar() {
-    if (!this.puedeEnviar || !this.zona || !this.metodoPago) return;
+    if (!this.puedeEnviar || !this.zona) return;
 
     this.enviando = true;
     this.error = '';
@@ -233,7 +221,6 @@ export class TomarPedido implements OnInit {
       zona: this.zona,
       mesa: this.zona === 'para_llevar' ? '' : this.mesa,
       nota: this.zona === 'para_llevar' ? this.nota.trim() : '',
-      metodo_pago_local: this.metodoPago,
       observaciones: this.observaciones.trim(),
       detalles: this.carrito.lineasActuales.map((l) => ({
         producto: String(l.producto.id),
@@ -280,7 +267,6 @@ export class TomarPedido implements OnInit {
     this.mesa = '';
     this.nota = '';
     this.observaciones = '';
-    this.metodoPago = null;
     this.error = '';
     this.busqueda = '';
     this.filtroActivo = null;

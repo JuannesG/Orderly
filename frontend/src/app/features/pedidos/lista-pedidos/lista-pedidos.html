@@ -70,6 +70,15 @@
         <strong class="total">${{ formatPrecio(pedido.total) }}</strong>
       </div>
 
+      @if (pedido.pago?.metodo === 'efectivo' && pedido.paga_con) {
+      <div class="efectivo-box">
+        Paga con <strong>${{ formatPrecio(pedido.paga_con) }}</strong>
+        · Llevar cambio: <strong>${{ formatPrecio(pedido.paga_con - pedido.total) }}</strong>
+      </div>
+      } @else if (pedido.pago?.metodo === 'efectivo') {
+      <div class="efectivo-box">Paga exacto, sin cambio</div>
+      }
+
       @if (pedido.pago?.metodo !== 'efectivo' && pedido.pago?.estado_verificacion === 'pendiente_verificacion') {
       <div class="verificar">
         @if (urlComprobante(pedido)) {

@@ -44,7 +44,7 @@ class PedidoCreateSerializer(serializers.ModelSerializer):
         model = Pedido
         fields = [
             'id', 'cliente', 'restaurante', 'subtotal', 'costo_domicilio', 'total',
-            'observaciones', 'detalles', 'metodo_pago', 'token_seguimiento', 'estado'
+            'observaciones', 'paga_con', 'detalles', 'metodo_pago', 'token_seguimiento', 'estado'
         ]
         read_only_fields = [
             'id', 'subtotal', 'costo_domicilio', 'total', 'token_seguimiento', 'estado'
@@ -89,9 +89,19 @@ class PedidoCreateSerializer(serializers.ModelSerializer):
             subtotal += (producto.precio + extra) * detalle['cantidad']
             lineas.append((producto, detalle['cantidad'], adiciones))
 
+        total = subtotal + COSTO_DOMICILIO
+        paga_con = validated_data.pop('paga_con', None)
+        if metodo_pago != 'efectivo':
+            paga_con = None
+        elif paga_con is not None and paga_con < total:
+            raise serializers.ValidationError(
+                {'paga_con': 'El billete no alcanza para pagar el total del pedido.'}
+            )    
+
         pedido = Pedido.objects.create(
             **validated_data,
             subtotal=subtotal,
+            paga_con=paga_con,
             costo_domicilio=COSTO_DOMICILIO,
             total=subtotal + COSTO_DOMICILIO,
         )
@@ -150,7 +160,7 @@ class PedidoListSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'token_seguimiento', 'estado','tipo', 'cliente_nombre', 'cliente_telefono',
             'cliente_direccion', 'cliente_referencia', 'subtotal', 'costo_domicilio',
-            'total', 'observaciones', 'detalles', 'pago', 'creado_en'
+            'total', 'observaciones', 'paga_con', 'detalles', 'pago', 'creado_en'
         ]
 
 MESAS_SALON = {str(n) for n in range(1, 18)}      # 1 a 17
@@ -167,13 +177,12 @@ class PedidoLocalCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Pedido
         fields = [
-            'id', 'zona', 'mesa', 'nota', 'metodo_pago_local', 'observaciones',
+            'id', 'zona', 'mesa', 'nota', 'observaciones',
             'detalles', 'subtotal', 'total', 'estado', 'creado_en',
         ]
         read_only_fields = ['id', 'subtotal', 'total', 'estado', 'creado_en']
         extra_kwargs = {
             'zona': {'required': True, 'allow_blank': False},
-            'metodo_pago_local': {'required': True, 'allow_blank': False},
         }
 
     def validate_observaciones(self, value):
@@ -261,7 +270,7 @@ class PedidoLocalListSerializer(serializers.ModelSerializer):
         model = Pedido
         fields = [
             'id', 'token_seguimiento', 'tipo', 'estado', 'zona', 'mesa', 'nota',
-            'metodo_pago_local', 'observaciones', 'subtotal', 'total',
+            'observaciones', 'subtotal', 'total',
             'creado_en', 'mesera_nombre', 'detalles',
         ]
 

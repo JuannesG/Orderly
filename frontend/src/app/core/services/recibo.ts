@@ -6,13 +6,13 @@ const ESLOGAN = 'Comidas rápidas y asados';
 const ZONAS: { [clave: string]: string } = {
   salon: 'Salón',
   terraza: 'Terraza',
-  para_llevar: 'Para llevar'
+  para_llevar: 'Para llevar',
 };
 
 const METODOS: { [clave: string]: string } = {
   efectivo: 'Efectivo',
   nequi: 'Nequi',
-  bancolombia: 'Bancolombia'
+  bancolombia: 'Bancolombia',
 };
 
 const ESTILOS = `
@@ -85,7 +85,7 @@ export class Recibo {
           <div class="fila adicion">
             <span>+ ${this.esc(a.nombre)}</span>
             <span>${this.moneda(Number(a.precio) * d.cantidad)}</span>
-          </div>`
+          </div>`,
           )
           .join('');
         const categoria = d.categoria_nombre
@@ -104,16 +104,20 @@ export class Recibo {
     let encabezadoPedido: string;
     let metodo: string;
     let totales: string;
+    let extraPago = '';
 
     if (esLocal) {
       const zona = ZONAS[pedido.zona] ?? pedido.zona;
-      const lugar = pedido.zona === 'para_llevar' ? `${zona} · ${pedido.nota}` : `${zona} · Mesa ${pedido.mesa}`;
+      const lugar =
+        pedido.zona === 'para_llevar'
+          ? `${zona} · ${pedido.nota}`
+          : `${zona} · Mesa ${pedido.mesa}`;
       const mesera = pedido.mesera_nombre ?? pedido.mesero_nombre ?? '';
       encabezadoPedido = `
         <div class="destacado">EN EL LOCAL</div>
         <div class="destacado">${this.esc(lugar)}</div>
         ${mesera ? `<div>Atiende: ${this.esc(mesera)}</div>` : ''}`;
-      metodo = METODOS[pedido.metodo_pago_local] ?? '';
+      metodo = '';
       totales = `
         <div class="fila total"><span>TOTAL</span><span>${this.moneda(pedido.total)}</span></div>`;
     } else {
@@ -124,6 +128,12 @@ export class Recibo {
         <div>Dir: ${this.esc(pedido.cliente_direccion)}</div>
         ${pedido.cliente_referencia ? `<div>Ref: ${this.esc(pedido.cliente_referencia)}</div>` : ''}`;
       metodo = METODOS[pedido.pago?.metodo] ?? '';
+      if (pedido.pago?.metodo === 'efectivo') {
+        extraPago = pedido.paga_con
+          ? `<div>Paga con: ${this.moneda(pedido.paga_con)}</div>
+            <div>Cambio: ${this.moneda(Number(pedido.paga_con) - Number(pedido.total))}</div>`
+          : '<div>Paga exacto</div>';
+      }
       totales = `
         <div class="fila"><span>Subtotal</span><span>${this.moneda(pedido.subtotal)}</span></div>
         <div class="fila"><span>Domicilio</span><span>${this.moneda(pedido.costo_domicilio)}</span></div>
@@ -152,6 +162,7 @@ export class Recibo {
   <div class="linea"></div>
   ${totales}
   ${metodo ? `<div>Pago: ${this.esc(metodo)}</div>` : ''}
+  ${extraPago}
 
   <div class="linea"></div>
   <div class="pie">· ¡Gracias por tu pedido! ·</div>

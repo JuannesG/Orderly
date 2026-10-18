@@ -8,12 +8,13 @@ import { Pedido as PedidoService, PedidoPayload } from '../../../core/services/p
 import { Menu } from '../../../core/services/menu';
 
 const COSTO_DOMICILIO = 3000;
+const BILLETES = [20000, 50000, 100000];
 
 @Component({
   selector: 'app-checkout',
   imports: [CommonModule, FormsModule],
   templateUrl: './checkout.html',
-  styleUrl: './checkout.css'
+  styleUrl: './checkout.css',
 })
 export class Checkout implements OnInit {
   observaciones = '';
@@ -26,6 +27,9 @@ export class Checkout implements OnInit {
   cuentaNequi = '';
   cuentaBancolombia = '';
   costoDomicilio = COSTO_DOMICILIO;
+  billetes = BILLETES;
+  efectivoOpcion: 'exacto' | 'otro' | number | null = null;
+  otroValor = '';
 
   constructor(
     public carrito: Carrito,
@@ -33,7 +37,7 @@ export class Checkout implements OnInit {
     private pedidoService: PedidoService,
     private menuService: Menu,
     private router: Router,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit() {
@@ -54,7 +58,7 @@ export class Checkout implements OnInit {
             this.router.navigate(['/tienda/menu']);
           }
           this.cdr.detectChanges();
-        }
+        },
       });
     }
   }
@@ -69,6 +73,41 @@ export class Checkout implements OnInit {
 
   get cuentaActual(): string {
     return this.metodoPago === 'nequi' ? this.cuentaNequi : this.cuentaBancolombia;
+  }
+
+  // Con cuánto paga el cliente. null significa "pago exacto" o aún sin elegir.
+  get pagaCon(): number | null {
+    if (this.efectivoOpcion === 'otro') {
+      const valor = Number(this.otroValor.replace(/\D/g, ''));
+      return valor > 0 ? valor : null;
+    }
+    if (typeof this.efectivoOpcion === 'number') return this.efectivoOpcion;
+    return null;
+  }
+
+  get efectivoValido(): boolean {
+    if (this.efectivoOpcion === 'exacto') return true;
+    const valor = this.pagaCon;
+    return valor !== null && valor >= this.total;
+  }
+
+  get cambio(): number {
+    return this.pagaCon !== null ? this.pagaCon - this.total : 0;
+  }
+
+  elegirExacto() {
+    this.efectivoOpcion = 'exacto';
+    this.otroValor = '';
+  }
+
+  elegirBillete(valor: number) {
+    this.efectivoOpcion = valor;
+    this.otroValor = '';
+  }
+
+  onOtroValor(texto: string) {
+    this.otroValor = texto;
+    this.efectivoOpcion = 'otro';
   }
 
   copiarCuenta() {
@@ -109,6 +148,11 @@ export class Checkout implements OnInit {
       return;
     }
 
+    if (this.metodoPago === 'efectivo' && !this.efectivoValido) {
+      alert('Elige con qué billete vas a pagar, o toca "Pago exacto".');
+      return;
+    }
+
     const cliente = this.clienteService.obtenerLocal();
     const restauranteId = localStorage.getItem('restaurante_id');
 
@@ -118,7 +162,7 @@ export class Checkout implements OnInit {
     }
 
     let itemsArray: any[] = [];
-    this.carrito.items$.subscribe(v => itemsArray = v).unsubscribe();
+    this.carrito.items$.subscribe((v) => (itemsArray = v)).unsubscribe();
 
     const payload: PedidoPayload = {
       cliente: cliente.id,
@@ -127,13 +171,14 @@ export class Checkout implements OnInit {
       costo_domicilio: this.costoDomicilio,
       total: this.total,
       observaciones: this.observaciones,
-      detalles: itemsArray.map(item => ({
+      detalles: itemsArray.map((item) => ({
         producto: item.producto.id,
         cantidad: item.cantidad,
         precio_unitario: Number(item.producto.precio),
-        adiciones: item.adicionales.map((a: any) => a.id)
+        adiciones: item.adicionales.map((a: any) => a.id),
       })),
-      metodo_pago: this.metodoPago
+      metodo_pago: this.metodoPago,
+      paga_con: this.metodoPago === 'efectivo' ? this.pagaCon : null,
     };
 
     this.enviando = true;
@@ -141,13 +186,17 @@ export class Checkout implements OnInit {
     this.pedidoService.crear(payload).subscribe({
       next: (resp) => {
         if (this.metodoPago !== 'efectivo' && this.archivoComprobante) {
-          this.pedidoService.subirComprobante(resp.token_seguimiento, this.archivoComprobante).subscribe({
-            next: () => this.finalizar(resp.token_seguimiento),
-            error: () => {
-              alert('Tu pedido se creó, pero no se pudo subir el comprobante. Envíalo por WhatsApp al restaurante.');
-              this.finalizar(resp.token_seguimiento);
-            }
-          });
+          this.pedidoService
+            .subirComprobante(resp.token_seguimiento, this.archivoComprobante)
+            .subscribe({
+              next: () => this.finalizar(resp.token_seguimiento),
+              error: () => {
+                alert(
+                  'Tu pedido se creó, pero no se pudo subir el comprobante. Envíalo por WhatsApp al restaurante.',
+                );
+                this.finalizar(resp.token_seguimiento);
+              },
+            });
         } else {
           this.finalizar(resp.token_seguimiento);
         }
@@ -157,7 +206,7 @@ export class Checkout implements OnInit {
         this.enviando = false;
         this.cdr.detectChanges();
         alert('No se pudo confirmar el pedido. Intenta de nuevo.');
-      }
+      },
     });
   }
 

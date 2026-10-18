@@ -18,12 +18,6 @@ const ZONAS: { [key: string]: string } = {
   para_llevar: 'Para llevar',
 };
 
-const METODOS: { [key: string]: string } = {
-  efectivo: 'Efectivo',
-  nequi: 'Nequi',
-  bancolombia: 'Bancolombia',
-};
-
 type Filtro = 'activos' | 'hoy' | 'todos';
 
 @Component({
@@ -123,10 +117,6 @@ export class PedidosLocal implements OnInit, OnDestroy {
 
   etiqueta(estado: string): string {
     return ETIQUETAS[estado] ?? estado;
-  }
-
-  metodoLabel(metodo: string | undefined): string {
-    return metodo ? (METODOS[metodo] ?? metodo) : '';
   }
 
   destino(pedido: any): string {

@@ -24,11 +24,6 @@ class Pedido(models.Model):
         ('terraza', 'Terraza'),
         ('para_llevar', 'Para llevar'),
     ]
-    METODOS_PAGO_LOCAL = [
-        ('efectivo', 'Efectivo'),
-        ('nequi', 'Nequi'),
-        ('bancolombia', 'Bancolombia'),
-    ]
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     token_seguimiento = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
@@ -44,7 +39,7 @@ class Pedido(models.Model):
     zona = models.CharField(max_length=20, choices=ZONAS, blank=True)
     mesa = models.CharField(max_length=10, blank=True)
     nota = models.CharField(max_length=100, blank=True)
-    metodo_pago_local = models.CharField(max_length=20, choices=METODOS_PAGO_LOCAL, blank=True)
+    paga_con = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     mesera = models.ForeignKey(Usuario, on_delete=models.SET_NULL, null=True, blank=True, related_name='pedidos_tomados')
 
     def __str__(self):

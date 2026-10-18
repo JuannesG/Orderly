@@ -26,7 +26,6 @@ class PanelLocalTests(BaseAPITestCase):
         r = self.client.post('/api/pedidos/local/', {
             'zona': 'salon',
             'mesa': mesa,
-            'metodo_pago_local': 'efectivo',
             'detalles': [{'producto': str(self.producto.id), 'cantidad': 1}],
         }, format='json')
         self.assertEqual(r.status_code, 201)

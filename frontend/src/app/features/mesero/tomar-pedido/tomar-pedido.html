@@ -113,14 +113,6 @@
   <textarea class="input-nota observaciones" rows="2" maxlength="300" [(ngModel)]="observaciones"
     placeholder="Observaciones (ej: sin cebolla)"></textarea>
 
-  <p class="paso">5. ¿Cómo va a pagar?</p>
-  <div class="pagos">
-    @for (m of metodosPago; track m.valor) {
-    <button [class.activo]="metodoPago === m.valor" (click)="elegirPago(m.valor)">{{ m.texto }}</button>
-    }
-  </div>
-  <p class="ayuda">Solo es un dato informativo: el pago se cobra en caja.</p>
-
   @if (error) {
   <p class="mensaje error">{{ error }}</p>
   }

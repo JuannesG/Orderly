@@ -20,6 +20,7 @@ export interface PedidoPayload {
   detalles: DetallePedidoPayload[];
   metodo_pago: string;
   comprobante_url?: string;
+  paga_con?: number | null;
 }
 
 export interface PedidoCreado {
@@ -32,7 +33,6 @@ export interface PedidoLocalPayload {
   zona: string;
   mesa: string;
   nota: string;
-  metodo_pago_local: string;
   observaciones: string;
   detalles: { producto: string; cantidad: number; adiciones: string[] }[];
 }
