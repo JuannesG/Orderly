@@ -1,1 +1,18 @@
-/* You can add global styles to this file, and also import other style files */
+:root {
+  --naranja: #E85A2A;
+  --naranja-oscuro: #C2410C;
+  --naranja-suave: #FFF4ED;
+  --verde: #22C55E;
+  --verde-suave: #ECFDF5;
+  --rojo-suave: #FEE2E2;
+  --texto: #1A1A1A;
+  --texto-suave: #6B6B6B;
+  --gris: #9B9B9B;
+  --borde: #EEEEEE;
+  --fondo: #F6F6F6;
+  --blanco: #FFFFFF;
+  --radio: 16px;
+  --sombra: 0 1px 6px rgba(0, 0, 0, 0.06);
+  --fuente-titulo: 'Baloo 2', 'Nunito', sans-serif;
+  --fuente-texto: 'Nunito', sans-serif;
+}

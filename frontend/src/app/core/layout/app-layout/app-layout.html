@@ -1,7 +1,16 @@
 <div class="layout">
   <header class="top-admin">
-    <img src="/assets/logo-mr-lucho.png" alt="Mr Lucho" class="logo-top">
-    <span>Panel de restaurante</span>
+    <div class="marca">
+      <img src="/assets/logo-mr-lucho.png" alt="Mr Lucho" class="logo-top">
+      <span class="titulo">Panel de restaurante</span>
+    </div>
+    <div class="usuario">
+      <span class="avatar"><svg lucideUser [size]="20"></svg></span>
+      <div class="usuario-datos">
+        <span class="usuario-nombre">{{ nombre }}</span>
+        <span class="usuario-rol">{{ rolEtiqueta }}</span>
+      </div>
+    </div>
   </header>
 
   <main class="contenido">
@@ -9,19 +18,25 @@
   </main>
 
   <nav class="nav-admin">
-        @if (esDueno) {
-      <a routerLink="/dashboard" routerLinkActive="activo"><span class="ico"><svg lucideHouse [size]="22"></svg></span><span>Inicio</span></a>
-      <a routerLink="/menu" routerLinkActive="activo"><span class="ico"><svg lucideBookOpen [size]="22"></svg></span><span>Menú</span></a>
+    @if (esDueno) {
+    <a routerLink="/dashboard" routerLinkActive="activo"><span class="ico"><svg lucideHouse
+          [size]="22"></svg></span><span>Inicio</span></a>
+    <a routerLink="/menu" routerLinkActive="activo"><span class="ico"><svg lucideBookOpen
+          [size]="22"></svg></span><span>Menú</span></a>
     }
     @if (veDomicilios || veLocal) {
-      <a routerLink="/pedidos" routerLinkActive="activo"><span class="ico"><svg lucideClipboardList [size]="22"></svg></span><span>Pedidos</span></a>
+    <a routerLink="/pedidos" routerLinkActive="activo"><span class="ico"><svg lucideClipboardList
+          [size]="22"></svg></span><span>Pedidos</span></a>
     }
     @if (veLocal) {
-      <a routerLink="/mesera" routerLinkActive="activo"><span class="ico"><svg lucideUtensils [size]="22"></svg></span><span>Tomar pedido</span></a>
+    <a routerLink="/mesera" routerLinkActive="activo"><span class="ico"><svg lucideUtensils
+          [size]="22"></svg></span><span>Tomar pedido</span></a>
     }
     @if (esDueno) {
-      <a routerLink="/reservas" routerLinkActive="activo"><span class="ico"><svg lucideCalendarDays [size]="22"></svg></span><span>Reservas</span></a>
+    <a routerLink="/reservas" routerLinkActive="activo"><span class="ico"><svg lucideCalendarDays
+          [size]="22"></svg></span><span>Reservas</span></a>
     }
-    <button (click)="cerrarSesion()"><span class="ico"><svg lucideLogOut [size]="22"></svg></span><span>Salir</span></button>
+    <button (click)="cerrarSesion()"><span class="ico"><svg lucideLogOut
+          [size]="22"></svg></span><span>Salir</span></button>
   </nav>
 </div>

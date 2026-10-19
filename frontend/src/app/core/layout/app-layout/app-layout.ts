@@ -7,17 +7,31 @@ import {
   LucideClipboardList,
   LucideUtensils,
   LucideCalendarDays,
-  LucideLogOut
+  LucideLogOut,
+  LucideUser
 } from '@lucide/angular';
 
 @Component({
   selector: 'app-app-layout',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, LucideHouse, LucideBookOpen, LucideClipboardList, LucideUtensils, LucideCalendarDays, LucideLogOut],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, LucideHouse, LucideBookOpen, LucideClipboardList, LucideUtensils, LucideCalendarDays, LucideLogOut, LucideUser],
   templateUrl: './app-layout.html',
   styleUrl: './app-layout.css'
 })
 export class AppLayout {
   constructor(private auth: Auth, private router: Router) {}
+
+  get nombre(): string {
+    return this.auth.nombre();
+  }
+
+  get rolEtiqueta(): string {
+    const etiquetas: { [rol: string]: string } = {
+      'dueño': 'Dueño',
+      domicilios: 'Domicilios',
+      mesera: 'Mesera'
+    };
+    return etiquetas[this.auth.rol() ?? ''] ?? '';
+  }
 
   get esDueno(): boolean {
     return this.auth.rol() === 'dueño';

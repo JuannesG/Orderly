@@ -1,19 +1,31 @@
 .layout {
   min-height: 100vh;
-  background-color: #F6F6F6;
-  font-family: 'Nunito', sans-serif;
+  background-color: var(--fondo);
+  font-family: var(--fuente-texto);
 }
+
+/* ---------- Barra superior ---------- */
 
 .top-admin {
   position: sticky;
   top: 0;
-  z-index: 10;
+  z-index: 20;
+  height: 64px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background-color: var(--blanco);
+  border-bottom: 1px solid var(--borde);
+  padding: 0 16px;
+}
+
+.marca {
   display: flex;
   align-items: center;
   gap: 10px;
-  background-color: #FFFFFF;
-  border-bottom: 1px solid #EEEEEE;
-  padding: 10px 16px;
+  min-width: 0;
 }
 
 .logo-top {
@@ -22,29 +34,77 @@
   object-fit: cover;
   object-position: center 40%;
   border-radius: 50%;
+  flex-shrink: 0;
 }
 
-.top-admin span {
+.titulo {
+  font-family: var(--fuente-titulo);
   font-weight: 700;
-  font-size: 0.9rem;
-  color: #1A1A1A;
+  font-size: 0.95rem;
+  color: var(--texto);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
+
+.usuario {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: var(--naranja-suave);
+  color: var(--naranja);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.usuario-datos {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+
+.usuario-nombre {
+  font-weight: 700;
+  font-size: 0.82rem;
+  color: var(--texto);
+  max-width: 110px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.usuario-rol {
+  font-size: 0.7rem;
+  color: var(--texto-suave);
+}
+
+/* ---------- Contenido ---------- */
 
 .contenido {
-  padding: 16px 16px 90px;
+  padding: 16px 16px 96px;
 }
+
+/* ---------- Menú (celular: barra de abajo) ---------- */
 
 .nav-admin {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
-  z-index: 10;
+  z-index: 20;
   display: flex;
   justify-content: space-around;
-  background-color: #FFFFFF;
-  border-top: 1px solid #EEEEEE;
-  padding: 8px 0 12px;
+  background-color: var(--blanco);
+  border-top: 1px solid var(--borde);
+  padding: 8px 0 calc(10px + env(safe-area-inset-bottom, 0px));
   box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.05);
 }
 
@@ -53,59 +113,78 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
+  gap: 3px;
   background: none;
   border: none;
-  color: #9B9B9B;
+  color: var(--gris);
   font-family: inherit;
   font-size: 0.68rem;
   font-weight: 700;
   text-decoration: none;
   cursor: pointer;
   padding: 4px 8px;
+  border-radius: 12px;
 }
 
 .nav-admin a.activo {
-  color: #E85A2A;
+  color: var(--naranja);
 }
 
 .ico {
-  font-size: 1.3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+
+.ico svg {
+  display: block;
+}
+
+/* ---------- Pantalla grande: menú lateral ---------- */
 
 @media (min-width: 900px) {
   .top-admin {
-    margin-left: 200px;
+    padding: 0 24px;
   }
 
   .contenido {
-    margin-left: 200px;
-    padding: 24px 32px;
+    margin-left: 232px;
+    padding: 28px 32px;
   }
 
   .nav-admin {
-    top: 0;
+    top: 64px;
     right: auto;
-    width: 200px;
+    bottom: 0;
+    width: 232px;
     flex-direction: column;
     justify-content: flex-start;
     gap: 6px;
-    padding: 90px 12px 12px;
+    padding: 20px 12px 12px;
     border-top: none;
-    border-right: 1px solid #EEEEEE;
+    border-right: 1px solid var(--borde);
     box-shadow: none;
+    overflow-y: auto;
   }
 
   .nav-admin a,
   .nav-admin button {
     flex-direction: row;
     gap: 12px;
-    font-size: 0.9rem;
+    font-size: 0.92rem;
     padding: 12px 14px;
-    border-radius: 12px;
+  }
+
+  .nav-admin a:hover,
+  .nav-admin button:hover {
+    background-color: var(--fondo);
   }
 
   .nav-admin a.activo {
-    background-color: #FFF4ED;
+    background-color: var(--naranja-suave);
+  }
+
+  .nav-admin button {
+    margin-top: auto;
   }
 }
