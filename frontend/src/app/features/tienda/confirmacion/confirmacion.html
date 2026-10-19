@@ -5,9 +5,9 @@
 
   @if (!cargando && !error) {
     <div class="confirmacion-card">
-      <div class="check-circulo">✓</div>
+      <div class="check-circulo"><svg lucideCheck [size]="30" [strokeWidth]="3"></svg></div>
       <h1>¡Pedido confirmado!</h1>
-      <p>Tu pedido fue enviado al restaurante. Te avisaremos por WhatsApp.</p>
+      <p>Tu pedido fue enviado al restaurante. Puedes ver cómo va en cualquier momento: el estado se actualiza solo.</p>
 
       <div class="numero-box">
         <span>Número de pedido</span>

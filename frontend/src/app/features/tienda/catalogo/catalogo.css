@@ -430,3 +430,12 @@
   opacity: 0.4;
   cursor: not-allowed;
 }
+
+.producto-row.agotado {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.precio.agotado-txt {
+  color: var(--gris);
+}

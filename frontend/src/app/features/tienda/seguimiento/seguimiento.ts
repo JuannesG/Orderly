@@ -1,16 +1,28 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Pedido as PedidoService } from '../../../core/services/pedido';
+import {
+  LucideReceipt,
+  LucideCircleCheck,
+  LucideChefHat,
+  LucideBike,
+  LucideHouse,
+  LucidePhone,
+  LucideMessageCircle,
+  LucideChevronDown,
+  LucideChevronUp
+} from '@lucide/angular';
 
 const ESTADOS_ORDEN = ['pendiente_verificacion', 'aceptado', 'en_preparacion', 'en_camino', 'entregado'];
 
 const PASOS = [
-  { estado: 'pendiente_verificacion', etiqueta: 'Recibido', icono: '🧾' },
-  { estado: 'aceptado', etiqueta: 'Aceptado', icono: '✅' },
-  { estado: 'en_preparacion', etiqueta: 'Preparación', icono: '🍳' },
-  { estado: 'en_camino', etiqueta: 'En camino', icono: '🛵' },
-  { estado: 'entregado', etiqueta: 'Entregado', icono: '🏠' }
+  { estado: 'pendiente_verificacion', etiqueta: 'Recibido' },
+  { estado: 'aceptado', etiqueta: 'Aceptado' },
+  { estado: 'en_preparacion', etiqueta: 'Preparación' },
+  { estado: 'en_camino', etiqueta: 'En camino' },
+  { estado: 'entregado', etiqueta: 'Entregado' }
 ];
+
 
 const METODOS: { [key: string]: string } = {
   nequi: 'Nequi',
@@ -20,6 +32,17 @@ const METODOS: { [key: string]: string } = {
 
 @Component({
   selector: 'app-seguimiento',
+  imports: [
+    LucideReceipt,
+    LucideCircleCheck,
+    LucideChefHat,
+    LucideBike,
+    LucideHouse,
+    LucidePhone,
+    LucideMessageCircle,
+    LucideChevronDown,
+    LucideChevronUp
+  ],
   templateUrl: './seguimiento.html',
   styleUrl: './seguimiento.css'
 })

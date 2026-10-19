@@ -16,14 +16,14 @@
   </header>
 
   @if (editandoDireccion) {
-    <div class="editar-direccion-panel">
-      <input type="text" [(ngModel)]="direccionEditada" class="input-direccion" placeholder="Nueva dirección">
-      <button class="btn-guardar-mini" (click)="guardarDireccion()">Guardar</button>
-    </div>
+  <div class="editar-direccion-panel">
+    <input type="text" [(ngModel)]="direccionEditada" class="input-direccion" placeholder="Nueva dirección">
+    <button class="btn-guardar-mini" (click)="guardarDireccion()">Guardar</button>
+  </div>
   }
 
   @if (!tiendaAbierta) {
-    <div class="banner-cerrado">Estamos cerrados en este momento. Vuelve más tarde.</div>
+  <div class="banner-cerrado">Estamos cerrados en este momento. Vuelve más tarde.</div>
   }
 
   <div class="buscador-wrap">
@@ -36,93 +36,99 @@
   <div class="filtros-scroll">
     <button [class.activo]="filtroActivo === null" (click)="setFiltro(null)">Todo</button>
     @for (categoria of categorias; track categoria.id) {
-      <button [class.activo]="filtroActivo === categoria.id" (click)="setFiltro(categoria.id ?? null)">
-        {{ categoria.nombre }}
-      </button>
+    <button [class.activo]="filtroActivo === categoria.id" (click)="setFiltro(categoria.id ?? null)">
+      {{ categoria.nombre }}
+    </button>
     }
   </div>
 
   @if (cargando) {
-    <p class="mensaje-carga">Cargando menú...</p>
+  <p class="mensaje-carga">Cargando menú...</p>
   }
 
   <div class="categorias-wrap">
     @for (categoria of categoriasVisibles; track categoria.id) {
-      <section class="categoria-sec">
-        <h2>{{ categoria.nombre }}</h2>
-        <div class="productos-col">
-          @for (producto of categoria.productos; track producto.id) {
-            <div class="producto-row" (click)="abrirDetalle(producto)">
-              @if (producto.imagen_url) {
-                <img class="producto-img" [src]="producto.imagen_url" alt="">
-              }
-              <div class="producto-texto">
-                <h3>{{ producto.nombre }}</h3>
-                @if (producto.descripcion) {
-                  <p class="desc">{{ producto.descripcion }}</p>
-                }
-                <p class="precio">${{ formatPrecio(producto.precio) }}</p>
-              </div>
-              <div class="producto-accion" (click)="$event.stopPropagation()">
-                @if (carrito.obtenerCantidad(producto.id) === 0) {
-                  <button class="btn-mas" aria-label="Agregar" [disabled]="!tiendaAbierta" (click)="agregar(producto)">
-                    <svg lucidePlus [size]="18"></svg>
-                  </button>
-                } @else {
-                  <div class="mini-stepper">
-                    <button aria-label="Quitar uno" [disabled]="!tiendaAbierta" (click)="quitar(producto)">
-                      <svg lucideMinus [size]="14"></svg>
-                    </button>
-                    <span>{{ carrito.obtenerCantidad(producto.id) }}</span>
-                    <button aria-label="Agregar uno" [disabled]="!tiendaAbierta" (click)="agregar(producto)">
-                      <svg lucidePlus [size]="14"></svg>
-                    </button>
-                  </div>
-                }
-              </div>
-            </div>
+    <section class="categoria-sec">
+      <h2>{{ categoria.nombre }}</h2>
+      <div class="productos-col">
+        @for (producto of categoria.productos; track producto.id) {
+        <div class="producto-row" [class.agotado]="!producto.disponible" (click)="abrirDetalle(producto)">
+          @if (producto.imagen_url) {
+          <img class="producto-img" [src]="producto.imagen_url" alt="">
           }
+          <div class="producto-texto">
+            <h3>{{ producto.nombre }}</h3>
+            @if (producto.descripcion) {
+            <p class="desc">{{ producto.descripcion }}</p>
+            }
+            @if (producto.disponible) {
+            <p class="precio">${{ formatPrecio(producto.precio) }}</p>
+            } @else {
+            <p class="precio agotado-txt">Agotado</p>
+            }
+          </div>
+          @if (producto.disponible) {
+          <div class="producto-accion" (click)="$event.stopPropagation()">
+            @if (carrito.obtenerCantidad(producto.id) === 0) {
+            <button class="btn-mas" aria-label="Agregar" [disabled]="!tiendaAbierta" (click)="agregar(producto)">
+              <svg lucidePlus [size]="18"></svg>
+            </button>
+            } @else {
+            <div class="mini-stepper">
+              <button aria-label="Quitar uno" [disabled]="!tiendaAbierta" (click)="quitar(producto)">
+                <svg lucideMinus [size]="14"></svg>
+              </button>
+              <span>{{ carrito.obtenerCantidad(producto.id) }}</span>
+              <button aria-label="Agregar uno" [disabled]="!tiendaAbierta" (click)="agregar(producto)">
+                <svg lucidePlus [size]="14"></svg>
+              </button>
+            </div>
+            }
+          </div>
+        }
         </div>
-      </section>
+        }
+      </div>
+    </section>
     }
   </div>
 
   @if (productoDetalle) {
-    <div class="overlay" (click)="cerrarDetalle()">
-      <div class="sheet" (click)="$event.stopPropagation()">
-        <button class="cerrar-x" aria-label="Cerrar" (click)="cerrarDetalle()">
-          <svg lucideX [size]="18"></svg>
-        </button>
-        <h2>{{ productoDetalle.nombre }}</h2>
-        <p class="sheet-precio">${{ formatPrecio(productoDetalle.precio) }}</p>
-        @if (productoDetalle.descripcion) {
-          <p class="sheet-desc">{{ productoDetalle.descripcion }}</p>
-        }
+  <div class="overlay" (click)="cerrarDetalle()">
+    <div class="sheet" (click)="$event.stopPropagation()">
+      <button class="cerrar-x" aria-label="Cerrar" (click)="cerrarDetalle()">
+        <svg lucideX [size]="18"></svg>
+      </button>
+      <h2>{{ productoDetalle.nombre }}</h2>
+      <p class="sheet-precio">${{ formatPrecio(productoDetalle.precio) }}</p>
+      @if (productoDetalle.descripcion) {
+      <p class="sheet-desc">{{ productoDetalle.descripcion }}</p>
+      }
 
-        @if (adiciones.length > 0 && detallePermiteAdicionales) {
-          <h3 class="sheet-sub">Adicionales</h3>
-          <div class="sheet-adiciones">
-            @for (a of adiciones; track a.id) {
-              <label class="opcion-adicional">
-                <input type="checkbox" [checked]="tieneAdicionDetalle(a.id)" (change)="toggleAdicionDetalle(a)">
-                <span>{{ a.nombre }}</span>
-                <span class="precio-mini">+${{ formatPrecio(a.precio) }}</span>
-              </label>
-            }
-          </div>
+      @if (adiciones.length > 0 && detallePermiteAdicionales) {
+      <h3 class="sheet-sub">Adicionales</h3>
+      <div class="sheet-adiciones">
+        @for (a of adiciones; track a.id) {
+        <label class="opcion-adicional">
+          <input type="checkbox" [checked]="tieneAdicionDetalle(a.id)" (change)="toggleAdicionDetalle(a)">
+          <span>{{ a.nombre }}</span>
+          <span class="precio-mini">+${{ formatPrecio(a.precio) }}</span>
+        </label>
         }
+      </div>
+      }
 
-        <div class="sheet-footer">
-          <div class="mini-stepper grande">
-            <button aria-label="Menos" (click)="cambiarCantidad(-1)"><svg lucideMinus [size]="16"></svg></button>
-            <span>{{ cantidadDetalle }}</span>
-            <button aria-label="Más" (click)="cambiarCantidad(1)"><svg lucidePlus [size]="16"></svg></button>
-          </div>
-          <button class="btn-agregar-total" [disabled]="!tiendaAbierta" (click)="agregarDesdeDetalle()">
-            Agregar ${{ formatPrecio(totalDetalle) }}
-          </button>
+      <div class="sheet-footer">
+        <div class="mini-stepper grande">
+          <button aria-label="Menos" (click)="cambiarCantidad(-1)"><svg lucideMinus [size]="16"></svg></button>
+          <span>{{ cantidadDetalle }}</span>
+          <button aria-label="Más" (click)="cambiarCantidad(1)"><svg lucidePlus [size]="16"></svg></button>
         </div>
+        <button class="btn-agregar-total" [disabled]="!tiendaAbierta" (click)="agregarDesdeDetalle()">
+          Agregar ${{ formatPrecio(totalDetalle) }}
+        </button>
       </div>
     </div>
+  </div>
   }
 </div>

@@ -66,6 +66,10 @@ export class Menu {
     return this.http.put<Producto>(`${this.apiUrl}/productos/${id}/`, producto);
   }
 
+  cambiarDisponibilidad(id: string, disponible: boolean): Observable<Producto> {
+    return this.http.patch<Producto>(`${this.apiUrl}/productos/${id}/`, { disponible });
+  }
+
   eliminarCategoria(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/categorias/${id}/`);
   }

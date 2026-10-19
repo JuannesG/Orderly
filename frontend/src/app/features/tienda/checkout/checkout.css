@@ -1,29 +1,31 @@
 .checkout-page {
   min-height: 100vh;
-  background-color: #FFFFFF;
-  font-family: 'Nunito', sans-serif;
-  color: #1A1A1A;
+  background-color: var(--blanco);
+  font-family: var(--fuente-texto);
+  color: var(--texto);
   padding-bottom: 100px;
 }
 
 .top-bar-simple {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 16px 20px;
-  border-bottom: 1px solid #F0F0F0;
+  gap: 12px;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--borde);
 }
 
 .btn-atras {
+  display: flex;
   background: none;
   border: none;
-  font-size: 1.3rem;
+  color: var(--texto);
   cursor: pointer;
-  color: #1A1A1A;
+  padding: 6px;
+  margin-left: -6px;
 }
 
 .top-bar-simple h1 {
-  font-family: 'Baloo 2', 'Nunito', sans-serif;
+  font-family: var(--fuente-titulo);
   font-size: 1.2rem;
   margin: 0;
 }
@@ -32,21 +34,21 @@
   margin: 16px 20px;
   padding: 16px;
   background-color: #F8F8F8;
-  border-radius: 16px;
+  border-radius: var(--radio);
 }
 
 .linea {
   display: flex;
   justify-content: space-between;
   font-size: 0.88rem;
-  color: #6B6B6B;
+  color: var(--texto-suave);
   padding: 4px 0;
 }
 
 .linea.total {
   font-weight: 700;
   font-size: 1rem;
-  color: #1A1A1A;
+  color: var(--texto);
   margin-top: 8px;
   padding-top: 8px;
   border-top: 1px solid #E8E8E8;
@@ -67,7 +69,7 @@
   width: 100%;
   box-sizing: border-box;
   background-color: #F8F8F8;
-  border: none;
+  border: 2px solid transparent;
   border-radius: 14px;
   padding: 12px;
   font-family: inherit;
@@ -75,6 +77,11 @@
   min-height: 70px;
   resize: vertical;
   outline: none;
+}
+
+.seccion textarea:focus {
+  border-color: var(--naranja);
+  background-color: var(--blanco);
 }
 
 .opciones-pago {
@@ -94,15 +101,21 @@
   cursor: pointer;
   text-align: left;
   font-family: inherit;
+  color: var(--texto);
 }
 
 .opcion-pago.activo {
-  border-color: #E85A2A;
-  background-color: #FFF4ED;
+  border-color: var(--naranja);
+  background-color: var(--naranja-suave);
 }
 
 .icono-pago {
-  font-size: 1.3rem;
+  display: flex;
+  color: var(--texto-suave);
+}
+
+.opcion-pago.activo .icono-pago {
+  color: var(--naranja);
 }
 
 .texto-pago {
@@ -121,7 +134,7 @@
 }
 
 .radio.marcado {
-  border-color: #E85A2A;
+  border-color: var(--naranja);
 }
 
 .radio.marcado::after {
@@ -131,7 +144,7 @@
   left: 50%;
   width: 9px;
   height: 9px;
-  background-color: #E85A2A;
+  background-color: var(--naranja);
   border-radius: 50%;
   transform: translate(-50%, -50%);
 }
@@ -139,14 +152,20 @@
 .datos-pago {
   margin: 0 20px 20px;
   background-color: #F8F8F8;
-  border-radius: 16px;
+  border-radius: var(--radio);
   padding: 16px;
 }
 
 .dp-titulo {
   font-size: 0.82rem;
-  color: #6B6B6B;
+  color: var(--texto-suave);
   margin: 0 0 10px;
+}
+
+.dp-ayuda {
+  font-size: 0.78rem;
+  color: var(--gris);
+  margin: -4px 0 12px;
 }
 
 .cuenta-box {
@@ -154,7 +173,7 @@
   justify-content: space-between;
   align-items: center;
   gap: 10px;
-  background-color: #FFFFFF;
+  background-color: var(--blanco);
   border-radius: 12px;
   padding: 12px 14px;
 }
@@ -162,7 +181,7 @@
 .cuenta-label {
   display: block;
   font-size: 0.72rem;
-  color: #9B9B9B;
+  color: var(--gris);
 }
 
 .cuenta-numero {
@@ -171,11 +190,15 @@
 }
 
 .btn-copiar {
-  background-color: #1A1A1A;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: var(--texto);
   color: #FFFFFF;
   border: none;
   border-radius: 10px;
   padding: 8px 14px;
+  font-family: inherit;
   font-weight: 700;
   font-size: 0.78rem;
   cursor: pointer;
@@ -187,68 +210,37 @@
 }
 
 .dp-total strong {
-  color: #E85A2A;
+  color: var(--naranja);
 }
 
 .subir-box {
   display: flex;
   align-items: center;
   gap: 10px;
-  background-color: #FFFFFF;
+  background-color: var(--blanco);
   border: 2px dashed #D0D0D0;
   border-radius: 14px;
   padding: 16px;
+  color: var(--texto-suave);
   cursor: pointer;
 }
 
 .subir-box.listo {
-  border-color: #22C55E;
+  border-color: var(--verde);
   background-color: #F0FDF4;
+  color: #166534;
 }
 
 .subir-icono {
-  font-size: 1.4rem;
+  display: flex;
 }
 
 .subir-texto {
   font-size: 0.85rem;
   font-weight: 700;
-  color: #6B6B6B;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.barra-inferior {
-  position: relative;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background-color: #FFFFFF;
-  padding: 14px 20px;
-  box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.05);
-}
-
-.btn-primario {
-  width: 100%;
-  background-color: #E85A2A;
-  color: #FFFFFF;
-  border: none;
-  border-radius: 14px;
-  padding: 15px;
-  font-weight: 700;
-  font-size: 0.95rem;
-  cursor: pointer;
-}
-
-.btn-primario:disabled {
-  opacity: 0.6;
-}
-
-.dp-ayuda {
-  font-size: 0.78rem;
-  color: #9B9B9B;
-  margin: -4px 0 12px;
 }
 
 .billetes {
@@ -259,20 +251,20 @@
 }
 
 .chip-billete {
-  background-color: #FFFFFF;
+  background-color: var(--blanco);
   border: 2px solid #E8E8E8;
   border-radius: 20px;
   padding: 10px 16px;
   font-family: inherit;
   font-weight: 700;
   font-size: 0.85rem;
-  color: #1A1A1A;
+  color: var(--texto);
   cursor: pointer;
 }
 
 .chip-billete.activo {
-  background-color: #E85A2A;
-  border-color: #E85A2A;
+  background-color: var(--naranja);
+  border-color: var(--naranja);
   color: #FFFFFF;
 }
 
@@ -284,7 +276,7 @@
 .input-billete {
   width: 100%;
   box-sizing: border-box;
-  background-color: #FFFFFF;
+  background-color: var(--blanco);
   border: 2px solid #E8E8E8;
   border-radius: 12px;
   padding: 12px 14px;
@@ -295,7 +287,7 @@
 
 .input-billete.activo,
 .input-billete:focus {
-  border-color: #E85A2A;
+  border-color: var(--naranja);
 }
 
 .dp-error {
@@ -309,4 +301,33 @@
   font-size: 0.85rem;
   margin: 10px 0 0;
   color: #166534;
+}
+
+.barra-inferior {
+  position: relative;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: var(--blanco);
+  padding: 14px 20px;
+  box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.05);
+}
+
+.btn-primario {
+  width: 100%;
+  background-color: var(--naranja);
+  color: #FFFFFF;
+  border: none;
+  border-radius: 14px;
+  padding: 15px;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(232, 90, 42, 0.3);
+}
+
+.btn-primario:disabled {
+  opacity: 0.6;
+  box-shadow: none;
 }

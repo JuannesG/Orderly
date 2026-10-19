@@ -2,10 +2,11 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Pedido as PedidoService } from '../../../core/services/pedido';
 import { Carrito } from '../../../core/services/carrito';
+import { LucideCheck } from '@lucide/angular';
 
 @Component({
   selector: 'app-confirmacion',
-  imports: [RouterLink],
+  imports: [RouterLink, LucideCheck],
   templateUrl: './confirmacion.html',
   styleUrl: './confirmacion.css'
 })

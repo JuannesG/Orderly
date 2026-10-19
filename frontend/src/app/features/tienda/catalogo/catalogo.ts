@@ -119,6 +119,7 @@ export class Catalogo implements OnInit {
   }
 
   quitar(producto: Producto) {
+    if (!producto.disponible) return;
     this.carrito.quitar(producto.id);
   }
 
@@ -162,6 +163,7 @@ export class Catalogo implements OnInit {
   }
 
   abrirDetalle(producto: Producto) {
+    if (!producto.disponible) return;
     this.productoDetalle = producto;
     this.cantidadDetalle = 1;
     this.adicionesDetalle = [];

@@ -6,13 +6,34 @@ import { Carrito } from '../../../core/services/carrito';
 import { ClienteService } from '../../../core/services/cliente';
 import { Pedido as PedidoService, PedidoPayload } from '../../../core/services/pedido';
 import { Menu } from '../../../core/services/menu';
+import {
+  LucideArrowLeft,
+  LucideSmartphone,
+  LucideLandmark,
+  LucideBanknote,
+  LucideCopy,
+  LucideCheck,
+  LucideCamera,
+  LucideCircleCheck
+} from '@lucide/angular';
 
 const COSTO_DOMICILIO = 3000;
 const BILLETES = [20000, 50000, 100000];
 
 @Component({
   selector: 'app-checkout',
-  imports: [CommonModule, FormsModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    LucideArrowLeft,
+    LucideSmartphone,
+    LucideLandmark,
+    LucideBanknote,
+    LucideCopy,
+    LucideCheck,
+    LucideCamera,
+    LucideCircleCheck
+  ],
   templateUrl: './checkout.html',
   styleUrl: './checkout.css',
 })
@@ -75,7 +96,6 @@ export class Checkout implements OnInit {
     return this.metodoPago === 'nequi' ? this.cuentaNequi : this.cuentaBancolombia;
   }
 
-  // Con cuánto paga el cliente. null significa "pago exacto" o aún sin elegir.
   get pagaCon(): number | null {
     if (this.efectivoOpcion === 'otro') {
       const valor = Number(this.otroValor.replace(/\D/g, ''));
@@ -108,6 +128,22 @@ export class Checkout implements OnInit {
   onOtroValor(texto: string) {
     this.otroValor = texto;
     this.efectivoOpcion = 'otro';
+  }
+
+  volver() {
+    this.router.navigate(['/tienda/carrito']);
+  }
+
+  private mensajeError(err: any): string {
+    if (err?.status === 429) {
+      return 'Hiciste muchos pedidos seguidos. Espera un momento e intenta de nuevo.';
+    }
+    const cuerpo = err?.error;
+    if (cuerpo && typeof cuerpo === 'object') {
+      const primero: any = Object.values(cuerpo)[0];
+      if (Array.isArray(primero) && typeof primero[0] === 'string') return primero[0];
+    }
+    return 'No se pudo confirmar el pedido. Intenta de nuevo.';
   }
 
   copiarCuenta() {
@@ -205,7 +241,7 @@ export class Checkout implements OnInit {
         console.error('Error al crear pedido:', err);
         this.enviando = false;
         this.cdr.detectChanges();
-        alert('No se pudo confirmar el pedido. Intenta de nuevo.');
+        alert(this.mensajeError(err));
       },
     });
   }

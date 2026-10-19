@@ -21,7 +21,15 @@
     <div class="stepper-h">
       @for (paso of pasos; track paso.estado) {
         <div class="paso-h" [class.activo]="pasoActivo(paso.estado)">
-          <div class="circulo">{{ paso.icono }}</div>
+          <div class="circulo">
+            @switch (paso.estado) {
+              @case ('pendiente_verificacion') { <svg lucideReceipt [size]="18"></svg> }
+              @case ('aceptado') { <svg lucideCircleCheck [size]="18"></svg> }
+              @case ('en_preparacion') { <svg lucideChefHat [size]="18"></svg> }
+              @case ('en_camino') { <svg lucideBike [size]="18"></svg> }
+              @default { <svg lucideHouse [size]="18"></svg> }
+            }
+          </div>
           <span class="et">{{ paso.etiqueta }}</span>
         </div>
       }
@@ -32,8 +40,12 @@
         <h2>{{ pedido.restaurante_nombre }}</h2>
         <p>Pedido #{{ pedido.token_seguimiento.slice(0, 8) }}</p>
       </div>
-      <a [href]="telUrl" class="btn-contacto btn-llamar">📞</a>
-      <a [href]="whatsappUrl" target="_blank" class="btn-contacto btn-wsp">💬</a>
+      <a [href]="telUrl" class="btn-contacto btn-llamar" aria-label="Llamar al restaurante">
+        <svg lucidePhone [size]="20"></svg>
+      </a>
+      <a [href]="whatsappUrl" target="_blank" class="btn-contacto btn-wsp" aria-label="Escribir por WhatsApp">
+        <svg lucideMessageCircle [size]="20"></svg>
+      </a>
     </div>
 
     <div class="acordeon">
@@ -43,7 +55,9 @@
             <span class="fila-titulo">Pago: <span class="estado-pago" [class]="pagoClase()">{{ pagoLabel() }}</span></span>
             <span class="fila-valor">{{ metodoLabel() }} · ${{ formatPrecio(pedido.total) }}</span>
           </div>
-          <span class="flecha">{{ seccionAbierta === 'pago' ? '⌃' : '⌄' }}</span>
+          <span class="flecha">
+            @if (seccionAbierta === 'pago') { <svg lucideChevronUp [size]="20"></svg> } @else { <svg lucideChevronDown [size]="20"></svg> }
+          </span>
         </div>
         @if (seccionAbierta === 'pago') {
           <div class="detalle">
@@ -57,7 +71,9 @@
       <div class="bloque">
         <div class="fila" (click)="toggleSeccion('orden')">
           <span class="fila-titulo">Detalles de tu orden</span>
-          <span class="flecha">{{ seccionAbierta === 'orden' ? '⌃' : '⌄' }}</span>
+          <span class="flecha">
+            @if (seccionAbierta === 'orden') { <svg lucideChevronUp [size]="20"></svg> } @else { <svg lucideChevronDown [size]="20"></svg> }
+          </span>
         </div>
         @if (seccionAbierta === 'orden') {
           <div class="detalle">
@@ -77,11 +93,13 @@
       <div class="bloque">
         <div class="fila" (click)="toggleSeccion('productos')">
           <span class="fila-titulo">Productos</span>
-          <span class="flecha">{{ seccionAbierta === 'productos' ? '⌃' : '⌄' }}</span>
+          <span class="flecha">
+            @if (seccionAbierta === 'productos') { <svg lucideChevronUp [size]="20"></svg> } @else { <svg lucideChevronDown [size]="20"></svg> }
+          </span>
         </div>
         @if (seccionAbierta === 'productos') {
           <div class="detalle">
-            @for (item of pedido.detalles; track item.producto_nombre) {
+            @for (item of pedido.detalles; track $index) {
               <div class="dl producto">
                 <span>
                   @if (item.categoria_nombre) {
@@ -91,7 +109,7 @@
                 </span>
                 <span>${{ formatPrecio(item.precio_unitario * item.cantidad) }}</span>
               </div>
-              @for (adicion of item.adiciones; track adicion.id) {
+              @for (adicion of item.adiciones; track $index) {
                 <div class="dl sub"><span>+ {{ adicion.nombre }}</span><span>${{ formatPrecio(adicion.precio * item.cantidad) }}</span></div>
               }
             }

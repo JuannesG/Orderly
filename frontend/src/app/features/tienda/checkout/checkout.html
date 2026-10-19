@@ -1,5 +1,8 @@
 <div class="checkout-page">
   <header class="top-bar-simple">
+    <button class="btn-atras" aria-label="Volver al carrito" (click)="volver()">
+      <svg lucideArrowLeft [size]="22"></svg>
+    </button>
     <h1>Confirmar pedido</h1>
   </header>
 
@@ -18,17 +21,17 @@
     <label>Método de pago</label>
     <div class="opciones-pago">
       <button class="opcion-pago" [class.activo]="metodoPago === 'nequi'" (click)="metodoPago = 'nequi'">
-        <span class="icono-pago">📱</span>
+        <span class="icono-pago"><svg lucideSmartphone [size]="22"></svg></span>
         <span class="texto-pago">Nequi</span>
         <span class="radio" [class.marcado]="metodoPago === 'nequi'"></span>
       </button>
       <button class="opcion-pago" [class.activo]="metodoPago === 'bancolombia'" (click)="metodoPago = 'bancolombia'">
-        <span class="icono-pago">🏦</span>
+        <span class="icono-pago"><svg lucideLandmark [size]="22"></svg></span>
         <span class="texto-pago">Bancolombia</span>
         <span class="radio" [class.marcado]="metodoPago === 'bancolombia'"></span>
       </button>
       <button class="opcion-pago" [class.activo]="metodoPago === 'efectivo'" (click)="metodoPago = 'efectivo'">
-        <span class="icono-pago">💵</span>
+        <span class="icono-pago"><svg lucideBanknote [size]="22"></svg></span>
         <span class="texto-pago">Efectivo (contraentrega)</span>
         <span class="radio" [class.marcado]="metodoPago === 'efectivo'"></span>
       </button>
@@ -36,57 +39,69 @@
   </div>
 
   @if (metodoPago === 'nequi' || metodoPago === 'bancolombia') {
-  <div class="datos-pago">
-    <p class="dp-titulo">Transfiere el total a esta cuenta:</p>
+    <div class="datos-pago">
+      <p class="dp-titulo">Transfiere el total a esta cuenta:</p>
 
-    <div class="cuenta-box">
-      <div>
-        <span class="cuenta-label">{{ metodoPago === 'nequi' ? 'Nequi' : 'Bancolombia (ahorros)' }}</span>
-        <strong class="cuenta-numero">{{ cuentaActual || 'No disponible' }}</strong>
+      <div class="cuenta-box">
+        <div>
+          <span class="cuenta-label">{{ metodoPago === 'nequi' ? 'Nequi' : 'Bancolombia (ahorros)' }}</span>
+          <strong class="cuenta-numero">{{ cuentaActual || 'No disponible' }}</strong>
+        </div>
+        @if (cuentaActual) {
+          <button type="button" class="btn-copiar" (click)="copiarCuenta()">
+            @if (copiado) {
+              <svg lucideCheck [size]="14"></svg>
+              ¡Copiado!
+            } @else {
+              <svg lucideCopy [size]="14"></svg>
+              Copiar
+            }
+          </button>
+        }
       </div>
-      @if (cuentaActual) {
-      <button type="button" class="btn-copiar" (click)="copiarCuenta()">
-        {{ copiado ? '¡Copiado!' : 'Copiar' }}
-      </button>
-      }
-    </div>
-    <p class="dp-total">Valor a transferir: <strong>${{ formatPrecio(total) }}</strong></p>
+      <p class="dp-total">Valor a transferir: <strong>${{ formatPrecio(total) }}</strong></p>
 
-    <label class="subir-box" [class.listo]="archivoComprobante">
-      <input type="file" accept="image/*" (change)="onArchivo($event)" hidden>
-      <span class="subir-icono">{{ archivoComprobante ? '✅' : '📷' }}</span>
-      <span class="subir-texto">{{ nombreArchivo || 'Subir foto del comprobante' }}</span>
-    </label>
-  </div>
+      <label class="subir-box" [class.listo]="archivoComprobante">
+        <input type="file" accept="image/*" (change)="onArchivo($event)" hidden>
+        <span class="subir-icono">
+          @if (archivoComprobante) {
+            <svg lucideCircleCheck [size]="24"></svg>
+          } @else {
+            <svg lucideCamera [size]="24"></svg>
+          }
+        </span>
+        <span class="subir-texto">{{ nombreArchivo || 'Subir foto del comprobante' }}</span>
+      </label>
+    </div>
   }
 
   @if (metodoPago === 'efectivo') {
-  <div class="datos-pago">
-    <p class="dp-titulo">¿Con qué billete vas a pagar?</p>
-    <p class="dp-ayuda">Así el domiciliario lleva el cambio listo.</p>
+    <div class="datos-pago">
+      <p class="dp-titulo">¿Con qué billete vas a pagar?</p>
+      <p class="dp-ayuda">Así el domiciliario lleva el cambio listo.</p>
 
-    <div class="billetes">
-      <button type="button" class="chip-billete" [class.activo]="efectivoOpcion === 'exacto'" (click)="elegirExacto()">
-        Pago exacto
-      </button>
-      @for (b of billetes; track b) {
-      <button type="button" class="chip-billete" [class.activo]="efectivoOpcion === b" [disabled]="b < total"
-        (click)="elegirBillete(b)">
-        ${{ formatPrecio(b) }}
-      </button>
+      <div class="billetes">
+        <button type="button" class="chip-billete" [class.activo]="efectivoOpcion === 'exacto'" (click)="elegirExacto()">
+          Pago exacto
+        </button>
+        @for (b of billetes; track b) {
+          <button type="button" class="chip-billete" [class.activo]="efectivoOpcion === b" [disabled]="b < total"
+            (click)="elegirBillete(b)">
+            ${{ formatPrecio(b) }}
+          </button>
+        }
+      </div>
+
+      <input type="text" inputmode="numeric" class="input-billete" [class.activo]="efectivoOpcion === 'otro'"
+        placeholder="Otro valor (ej: 150000)" [ngModel]="otroValor" (ngModelChange)="onOtroValor($event)">
+
+      @if (efectivoOpcion === 'otro' && otroValor && !efectivoValido) {
+        <p class="dp-error">El valor debe ser igual o mayor al total (${{ formatPrecio(total) }}).</p>
+      }
+      @if (efectivoValido && efectivoOpcion !== 'exacto' && cambio > 0) {
+        <p class="dp-cambio">Te devolveremos <strong>${{ formatPrecio(cambio) }}</strong> de cambio.</p>
       }
     </div>
-
-    <input type="text" inputmode="numeric" class="input-billete" [class.activo]="efectivoOpcion === 'otro'"
-      placeholder="Otro valor (ej: 150000)" [ngModel]="otroValor" (ngModelChange)="onOtroValor($event)">
-
-    @if (efectivoOpcion === 'otro' && otroValor && !efectivoValido) {
-    <p class="dp-error">El valor debe ser igual o mayor al total (${{ formatPrecio(total) }}).</p>
-    }
-    @if (efectivoValido && efectivoOpcion !== 'exacto' && cambio > 0) {
-    <p class="dp-cambio">Te devolveremos <strong>${{ formatPrecio(cambio) }}</strong> de cambio.</p>
-    }
-  </div>
   }
 
   <div class="barra-inferior">
