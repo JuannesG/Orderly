@@ -16,3 +16,99 @@
   --fuente-titulo: 'Baloo 2', 'Nunito', sans-serif;
   --fuente-texto: 'Nunito', sans-serif;
 }
+
+/* ---------- Controles de los pedidos (compartidos) ---------- */
+.barra-controles {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.segmentado {
+  display: flex;
+  width: 100%;
+  gap: 4px;
+  padding: 4px;
+  background-color: var(--blanco);
+  border: 2px solid var(--borde);
+  border-radius: 14px;
+}
+
+.segmentado button {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background-color: transparent;
+  border: none;
+  border-radius: 10px;
+  padding: 9px 14px;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 0.82rem;
+  color: var(--texto-suave);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.segmentado button.activo {
+  background-color: var(--naranja);
+  color: #FFFFFF;
+}
+
+.segmentado .contador {
+  min-width: 20px;
+  padding: 1px 6px;
+  border-radius: 10px;
+  background-color: var(--fondo);
+  color: var(--texto-suave);
+  font-size: 0.72rem;
+  line-height: 1.4;
+}
+
+.segmentado button.activo .contador {
+  background-color: rgba(255, 255, 255, 0.28);
+  color: #FFFFFF;
+}
+
+.acciones-barra {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: var(--blanco);
+  border: 2px solid var(--borde);
+  color: var(--texto-suave);
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 0.8rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.chip-toggle.activo {
+  background-color: var(--naranja-suave);
+  border-color: var(--naranja);
+  color: var(--naranja-oscuro);
+}
+
+@media (min-width: 600px) {
+  .segmentado {
+    width: auto;
+  }
+
+  .segmentado button {
+    flex: none;
+  }
+}

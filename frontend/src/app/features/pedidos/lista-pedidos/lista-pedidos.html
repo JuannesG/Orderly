@@ -4,185 +4,189 @@
     <span class="subrayado"></span>
   </header>
 
-  <div class="filtros-chips">
-    <button [class.activo]="filtro === 'activos'" (click)="filtro = 'activos'">Activos ({{ contarActivos }})</button>
-    <button [class.activo]="filtro === 'hoy'" (click)="filtro = 'hoy'">Hoy</button>
-    <button [class.activo]="filtro === 'todos'" (click)="filtro = 'todos'">Todos</button>
+  <div class="barra-controles">
+    <div class="segmentado">
+      <button [class.activo]="filtro === 'activos'" (click)="filtro = 'activos'">
+        Activos <span class="contador">{{ contarActivos }}</span>
+      </button>
+      <button [class.activo]="filtro === 'hoy'" (click)="filtro = 'hoy'">Hoy</button>
+      <button [class.activo]="filtro === 'todos'" (click)="filtro = 'todos'">Todos</button>
+    </div>
+
+    @if (recibeAvisos) {
+    <div class="acciones-barra">
+      <button class="chip-toggle" [class.activo]="aviso.activo && aviso.listo" (click)="alternarSonido()">
+        @if (aviso.activo && aviso.listo) {
+        <svg lucideBellRing [size]="16"></svg>
+        } @else {
+        <svg lucideBell [size]="16"></svg>
+        }
+        {{ aviso.texto }}
+      </button>
+    </div>
+    }
   </div>
 
-  @if (recibeAvisos) {
-    <button class="btn-sonido" [class.activo]="aviso.activo && aviso.listo" (click)="alternarSonido()">
-      @if (aviso.activo && aviso.listo) {
-        <svg lucideBellRing [size]="16"></svg>
-      } @else {
-        <svg lucideBell [size]="16"></svg>
-      }
-      {{ aviso.texto }}
-    </button>
-  }
-
   @if (cargando) {
-    <p class="mensaje">Cargando pedidos...</p>
+  <p class="mensaje">Cargando pedidos...</p>
   }
 
   @if (!cargando && pedidosVisibles.length === 0) {
-    <p class="mensaje">No hay pedidos para mostrar.</p>
+  <p class="mensaje">No hay pedidos para mostrar.</p>
   }
 
   <div class="ped-lista">
     @for (pedido of pedidosVisibles; track pedido.token_seguimiento) {
-      <div class="ped-card">
-        <div class="ped-head">
-          <div>
-            <h3>{{ pedido.cliente_nombre }}</h3>
-            <a [href]="'tel:' + pedido.cliente_telefono" class="tel">
-              <svg lucidePhone [size]="14"></svg>
-              {{ pedido.cliente_telefono }}
-            </a>
-          </div>
-          <div class="head-der">
-            <span class="badge" [class]="pedido.estado">{{ etiqueta(pedido.estado) }}</span>
-            <span class="hora">{{ pedido.creado_en | date:'h:mm a' }}</span>
-          </div>
+    <div class="ped-card">
+      <div class="ped-head">
+        <div>
+          <h3>{{ pedido.cliente_nombre }}</h3>
+          <a [href]="'tel:' + pedido.cliente_telefono" class="tel">
+            <svg lucidePhone [size]="14"></svg>
+            {{ pedido.cliente_telefono }}
+          </a>
         </div>
-
-        <div class="direccion-box">
-          <span class="dir-linea">
-            <svg lucideMapPin [size]="16"></svg>
-            <span>{{ pedido.cliente_direccion }}</span>
-          </span>
-          @if (pedido.cliente_referencia) {
-            <span class="ref">Ref: {{ pedido.cliente_referencia }}</span>
-          }
+        <div class="head-der">
+          <span class="badge" [class]="pedido.estado">{{ etiqueta(pedido.estado) }}</span>
+          <span class="hora">{{ pedido.creado_en | date:'h:mm a' }}</span>
         </div>
+      </div>
 
-        <div class="items">
-          @for (item of pedido.detalles; track $index) {
-            <div class="item-linea producto">
-              <span>
-                @if (item.categoria_nombre) {
-                  <small class="categoria">{{ item.categoria_nombre }}</small>
-                }
-                {{ item.cantidad }}x {{ item.producto_nombre }}
-              </span>
-              <span>${{ formatPrecio(item.precio_unitario * item.cantidad) }}</span>
-            </div>
-            @for (adicion of item.adiciones; track $index) {
-              <div class="item-linea adicion">
-                <span>+ {{ adicion.nombre }}</span>
-                <span>${{ formatPrecio(adicion.precio * item.cantidad) }}</span>
-              </div>
-            }
-          }
-          @if (pedido.observaciones) {
-            <p class="obs">"{{ pedido.observaciones }}"</p>
-          }
-        </div>
-
-        <div class="pago-row">
-          <span class="metodo">{{ metodoLabel(pedido.pago?.metodo) }}</span>
-          <strong class="total">${{ formatPrecio(pedido.total) }}</strong>
-        </div>
-
-        @if (pedido.pago?.metodo === 'efectivo' && pedido.paga_con) {
-          <div class="efectivo-box">
-            <svg lucideBanknote [size]="18"></svg>
-            <span>
-              Paga con <strong>${{ formatPrecio(pedido.paga_con) }}</strong>
-              · Llevar cambio: <strong>${{ formatPrecio(pedido.paga_con - pedido.total) }}</strong>
-            </span>
-          </div>
-        } @else if (pedido.pago?.metodo === 'efectivo') {
-          <div class="efectivo-box">
-            <svg lucideBanknote [size]="18"></svg>
-            <span>Paga exacto, sin cambio</span>
-          </div>
-        }
-
-        @if (pedido.pago?.metodo !== 'efectivo' && pedido.pago?.estado_verificacion === 'pendiente_verificacion') {
-          <div class="verificar">
-            @if (urlComprobante(pedido)) {
-              <button class="btn-ver" (click)="verComprobante(urlComprobante(pedido)!)">
-                <svg lucideReceipt [size]="18"></svg>
-                Ver comprobante
-              </button>
-            } @else {
-              <p class="sin-comp">El cliente aún no subió el comprobante</p>
-            }
-            <div class="botones-verificar">
-              <button class="btn-rechazar" (click)="verificarPago(pedido, false)">Rechazar</button>
-              <button class="btn-aceptar" [disabled]="!urlComprobante(pedido)" (click)="verificarPago(pedido, true)">
-                Aceptar pago
-              </button>
-            </div>
-          </div>
-        }
-
-        @if (pedido.estado === 'pendiente_verificacion' && pedido.pago?.metodo === 'efectivo') {
-          <button class="btn-aceptar-pedido" (click)="verificarPago(pedido, true)">
-            <svg lucideCheck [size]="18"></svg>
-            Aceptar pedido
-          </button>
-        }
-
-        @if (pedido.estado === 'aceptado') {
-          <button class="btn-imprimir" (click)="imprimir(pedido)">
-            <svg lucidePrinter [size]="18"></svg>
-            Imprimir y enviar a cocina
-          </button>
-        }
-
-        @if (pedido.estado === 'en_preparacion' || pedido.estado === 'en_camino' || pedido.estado === 'entregado') {
-          <button class="btn-reimprimir" (click)="reimprimir(pedido)">
-            <svg lucidePrinter [size]="18"></svg>
-            Reimprimir recibo
-          </button>
-        }
-
-        @if (pedido.estado !== 'pendiente_verificacion' && pedido.estado !== 'rechazado' && pedido.estado !== 'entregado') {
-          <div class="botones-estado">
-            @for (estado of estadosBotones; track estado) {
-              <button [class]="pedido.estado === estado ? 'activo ' + estado : ''" (click)="cambiarAEstado(pedido, estado)">
-                {{ etiqueta(estado) }}
-              </button>
-            }
-          </div>
-        }
-
-        @if (pedido.estado === 'entregado') {
-          <p class="cerrado">
-            <svg lucideCircleCheck [size]="18"></svg>
-            Pedido entregado · ya no se puede modificar
-          </p>
-        }
-
-        @if (pedido.estado === 'rechazado') {
-          <button class="btn-aceptar-pedido" (click)="reactivar(pedido)">
-            <svg lucideRotateCcw [size]="18"></svg>
-            Reactivar pedido
-          </button>
+      <div class="direccion-box">
+        <span class="dir-linea">
+          <svg lucideMapPin [size]="16"></svg>
+          <span>{{ pedido.cliente_direccion }}</span>
+        </span>
+        @if (pedido.cliente_referencia) {
+        <span class="ref">Ref: {{ pedido.cliente_referencia }}</span>
         }
       </div>
+
+      <div class="items">
+        @for (item of pedido.detalles; track $index) {
+        <div class="item-linea producto">
+          <span>
+            @if (item.categoria_nombre) {
+            <small class="categoria">{{ item.categoria_nombre }}</small>
+            }
+            {{ item.cantidad }}x {{ item.producto_nombre }}
+          </span>
+          <span>${{ formatPrecio(item.precio_unitario * item.cantidad) }}</span>
+        </div>
+        @for (adicion of item.adiciones; track $index) {
+        <div class="item-linea adicion">
+          <span>+ {{ adicion.nombre }}</span>
+          <span>${{ formatPrecio(adicion.precio * item.cantidad) }}</span>
+        </div>
+        }
+        }
+        @if (pedido.observaciones) {
+        <p class="obs">"{{ pedido.observaciones }}"</p>
+        }
+      </div>
+
+      <div class="pago-row">
+        <span class="metodo">{{ metodoLabel(pedido.pago?.metodo) }}</span>
+        <strong class="total">${{ formatPrecio(pedido.total) }}</strong>
+      </div>
+
+      @if (pedido.pago?.metodo === 'efectivo' && pedido.paga_con) {
+      <div class="efectivo-box">
+        <svg lucideBanknote [size]="18"></svg>
+        <span>
+          Paga con <strong>${{ formatPrecio(pedido.paga_con) }}</strong>
+          · Llevar cambio: <strong>${{ formatPrecio(pedido.paga_con - pedido.total) }}</strong>
+        </span>
+      </div>
+      } @else if (pedido.pago?.metodo === 'efectivo') {
+      <div class="efectivo-box">
+        <svg lucideBanknote [size]="18"></svg>
+        <span>Paga exacto, sin cambio</span>
+      </div>
+      }
+
+      @if (pedido.pago?.metodo !== 'efectivo' && pedido.pago?.estado_verificacion === 'pendiente_verificacion') {
+      <div class="verificar">
+        @if (urlComprobante(pedido)) {
+        <button class="btn-ver" (click)="verComprobante(urlComprobante(pedido)!)">
+          <svg lucideReceipt [size]="18"></svg>
+          Ver comprobante
+        </button>
+        } @else {
+        <p class="sin-comp">El cliente aún no subió el comprobante</p>
+        }
+        <div class="botones-verificar">
+          <button class="btn-rechazar" (click)="verificarPago(pedido, false)">Rechazar</button>
+          <button class="btn-aceptar" [disabled]="!urlComprobante(pedido)" (click)="verificarPago(pedido, true)">
+            Aceptar pago
+          </button>
+        </div>
+      </div>
+      }
+
+      @if (pedido.estado === 'pendiente_verificacion' && pedido.pago?.metodo === 'efectivo') {
+      <button class="btn-aceptar-pedido" (click)="verificarPago(pedido, true)">
+        <svg lucideCheck [size]="18"></svg>
+        Aceptar pedido
+      </button>
+      }
+
+      @if (pedido.estado === 'aceptado') {
+      <button class="btn-imprimir" (click)="imprimir(pedido)">
+        <svg lucidePrinter [size]="18"></svg>
+        Imprimir y enviar a cocina
+      </button>
+      }
+
+      @if (pedido.estado === 'en_preparacion' || pedido.estado === 'en_camino' || pedido.estado === 'entregado') {
+      <button class="btn-reimprimir" (click)="reimprimir(pedido)">
+        <svg lucidePrinter [size]="18"></svg>
+        Reimprimir recibo
+      </button>
+      }
+
+      @if (pedido.estado !== 'pendiente_verificacion' && pedido.estado !== 'rechazado' && pedido.estado !== 'entregado')
+      {
+      <div class="botones-estado">
+        @for (estado of estadosBotones; track estado) {
+        <button [class]="pedido.estado === estado ? 'activo ' + estado : ''" (click)="cambiarAEstado(pedido, estado)">
+          {{ etiqueta(estado) }}
+        </button>
+        }
+      </div>
+      }
+
+      @if (pedido.estado === 'entregado') {
+      <p class="cerrado">
+        <svg lucideCircleCheck [size]="18"></svg>
+        Pedido entregado · ya no se puede modificar
+      </p>
+      }
+
+      @if (pedido.estado === 'rechazado') {
+      <button class="btn-aceptar-pedido" (click)="reactivar(pedido)">
+        <svg lucideRotateCcw [size]="18"></svg>
+        Reactivar pedido
+      </button>
+      }
+    </div>
     }
   </div>
 
   @if (comprobanteAbierto) {
-    <div class="overlay" (click)="comprobanteAbierto = null">
-      <div class="visor" (click)="$event.stopPropagation()">
-        <button class="cerrar-x" aria-label="Cerrar" (click)="comprobanteAbierto = null">
-          <svg lucideX [size]="18"></svg>
-        </button>
-        <img [src]="comprobanteAbierto" alt="Comprobante de pago">
-      </div>
+  <div class="overlay" (click)="comprobanteAbierto = null">
+    <div class="visor" (click)="$event.stopPropagation()">
+      <button class="cerrar-x" aria-label="Cerrar" (click)="comprobanteAbierto = null">
+        <svg lucideX [size]="18"></svg>
+      </button>
+      <img [src]="comprobanteAbierto" alt="Comprobante de pago">
     </div>
+  </div>
   }
 
   @if (pedidoPorEntregar) {
-    <app-confirmar-accion
-      titulo="¿Marcar como entregado?"
-      [mensaje]="'Pedido de ' + pedidoPorEntregar.cliente_nombre + ' · Ya no se podrá cambiar.'"
-      textoConfirmar="Sí, entregado"
-      (confirmar)="confirmarEntrega()"
-      (cancelar)="pedidoPorEntregar = null" />
+  <app-confirmar-accion titulo="¿Marcar como entregado?"
+    [mensaje]="'Pedido de ' + pedidoPorEntregar.cliente_nombre + ' · Ya no se podrá cambiar.'"
+    textoConfirmar="Sí, entregado" (confirmar)="confirmarEntrega()" (cancelar)="pedidoPorEntregar = null" />
   }
 </div>
