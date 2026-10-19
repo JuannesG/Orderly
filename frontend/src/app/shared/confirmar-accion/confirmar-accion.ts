@@ -11,4 +11,5 @@ export class ConfirmarAccion {
   textoConfirmar = input<string>('Confirmar');
   confirmar = output<void>();
   cancelar = output<void>();
+  peligro = input<boolean>(false);
 }

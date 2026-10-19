@@ -68,3 +68,7 @@ p {
   from { opacity: 0; }
   to { opacity: 1; }
 }
+
+.btn-confirmar.peligro {
+  background-color: #EF4444;
+}

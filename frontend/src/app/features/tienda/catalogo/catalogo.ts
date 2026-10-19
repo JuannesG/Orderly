@@ -4,14 +4,13 @@ import { Router } from '@angular/router';
 import { Menu, Categoria, Producto, Adicion } from '../../../core/services/menu';
 import { Carrito } from '../../../core/services/carrito';
 import { ClienteService } from '../../../core/services/cliente';
+import { LucideMapPin, LucideSearch, LucidePlus, LucideMinus, LucideX } from '@lucide/angular';
 
-// Las categorías cuyo nombre contenga alguno de estos textos no ofrecen adicionales.
-// Se compara sin tildes y sin distinguir mayúsculas.
 const CATEGORIAS_SIN_ADICIONALES = ['bebida'];
 
 @Component({
   selector: 'app-catalogo',
-  imports: [FormsModule],
+  imports: [FormsModule, LucideMapPin, LucideSearch, LucidePlus, LucideMinus, LucideX],
   templateUrl: './catalogo.html',
   styleUrl: './catalogo.css'
 })

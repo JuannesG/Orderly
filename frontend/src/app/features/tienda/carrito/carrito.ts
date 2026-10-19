@@ -3,14 +3,18 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Carrito as CarritoService, ItemCarrito } from '../../../core/services/carrito';
 import { Menu, Adicion, Categoria } from '../../../core/services/menu';
+import {
+  LucideArrowLeft,
+  LucideShoppingCart,
+  LucidePlus,
+  LucideMinus
+} from '@lucide/angular';
 
-// Las categorías cuyo nombre contenga alguno de estos textos no ofrecen adicionales.
-// Se compara sin tildes y sin distinguir mayúsculas.
 const CATEGORIAS_SIN_ADICIONALES = ['bebida'];
 
 @Component({
   selector: 'app-carrito',
-  imports: [CommonModule],
+  imports: [CommonModule, LucideArrowLeft, LucideShoppingCart, LucidePlus, LucideMinus],
   templateUrl: './carrito.html',
   styleUrl: './carrito.css'
 })

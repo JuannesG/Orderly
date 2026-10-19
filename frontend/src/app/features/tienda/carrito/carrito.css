@@ -1,47 +1,60 @@
 .carrito-page {
   min-height: 100vh;
-  background-color: #FFFFFF;
-  font-family: 'Nunito', sans-serif;
-  color: #1A1A1A;
+  background-color: var(--blanco);
+  font-family: var(--fuente-texto);
+  color: var(--texto);
   padding-bottom: 110px;
 }
 
 .top-bar-simple {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 16px 20px;
-  border-bottom: 1px solid #F0F0F0;
+  gap: 12px;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--borde);
 }
 
 .btn-atras {
+  display: flex;
   background: none;
   border: none;
-  font-size: 1.3rem;
+  color: var(--texto);
   cursor: pointer;
-  color: #1A1A1A;
+  padding: 6px;
+  margin-left: -6px;
 }
 
 .top-bar-simple h1 {
-  font-family: 'Baloo 2', 'Nunito', sans-serif;
+  font-family: var(--fuente-titulo);
   font-size: 1.2rem;
   margin: 0;
 }
 
 .vacio-wrap {
   text-align: center;
-  padding: 80px 24px;
+  padding: 70px 24px;
 }
 
 .vacio-icono {
-  font-size: 3rem;
-  display: block;
-  margin-bottom: 12px;
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 14px;
+  border-radius: 50%;
+  background-color: var(--naranja-suave);
+  color: var(--naranja);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .vacio-wrap p {
-  color: #6B6B6B;
-  margin-bottom: 20px;
+  color: var(--texto-suave);
+  margin: 0 0 20px;
+}
+
+.vacio-wrap .btn-primario {
+  max-width: 260px;
+  margin: 0 auto;
 }
 
 .items-col {
@@ -53,7 +66,7 @@
 
 .item-card {
   background-color: #F8F8F8;
-  border-radius: 16px;
+  border-radius: var(--radio);
   padding: 14px 16px;
 }
 
@@ -68,7 +81,7 @@
   display: block;
   font-size: 0.68rem;
   font-weight: 600;
-  color: #9B9B9B;
+  color: var(--gris);
   margin-bottom: 2px;
 }
 
@@ -80,7 +93,7 @@
 
 .precio-unit {
   font-size: 0.75rem;
-  color: #9B9B9B;
+  color: var(--gris);
   margin: 0;
 }
 
@@ -88,19 +101,21 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  background-color: #FFFFFF;
+  background-color: var(--blanco);
   border-radius: 20px;
   padding: 4px 8px;
 }
 
 .mini-stepper button {
-  width: 26px;
-  height: 26px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   border: none;
-  background-color: #E85A2A;
+  background-color: var(--naranja);
   color: #FFFFFF;
-  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
 }
 
@@ -118,18 +133,22 @@
 }
 
 .chip {
-  background-color: #FFFFFF;
+  background-color: var(--blanco);
   font-size: 0.72rem;
   padding: 4px 10px;
   border-radius: 12px;
-  color: #6B6B6B;
+  color: var(--texto-suave);
 }
 
 .link-adicionales {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
   background: none;
   border: none;
-  color: #E85A2A;
-  font-size: 0.78rem;
+  color: var(--naranja);
+  font-family: inherit;
+  font-size: 0.8rem;
   font-weight: 700;
   margin-top: 8px;
   cursor: pointer;
@@ -149,26 +168,26 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 0.82rem;
+  font-size: 0.84rem;
   cursor: pointer;
 }
 
 .opcion-adicional input {
-  accent-color: #E85A2A;
+  accent-color: var(--naranja);
   width: 16px;
   height: 16px;
 }
 
 .precio-mini {
   margin-left: auto;
-  color: #9B9B9B;
+  color: var(--gris);
   font-size: 0.78rem;
 }
 
 .item-total {
   text-align: right;
   font-weight: 700;
-  color: #E85A2A;
+  color: var(--naranja);
   margin: 10px 0 0 0;
 }
 
@@ -176,7 +195,7 @@
   margin: 8px 20px;
   padding: 16px;
   background-color: #F8F8F8;
-  border-radius: 16px;
+  border-radius: var(--radio);
 }
 
 .linea {
@@ -188,7 +207,7 @@
 
 .nota {
   font-size: 0.72rem;
-  color: #9B9B9B;
+  color: var(--gris);
   text-align: right;
   margin: 4px 0 0 0;
 }
@@ -198,33 +217,25 @@
   bottom: 0;
   left: 0;
   right: 0;
-  background-color: #FFFFFF;
+  background-color: var(--blanco);
   padding: 14px 20px;
   display: flex;
   gap: 10px;
   box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.05);
 }
 
-.btn-secundario,
 .btn-primario {
   flex: 1;
-  padding: 14px;
-  border-radius: 14px;
-  font-weight: 700;
-  cursor: pointer;
-  border: none;
-  text-align: center;
-  text-decoration: none;
   display: block;
-  font-size: 0.9rem;
-}
-
-.btn-secundario {
-  background-color: #F8F8F8;
-  color: #1A1A1A;
-}
-
-.btn-primario {
-  background-color: #E85A2A;
+  padding: 15px;
+  border: none;
+  border-radius: 14px;
+  background-color: var(--naranja);
   color: #FFFFFF;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(232, 90, 42, 0.3);
 }

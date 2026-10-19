@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
 import { Pedido as PedidoService } from '../../../core/services/pedido';
 import { ClienteService } from '../../../core/services/cliente';
+import { LucideClipboardList, LucideChevronRight } from '@lucide/angular';
 
 const ETIQUETAS: { [key: string]: string } = {
   pendiente_verificacion: 'Recibido',
@@ -17,7 +18,7 @@ const FINALES = ['entregado', 'rechazado'];
 
 @Component({
   selector: 'app-mis-pedidos',
-  imports: [RouterLink, CommonModule],
+  imports: [RouterLink, CommonModule, LucideClipboardList, LucideChevronRight],
   templateUrl: './mis-pedidos.html',
   styleUrl: './mis-pedidos.css'
 })

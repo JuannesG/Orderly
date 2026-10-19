@@ -9,10 +9,10 @@
         </span>
       </div>
     </div>
-    <div class="direccion-chip" (click)="toggleEditarDireccion()">
-      <span class="pin">📍</span>
+    <button class="direccion-chip" (click)="toggleEditarDireccion()">
+      <svg lucideMapPin [size]="14"></svg>
       <span class="texto-direccion">{{ direccionCliente }}</span>
-    </div>
+    </button>
   </header>
 
   @if (editandoDireccion) {
@@ -27,7 +27,10 @@
   }
 
   <div class="buscador-wrap">
-    <input type="text" [(ngModel)]="busqueda" (ngModelChange)="onBuscar()" placeholder="¿Qué se te antoja hoy?" class="input-buscar">
+    <label class="input-buscar">
+      <svg lucideSearch [size]="18"></svg>
+      <input type="text" [(ngModel)]="busqueda" (ngModelChange)="onBuscar()" placeholder="¿Qué se te antoja hoy?">
+    </label>
   </div>
 
   <div class="filtros-scroll">
@@ -50,6 +53,9 @@
         <div class="productos-col">
           @for (producto of categoria.productos; track producto.id) {
             <div class="producto-row" (click)="abrirDetalle(producto)">
+              @if (producto.imagen_url) {
+                <img class="producto-img" [src]="producto.imagen_url" alt="">
+              }
               <div class="producto-texto">
                 <h3>{{ producto.nombre }}</h3>
                 @if (producto.descripcion) {
@@ -59,12 +65,18 @@
               </div>
               <div class="producto-accion" (click)="$event.stopPropagation()">
                 @if (carrito.obtenerCantidad(producto.id) === 0) {
-                  <button class="btn-mas" [disabled]="!tiendaAbierta" (click)="agregar(producto)">+</button>
+                  <button class="btn-mas" aria-label="Agregar" [disabled]="!tiendaAbierta" (click)="agregar(producto)">
+                    <svg lucidePlus [size]="18"></svg>
+                  </button>
                 } @else {
                   <div class="mini-stepper">
-                    <button [disabled]="!tiendaAbierta" (click)="quitar(producto)">−</button>
+                    <button aria-label="Quitar uno" [disabled]="!tiendaAbierta" (click)="quitar(producto)">
+                      <svg lucideMinus [size]="14"></svg>
+                    </button>
                     <span>{{ carrito.obtenerCantidad(producto.id) }}</span>
-                    <button [disabled]="!tiendaAbierta" (click)="agregar(producto)">+</button>
+                    <button aria-label="Agregar uno" [disabled]="!tiendaAbierta" (click)="agregar(producto)">
+                      <svg lucidePlus [size]="14"></svg>
+                    </button>
                   </div>
                 }
               </div>
@@ -78,7 +90,9 @@
   @if (productoDetalle) {
     <div class="overlay" (click)="cerrarDetalle()">
       <div class="sheet" (click)="$event.stopPropagation()">
-        <button class="cerrar-x" (click)="cerrarDetalle()">✕</button>
+        <button class="cerrar-x" aria-label="Cerrar" (click)="cerrarDetalle()">
+          <svg lucideX [size]="18"></svg>
+        </button>
         <h2>{{ productoDetalle.nombre }}</h2>
         <p class="sheet-precio">${{ formatPrecio(productoDetalle.precio) }}</p>
         @if (productoDetalle.descripcion) {
@@ -100,9 +114,9 @@
 
         <div class="sheet-footer">
           <div class="mini-stepper grande">
-            <button (click)="cambiarCantidad(-1)">−</button>
+            <button aria-label="Menos" (click)="cambiarCantidad(-1)"><svg lucideMinus [size]="16"></svg></button>
             <span>{{ cantidadDetalle }}</span>
-            <button (click)="cambiarCantidad(1)">+</button>
+            <button aria-label="Más" (click)="cambiarCantidad(1)"><svg lucidePlus [size]="16"></svg></button>
           </div>
           <button class="btn-agregar-total" [disabled]="!tiendaAbierta" (click)="agregarDesdeDetalle()">
             Agregar ${{ formatPrecio(totalDetalle) }}

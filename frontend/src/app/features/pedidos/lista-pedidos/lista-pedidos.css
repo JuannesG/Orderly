@@ -1,30 +1,44 @@
 .ped-page {
   max-width: 720px;
   margin: 0 auto;
-  font-family: 'Nunito', sans-serif;
-  color: #1A1A1A;
+  font-family: var(--fuente-texto);
+  color: var(--texto);
 }
 
-.ped-page h1 {
-  font-family: 'Baloo 2', 'Nunito', sans-serif;
-  font-size: 1.4rem;
-  margin: 0 0 12px;
+.cabecera {
+  margin-bottom: 14px;
+}
+
+.cabecera h1 {
+  font-family: var(--fuente-titulo);
+  font-size: 1.6rem;
+  margin: 0;
+}
+
+.subrayado {
+  display: block;
+  width: 36px;
+  height: 3px;
+  border-radius: 2px;
+  background-color: var(--naranja);
+  margin-top: 6px;
 }
 
 .filtros-chips {
   display: flex;
   gap: 8px;
   overflow-x: auto;
-  margin-bottom: 14px;
+  margin-bottom: 12px;
   scrollbar-width: none;
 }
 
 .filtros-chips button {
-  background-color: #FFFFFF;
-  border: none;
-  color: #6B6B6B;
+  background-color: var(--blanco);
+  border: 2px solid var(--borde);
+  color: var(--texto-suave);
   padding: 9px 16px;
   border-radius: 20px;
+  font-family: inherit;
   font-weight: 700;
   font-size: 0.82rem;
   cursor: pointer;
@@ -33,13 +47,36 @@
 }
 
 .filtros-chips button.activo {
-  background-color: #E85A2A;
+  background-color: var(--naranja);
+  border-color: var(--naranja);
+  color: #FFFFFF;
+}
+
+.btn-sonido {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: var(--blanco);
+  border: 2px solid var(--borde);
+  color: var(--texto-suave);
+  padding: 9px 16px;
+  border-radius: 20px;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 0.82rem;
+  cursor: pointer;
+  margin-bottom: 14px;
+}
+
+.btn-sonido.activo {
+  background-color: var(--naranja);
+  border-color: var(--naranja);
   color: #FFFFFF;
 }
 
 .mensaje {
   text-align: center;
-  color: #9B9B9B;
+  color: var(--gris);
   margin-top: 30px;
 }
 
@@ -50,10 +87,10 @@
 }
 
 .ped-card {
-  background-color: #FFFFFF;
+  background-color: var(--blanco);
   border-radius: 18px;
   padding: 16px;
-  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
+  box-shadow: var(--sombra);
 }
 
 .ped-head {
@@ -64,13 +101,16 @@
 }
 
 .ped-head h3 {
-  margin: 0 0 2px;
-  font-size: 1rem;
+  margin: 0 0 4px;
+  font-size: 1.02rem;
 }
 
 .tel {
-  font-size: 0.8rem;
-  color: #E85A2A;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.82rem;
+  color: var(--naranja);
   font-weight: 700;
   text-decoration: none;
 }
@@ -84,7 +124,7 @@
 
 .hora {
   font-size: 0.72rem;
-  color: #9B9B9B;
+  color: var(--gris);
 }
 
 .badge {
@@ -93,7 +133,7 @@
   padding: 4px 10px;
   border-radius: 12px;
   background-color: #F3F3F3;
-  color: #6B6B6B;
+  color: var(--texto-suave);
 }
 
 .badge.pendiente_verificacion { background-color: #FEF3C7; color: #92400E; }
@@ -106,19 +146,32 @@
 .direccion-box {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  background-color: #F8F8F8;
+  gap: 4px;
+  background-color: var(--fondo);
   border-radius: 12px;
   padding: 10px 12px;
   margin: 12px 0;
-  font-size: 0.82rem;
+  font-size: 0.84rem;
   font-weight: 600;
+}
+
+.dir-linea {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.dir-linea svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+  color: var(--naranja);
 }
 
 .ref {
   font-size: 0.75rem;
-  color: #9B9B9B;
+  color: var(--gris);
   font-weight: 400;
+  padding-left: 22px;
 }
 
 .items {
@@ -129,7 +182,8 @@
 .item-linea {
   display: flex;
   justify-content: space-between;
-  font-size: 0.85rem;
+  gap: 10px;
+  font-size: 0.86rem;
   padding: 3px 0;
 }
 
@@ -141,18 +195,18 @@
   display: block;
   font-size: 0.68rem;
   font-weight: 600;
-  color: #9B9B9B;
+  color: var(--gris);
 }
 
 .item-linea.adicion {
   padding-left: 12px;
-  font-size: 0.75rem;
-  color: #9B9B9B;
+  font-size: 0.76rem;
+  color: var(--gris);
 }
 
 .obs {
   font-size: 0.8rem;
-  color: #6B6B6B;
+  color: var(--texto-suave);
   font-style: italic;
   margin: 8px 0 0;
   background-color: #FFF8E1;
@@ -171,14 +225,31 @@
   font-size: 0.75rem;
   font-weight: 700;
   background-color: #F3F3F3;
-  color: #6B6B6B;
+  color: var(--texto-suave);
   padding: 4px 10px;
   border-radius: 8px;
 }
 
 .total {
   font-size: 1.1rem;
-  color: #E85A2A;
+  color: var(--naranja);
+}
+
+.efectivo-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  background-color: var(--verde-suave);
+  border: 1px solid #BBF7D0;
+  color: #166534;
+  border-radius: 10px;
+  padding: 9px 12px;
+  font-size: 0.82rem;
+}
+
+.efectivo-box svg {
+  flex-shrink: 0;
 }
 
 .verificar {
@@ -190,11 +261,16 @@
 
 .btn-ver {
   width: 100%;
-  background-color: #FFFFFF;
-  border: 2px solid #E85A2A;
-  color: #E85A2A;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: var(--blanco);
+  border: 2px solid var(--naranja);
+  color: var(--naranja);
   border-radius: 10px;
   padding: 10px;
+  font-family: inherit;
   font-weight: 700;
   font-size: 0.85rem;
   cursor: pointer;
@@ -219,18 +295,19 @@
   padding: 12px;
   border: none;
   border-radius: 10px;
+  font-family: inherit;
   font-weight: 700;
   font-size: 0.85rem;
   cursor: pointer;
 }
 
 .btn-rechazar {
-  background-color: #FEE2E2;
+  background-color: var(--rojo-suave);
   color: #991B1B;
 }
 
 .btn-aceptar {
-  background-color: #22C55E;
+  background-color: var(--verde);
   color: #FFFFFF;
 }
 
@@ -239,17 +316,42 @@
   cursor: not-allowed;
 }
 
-.btn-aceptar-pedido {
+.btn-aceptar-pedido,
+.btn-imprimir,
+.btn-reimprimir {
   width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   margin-top: 10px;
-  background-color: #22C55E;
-  color: #FFFFFF;
-  border: none;
   border-radius: 12px;
   padding: 13px;
+  font-family: inherit;
   font-weight: 700;
   font-size: 0.9rem;
   cursor: pointer;
+}
+
+.btn-aceptar-pedido {
+  background-color: var(--verde);
+  color: #FFFFFF;
+  border: none;
+}
+
+.btn-imprimir {
+  background-color: var(--naranja);
+  color: #FFFFFF;
+  border: none;
+}
+
+.btn-reimprimir {
+  margin-top: 8px;
+  padding: 11px;
+  font-size: 0.85rem;
+  background-color: var(--blanco);
+  border: 2px solid var(--naranja);
+  color: var(--naranja);
 }
 
 .botones-estado {
@@ -261,10 +363,11 @@
 
 .botones-estado button {
   background-color: #F3F3F3;
-  color: #6B6B6B;
+  color: var(--texto-suave);
   border: none;
   border-radius: 10px;
   padding: 11px 6px;
+  font-family: inherit;
   font-size: 0.78rem;
   font-weight: 700;
   cursor: pointer;
@@ -272,7 +375,7 @@
 
 .botones-estado button.activo.aceptado,
 .botones-estado button.activo.en_preparacion {
-  background-color: #E85A2A;
+  background-color: var(--naranja);
   color: #FFFFFF;
 }
 
@@ -282,8 +385,22 @@
 }
 
 .botones-estado button.activo.entregado {
-  background-color: #22C55E;
+  background-color: var(--verde);
   color: #FFFFFF;
+}
+
+.cerrado {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 12px 0 0;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #166534;
+  background-color: #DCFCE7;
+  border-radius: 10px;
+  padding: 10px;
 }
 
 .overlay {
@@ -318,8 +435,11 @@
   height: 34px;
   border-radius: 50%;
   border: none;
-  background-color: #FFFFFF;
-  font-size: 0.95rem;
+  background-color: var(--blanco);
+  color: var(--texto);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
 }
 
@@ -327,72 +447,4 @@
   .botones-estado {
     grid-template-columns: repeat(4, 1fr);
   }
-}
-
-.btn-sonido {
-  background-color: #FFFFFF;
-  border: 2px solid #E8E8E8;
-  color: #6B6B6B;
-  padding: 9px 16px;
-  border-radius: 20px;
-  font-family: inherit;
-  font-weight: 700;
-  font-size: 0.82rem;
-  cursor: pointer;
-  margin-bottom: 14px;
-}
-
-.btn-sonido.activo {
-  background-color: #E85A2A;
-  border-color: #E85A2A;
-  color: #FFFFFF;
-}
-
-.btn-imprimir {
-  width: 100%;
-  margin-top: 10px;
-  background-color: #E85A2A;
-  color: #FFFFFF;
-  border: none;
-  border-radius: 12px;
-  padding: 13px;
-  font-family: inherit;
-  font-weight: 700;
-  font-size: 0.9rem;
-  cursor: pointer;
-}
-
-.cerrado {
-  margin: 12px 0 0;
-  text-align: center;
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: #166534;
-  background-color: #DCFCE7;
-  border-radius: 10px;
-  padding: 10px;
-}
-
-.btn-reimprimir {
-  width: 100%;
-  margin-top: 8px;
-  background-color: #FFFFFF;
-  border: 2px solid #E85A2A;
-  color: #E85A2A;
-  border-radius: 12px;
-  padding: 11px;
-  font-family: inherit;
-  font-weight: 700;
-  font-size: 0.85rem;
-  cursor: pointer;
-}
-
-.efectivo-box {
-  margin-top: 8px;
-  background-color: #ECFDF5;
-  border: 1px solid #BBF7D0;
-  color: #166534;
-  border-radius: 10px;
-  padding: 9px 12px;
-  font-size: 0.82rem;
 }

@@ -1,10 +1,19 @@
 <div class="reservas-content">
-  <div class="encabezado">
-    <h1>Reservas</h1>
+  <header class="encabezado">
+    <div>
+      <h1>Reservas</h1>
+      <span class="subrayado"></span>
+    </div>
     <button class="btn-agregar" (click)="toggleFormulario()">
-      {{ mostrarFormulario ? 'Cerrar' : '+ Reserva' }}
+      @if (mostrarFormulario) {
+        <svg lucideX [size]="18"></svg>
+        Cerrar
+      } @else {
+        <svg lucidePlus [size]="18"></svg>
+        Reserva
+      }
     </button>
-  </div>
+  </header>
 
   @if (mostrarFormulario) {
     <div class="form-reserva">
@@ -34,6 +43,9 @@
         <label>Motivo (opcional)</label>
         <input type="text" [(ngModel)]="motivoForm" name="motivoForm" placeholder="Cumpleaños, reunión...">
       </div>
+      @if (errorForm) {
+        <p class="error-form">{{ errorForm }}</p>
+      }
       <button class="btn-guardar" (click)="guardarReserva()">Guardar reserva</button>
     </div>
   }
@@ -57,21 +69,43 @@
         <div class="r-top">
           <div>
             <h3>{{ reserva.nombre_cliente }}</h3>
-            <a [href]="'tel:' + reserva.telefono" class="tel">📞 {{ reserva.telefono }}</a>
+            <a [href]="'tel:' + reserva.telefono" class="tel">
+              <svg lucidePhone [size]="14"></svg>
+              {{ reserva.telefono }}
+            </a>
           </div>
           <div class="r-hora">
-            <strong>{{ reserva.hora }}</strong>
+            <strong>
+              <svg lucideClock [size]="16"></svg>
+              {{ reserva.hora }}
+            </strong>
             <span>{{ reserva.fecha }}</span>
           </div>
         </div>
         <div class="r-bottom">
-          <span class="chip">👥 {{ reserva.numero_personas }} personas</span>
+          <span class="chip">
+            <svg lucideUsers [size]="14"></svg>
+            {{ reserva.numero_personas }} personas
+          </span>
           @if (reserva.motivo) {
             <span class="motivo">{{ reserva.motivo }}</span>
           }
-          <button class="btn-eliminar" (click)="eliminarReserva(reserva.id)">Eliminar</button>
+          <button class="btn-eliminar" (click)="reservaPorEliminar = reserva">
+            <svg lucideTrash2 [size]="14"></svg>
+            Eliminar
+          </button>
         </div>
       </div>
     }
   </div>
+
+  @if (reservaPorEliminar) {
+    <app-confirmar-accion
+      titulo="¿Eliminar esta reserva?"
+      [mensaje]="reservaPorEliminar.nombre_cliente + ' · ' + reservaPorEliminar.fecha + ' · ' + reservaPorEliminar.hora"
+      textoConfirmar="Sí, eliminar"
+      [peligro]="true"
+      (confirmar)="confirmarEliminar()"
+      (cancelar)="reservaPorEliminar = null" />
+  }
 </div>

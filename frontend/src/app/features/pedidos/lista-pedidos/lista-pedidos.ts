@@ -5,6 +5,19 @@ import { AvisoSonoro } from '../../../core/services/aviso-sonoro';
 import { Auth } from '../../../core/services/auth';
 import { ConfirmarAccion } from '../../../shared/confirmar-accion/confirmar-accion';
 import { Recibo } from '../../../core/services/recibo';
+import {
+  LucideBell,
+  LucideBellRing,
+  LucidePhone,
+  LucideMapPin,
+  LucideReceipt,
+  LucideCheck,
+  LucidePrinter,
+  LucideBanknote,
+  LucideCircleCheck,
+  LucideRotateCcw,
+  LucideX
+} from '@lucide/angular';
 
 const ETIQUETAS: { [key: string]: string } = {
   pendiente_verificacion: 'Pendiente',
@@ -26,7 +39,21 @@ const FINALES = ['entregado', 'rechazado'];
 
 @Component({
   selector: 'app-lista-pedidos',
-  imports: [CommonModule, ConfirmarAccion],
+  imports: [
+    CommonModule,
+    ConfirmarAccion,
+    LucideBell,
+    LucideBellRing,
+    LucidePhone,
+    LucideMapPin,
+    LucideReceipt,
+    LucideCheck,
+    LucidePrinter,
+    LucideBanknote,
+    LucideCircleCheck,
+    LucideRotateCcw,
+    LucideX
+  ],
   templateUrl: './lista-pedidos.html',
   styleUrl: './lista-pedidos.css',
 })

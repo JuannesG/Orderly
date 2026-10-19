@@ -5,18 +5,32 @@ import { filter } from 'rxjs/operators';
 import { Carrito } from '../../services/carrito';
 import { Menu } from '../../services/menu';
 import { Pedido as PedidoService } from '../../services/pedido';
+import {
+  LucideUtensils,
+  LucideClipboardList,
+  LucideBike,
+  LucideMessageCircle,
+  LucideShoppingCart
+} from '@lucide/angular';
 
 @Component({
   selector: 'app-cliente-layout',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [
+    RouterOutlet,
+    RouterLink,
+    RouterLinkActive,
+    LucideUtensils,
+    LucideClipboardList,
+    LucideBike,
+    LucideMessageCircle,
+    LucideShoppingCart
+  ],
   templateUrl: './cliente-layout.html',
   styleUrl: './cliente-layout.css',
 })
 export class ClienteLayout implements OnInit, OnDestroy {
   whatsappRestaurante = '';
 
-  // Token del pedido que se muestra en "En curso". Es null cuando no hay pedido
-  // activo, o cuando el pedido fue rechazado o entregado.
   enCursoToken: string | null = null;
 
   private intervalId: any;
@@ -40,8 +54,6 @@ export class ClienteLayout implements OnInit, OnDestroy {
       },
     });
 
-    // Revisa el pedido al abrir la tienda, cada vez que el cliente cambia de pantalla
-    // (por ejemplo, justo después de hacer un pedido) y cada 6 segundos.
     this.revisarPedidoEnCurso();
     this.navSub = this.router.events
       .pipe(filter((evento) => evento instanceof NavigationEnd))
@@ -70,15 +82,12 @@ export class ClienteLayout implements OnInit, OnDestroy {
           localStorage.removeItem('pedido_activo_token');
           this.actualizarEnCurso(null);
         } else if (pedido.estado === 'rechazado') {
-          // No se borra el token: si el restaurante reactiva el pedido, "En curso" vuelve.
           this.actualizarEnCurso(null);
         } else {
           this.actualizarEnCurso(token);
         }
       },
       error: (err) => {
-        // Si el pedido ya no existe, se limpia. Ante otros errores (sin conexión,
-        // servidor dormido) no se cambia nada.
         if (err.status === 404) {
           localStorage.removeItem('pedido_activo_token');
           this.actualizarEnCurso(null);

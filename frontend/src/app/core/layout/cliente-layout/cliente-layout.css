@@ -1,5 +1,5 @@
 .cliente-contenido {
-  padding-bottom: 64px;
+  padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px));
 }
 
 .nav-inferior {
@@ -7,24 +7,25 @@
   bottom: 0;
   left: 0;
   right: 0;
-  height: 64px;
+  min-height: 64px;
   box-sizing: border-box;
-  background-color: #FFFFFF;
-  border-top: 1px solid #F0F0F0;
+  background-color: var(--blanco);
+  border-top: 1px solid var(--borde);
   display: flex;
   justify-content: space-around;
   align-items: center;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
   box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.05);
   z-index: 20;
-  font-family: 'Nunito', sans-serif;
+  font-family: var(--fuente-texto);
 }
 
 .nav-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
-  color: #9B9B9B;
+  gap: 3px;
+  color: var(--gris);
   font-size: 0.68rem;
   font-weight: 700;
   text-decoration: none;
@@ -33,18 +34,18 @@
 }
 
 .nav-item.activo {
-  color: #E85A2A;
+  color: var(--naranja);
 }
 
 .nav-icono {
-  font-size: 1.3rem;
+  display: flex;
 }
 
 .nav-badge {
   position: absolute;
   top: -2px;
   right: 2px;
-  background-color: #E85A2A;
+  background-color: var(--naranja);
   color: #FFFFFF;
   font-size: 0.6rem;
   min-width: 15px;
@@ -55,7 +56,6 @@
   justify-content: center;
 }
 
-/* Las barras fijas de Carrito y Checkout suben para no quedar debajo del menú */
 :host ::ng-deep .barra-inferior {
   bottom: 64px;
 }

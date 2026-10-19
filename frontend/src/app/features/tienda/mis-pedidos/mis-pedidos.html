@@ -12,7 +12,7 @@
 
   @if (!cargando && pedidos.length === 0) {
     <div class="vacio">
-      <span>🧾</span>
+      <span class="vacio-icono"><svg lucideClipboardList [size]="40"></svg></span>
       <p>Todavía no has hecho pedidos</p>
     </div>
   }
@@ -29,7 +29,10 @@
           <p class="fecha">{{ pedido.creado_en | date:'d MMM, h:mm a' }}</p>
           <div class="fila-bottom">
             <span class="items">{{ pedido.detalles.length }} producto(s)</span>
-            <span class="total">${{ formatPrecio(pedido.total) }}</span>
+            <span class="derecha">
+              <span class="total">${{ formatPrecio(pedido.total) }}</span>
+              <svg lucideChevronRight [size]="18" class="flecha"></svg>
+            </span>
           </div>
         </a>
       }

@@ -1,10 +1,28 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import {
+  LucidePlus,
+  LucideX,
+  LucidePhone,
+  LucideClock,
+  LucideUsers,
+  LucideTrash2
+} from '@lucide/angular';
 import { ReservaService, Reserva } from '../../../core/services/reserva';
+import { ConfirmarAccion } from '../../../shared/confirmar-accion/confirmar-accion';
 
 @Component({
   selector: 'app-lista-reservas',
-  imports: [FormsModule],
+  imports: [
+    FormsModule,
+    ConfirmarAccion,
+    LucidePlus,
+    LucideX,
+    LucidePhone,
+    LucideClock,
+    LucideUsers,
+    LucideTrash2
+  ],
   templateUrl: './lista-reservas.html',
   styleUrl: './lista-reservas.css',
 })
@@ -13,6 +31,8 @@ export class ListaReservas implements OnInit {
   cargando = true;
   mostrarFormulario = false;
   soloHoy = true;
+  errorForm = '';
+  reservaPorEliminar: Reserva | null = null;
 
   nombreForm = '';
   telefonoForm = '';
@@ -54,6 +74,7 @@ export class ListaReservas implements OnInit {
 
   toggleFormulario() {
     this.mostrarFormulario = !this.mostrarFormulario;
+    this.errorForm = '';
     if (!this.mostrarFormulario) {
       this.limpiarFormulario();
     }
@@ -67,8 +88,10 @@ export class ListaReservas implements OnInit {
       !this.horaForm ||
       !this.personasForm
     ) {
+      this.errorForm = 'Completa nombre, teléfono, fecha, hora y número de personas.';
       return;
     }
+    this.errorForm = '';
 
     const restauranteId = localStorage.getItem('restaurante_id');
     if (!restauranteId) {
@@ -99,14 +122,13 @@ export class ListaReservas implements OnInit {
     });
   }
 
-  eliminarReserva(id: string | undefined) {
-    if (!id) return;
-    const confirmado = confirm('¿Eliminar esta reserva?');
-    if (confirmado) {
-      this.reservaService.eliminar(id).subscribe(() => {
-        this.cargarReservas();
-      });
-    }
+  confirmarEliminar() {
+    const reserva = this.reservaPorEliminar;
+    this.reservaPorEliminar = null;
+    if (!reserva?.id) return;
+    this.reservaService.eliminar(reserva.id).subscribe(() => {
+      this.cargarReservas();
+    });
   }
 
   limpiarFormulario() {

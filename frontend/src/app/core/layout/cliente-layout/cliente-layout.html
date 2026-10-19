@@ -5,27 +5,27 @@
 
   <nav class="nav-inferior">
     <a routerLink="/tienda/menu" routerLinkActive="activo" class="nav-item">
-      <span class="nav-icono">🍔</span>
+      <span class="nav-icono"><svg lucideUtensils [size]="22"></svg></span>
       <span>Menú</span>
     </a>
     <a routerLink="/tienda/pedidos" routerLinkActive="activo" class="nav-item">
-      <span class="nav-icono">🧾</span>
+      <span class="nav-icono"><svg lucideClipboardList [size]="22"></svg></span>
       <span>Pedidos</span>
     </a>
     @if (enCursoToken) {
       <a [routerLink]="['/tienda/seguimiento', enCursoToken]" class="nav-item">
-        <span class="nav-icono">🚴</span>
+        <span class="nav-icono"><svg lucideBike [size]="22"></svg></span>
         <span>En curso</span>
       </a>
     }
     @if (whatsappRestaurante) {
       <a [href]="whatsappUrl" target="_blank" rel="noopener" class="nav-item">
-        <span class="nav-icono">💬</span>
+        <span class="nav-icono"><svg lucideMessageCircle [size]="22"></svg></span>
         <span>Contacto</span>
       </a>
     }
     <a routerLink="/tienda/carrito" routerLinkActive="activo" class="nav-item">
-      <span class="nav-icono">🛒</span>
+      <span class="nav-icono"><svg lucideShoppingCart [size]="22"></svg></span>
       <span>Carrito</span>
       @if (carrito.totalItems() > 0) {
         <span class="nav-badge">{{ carrito.totalItems() }}</span>

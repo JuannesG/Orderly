@@ -1,12 +1,16 @@
 <div class="carrito-page">
   <header class="top-bar-simple">
+    <button class="btn-atras" aria-label="Seguir comprando" (click)="seguirComprando()">
+      <svg lucideArrowLeft [size]="22"></svg>
+    </button>
     <h1>Tu pedido</h1>
   </header>
 
   @if (carrito.totalItems() === 0) {
     <div class="vacio-wrap">
-      <span class="vacio-icono">🛒</span>
+      <span class="vacio-icono"><svg lucideShoppingCart [size]="40"></svg></span>
       <p>Tu carrito está vacío</p>
+      <button class="btn-primario" (click)="seguirComprando()">Ver el menú</button>
     </div>
   } @else {
     <div class="items-col">
@@ -21,9 +25,9 @@
               <p class="precio-unit">${{ formatPrecio(item.producto.precio) }}</p>
             </div>
             <div class="mini-stepper">
-              <button (click)="quitar(item)">−</button>
+              <button aria-label="Quitar uno" (click)="quitar(item)"><svg lucideMinus [size]="14"></svg></button>
               <span>{{ item.cantidad }}</span>
-              <button (click)="agregar(item)">+</button>
+              <button aria-label="Agregar uno" (click)="agregar(item)"><svg lucidePlus [size]="14"></svg></button>
             </div>
           </div>
 
@@ -37,7 +41,13 @@
 
           @if (permiteAdicionales(item)) {
             <button class="link-adicionales" (click)="toggleExpandido(item.producto.id)">
-              {{ itemExpandido === item.producto.id ? 'Ocultar adicionales' : '+ Adicionales' }}
+              @if (itemExpandido === item.producto.id) {
+                <svg lucideMinus [size]="14"></svg>
+                Ocultar adicionales
+              } @else {
+                <svg lucidePlus [size]="14"></svg>
+                Adicionales
+              }
             </button>
 
             @if (itemExpandido === item.producto.id) {

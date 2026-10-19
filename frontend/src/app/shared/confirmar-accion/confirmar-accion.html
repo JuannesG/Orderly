@@ -6,7 +6,7 @@
     }
     <div class="acciones">
       <button class="btn-cancelar" (click)="cancelar.emit()">Cancelar</button>
-      <button class="btn-confirmar" (click)="confirmar.emit()">{{ textoConfirmar() }}</button>
+      <button class="btn-confirmar" [class.peligro]="peligro()" (click)="confirmar.emit()">{{ textoConfirmar() }}</button>
     </div>
   </div>
 </div>

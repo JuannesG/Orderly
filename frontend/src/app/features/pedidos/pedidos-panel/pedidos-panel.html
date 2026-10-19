@@ -1,8 +1,14 @@
 <div class="panel-pedidos">
   @if (verDomicilios && verLocal) {
     <div class="pestanas">
-      <button [class.activo]="pestana === 'domicilios'" (click)="pestana = 'domicilios'">Domicilios</button>
-      <button [class.activo]="pestana === 'local'" (click)="pestana = 'local'">En el local</button>
+      <button [class.activo]="pestana === 'domicilios'" (click)="pestana = 'domicilios'">
+        <svg lucideBike [size]="20"></svg>
+        Domicilios
+      </button>
+      <button [class.activo]="pestana === 'local'" (click)="pestana = 'local'">
+        <svg lucideStore [size]="20"></svg>
+        En el local
+      </button>
     </div>
   }
 

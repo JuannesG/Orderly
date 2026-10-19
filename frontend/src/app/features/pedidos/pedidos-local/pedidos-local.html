@@ -1,5 +1,8 @@
 <div class="local-page">
-  <h1>En el local</h1>
+  <header class="cabecera">
+    <h1>En el local</h1>
+    <span class="subrayado"></span>
+  </header>
 
   <div class="filtros-chips">
     <button [class.activo]="filtro === 'activos'" (click)="cambiarFiltro('activos')">Activos</button>
@@ -8,90 +11,119 @@
   </div>
 
   <div class="opciones">
-    <button class="chip-opcion" [class.activo]="soloMios" (click)="alternarMios()">Solo los míos</button>
-    @if (esDueno) {
-    <button class="chip-opcion" [class.activo]="aviso.activo && aviso.listo" (click)="alternarSonido()">
-      {{ aviso.texto }}
+    <button class="chip-opcion" [class.activo]="soloMios" (click)="alternarMios()">
+      <svg lucideUser [size]="16"></svg>
+      Solo los míos
     </button>
+    @if (esDueno) {
+      <button class="chip-opcion" [class.activo]="aviso.activo && aviso.listo" (click)="alternarSonido()">
+        @if (aviso.activo && aviso.listo) {
+          <svg lucideBellRing [size]="16"></svg>
+        } @else {
+          <svg lucideBell [size]="16"></svg>
+        }
+        {{ aviso.texto }}
+      </button>
     }
   </div>
 
   @if (error) {
-  <p class="mensaje error">{{ error }}</p>
+    <p class="mensaje error">{{ error }}</p>
   }
 
   @if (cargando) {
-  <p class="mensaje">Cargando pedidos...</p>
+    <p class="mensaje">Cargando pedidos...</p>
   }
 
   @if (!cargando && pedidos.length === 0) {
-  <p class="mensaje">No hay pedidos para mostrar.</p>
+    <p class="mensaje">No hay pedidos para mostrar.</p>
   }
 
   <div class="ped-lista">
     @for (pedido of pedidos; track pedido.token_seguimiento) {
-    <div class="ped-card">
-      <div class="ped-head">
-        <div>
-          <h3>{{ destino(pedido) }}</h3>
-          @if (nombreMesera(pedido)) {
-          <p class="mesera">Tomó el pedido: {{ nombreMesera(pedido) }}</p>
+      <div class="ped-card">
+        <div class="ped-head">
+          <div class="ped-titulo">
+            <span class="zona-icono">
+              @if (pedido.zona === 'salon') {
+                <svg lucideUtensils [size]="20"></svg>
+              } @else if (pedido.zona === 'terraza') {
+                <svg lucideLeaf [size]="20"></svg>
+              } @else {
+                <svg lucideShoppingBag [size]="20"></svg>
+              }
+            </span>
+            <div>
+              <h3>{{ destino(pedido) }}</h3>
+              @if (nombreMesera(pedido)) {
+                <p class="mesera">
+                  <svg lucideUser [size]="13"></svg>
+                  Tomó el pedido: {{ nombreMesera(pedido) }}
+                </p>
+              }
+            </div>
+          </div>
+          <div class="head-der">
+            <span class="badge" [class]="pedido.estado">{{ etiqueta(pedido.estado) }}</span>
+            <span class="hora">{{ pedido.creado_en | date:'h:mm a' }}</span>
+          </div>
+        </div>
+
+        <div class="items">
+          @for (item of pedido.detalles; track $index) {
+            <div class="item-linea producto">
+              <span>
+                @if (item.categoria_nombre) {
+                  <small class="categoria">{{ item.categoria_nombre }}</small>
+                }
+                {{ item.cantidad }}x {{ item.producto_nombre }}
+              </span>
+            </div>
+            @for (adicion of item.adiciones; track $index) {
+              <div class="item-linea adicion">
+                <span>+ {{ adicion.nombre }}</span>
+              </div>
+            }
+          }
+          @if (pedido.observaciones) {
+            <p class="obs">"{{ pedido.observaciones }}"</p>
           }
         </div>
-        <div class="head-der">
-          <span class="badge" [class]="pedido.estado">{{ etiqueta(pedido.estado) }}</span>
-          <span class="hora">{{ pedido.creado_en | date:'h:mm a' }}</span>
-        </div>
-      </div>
 
-      <div class="items">
-        @for (item of pedido.detalles; track $index) {
-        <div class="item-linea producto">
-          <span>
-            @if (item.categoria_nombre) {
-            <small class="categoria">{{ item.categoria_nombre }}</small>
+        <div class="pago-row">
+          <strong class="total">${{ formatPrecio(pedido.total) }}</strong>
+        </div>
+
+        @if (pedido.estado !== 'entregado') {
+          @if (esDueno && pedido.estado !== 'aceptado') {
+            <button class="btn-reimprimir" (click)="reimprimir(pedido)">
+              <svg lucidePrinter [size]="18"></svg>
+              Reimprimir recibo
+            </button>
+          }
+          <div class="botones">
+            @if (esDueno && pedido.estado === 'aceptado') {
+              <button class="btn-imprimir" [disabled]="ocupado === pedido.token_seguimiento" (click)="imprimir(pedido)">
+                <svg lucidePrinter [size]="18"></svg>
+                Imprimir recibo
+              </button>
             }
-            {{ item.cantidad }}x {{ item.producto_nombre }}
-          </span>
-        </div>
-        @for (adicion of item.adiciones; track $index) {
-        <div class="item-linea adicion">
-          <span>+ {{ adicion.nombre }}</span>
-        </div>
-        }
-        }
-        @if (pedido.observaciones) {
-        <p class="obs">"{{ pedido.observaciones }}"</p>
+            <button class="btn-entregado" [disabled]="ocupado === pedido.token_seguimiento" (click)="pedidoPorEntregar = pedido">
+              <svg lucideCheck [size]="18"></svg>
+              Entregado
+            </button>
+          </div>
         }
       </div>
-
-      <div class="pago-row">
-        <strong class="total">${{ formatPrecio(pedido.total) }}</strong>
-      </div>
-
-      @if (pedido.estado !== 'entregado') {
-      @if (esDueno && pedido.estado !== 'aceptado') {
-      <button class="btn-reimprimir" (click)="reimprimir(pedido)">Reimprimir recibo</button>
-      }
-      <div class="botones">
-        @if (esDueno && pedido.estado === 'aceptado') {
-        <button class="btn-imprimir" [disabled]="ocupado === pedido.token_seguimiento" (click)="imprimir(pedido)">
-          Imprimir recibo
-        </button>
-        }
-        <button class="btn-entregado" [disabled]="ocupado === pedido.token_seguimiento"
-          (click)="pedidoPorEntregar = pedido">
-          Entregado
-        </button>
-      </div>
-      }
-    </div>
     }
   </div>
 
   @if (pedidoPorEntregar) {
-  <app-confirmar-accion titulo="¿Marcar como entregado?"
-    [mensaje]="destino(pedidoPorEntregar) + ' · Ya no se podrá cambiar.'" textoConfirmar="Sí, entregado"
-    (confirmar)="confirmarEntrega()" (cancelar)="pedidoPorEntregar = null" />
+    <app-confirmar-accion
+      titulo="¿Marcar como entregado?"
+      [mensaje]="destino(pedidoPorEntregar) + ' · Ya no se podrá cambiar.'"
+      textoConfirmar="Sí, entregado"
+      (confirmar)="confirmarEntrega()"
+      (cancelar)="pedidoPorEntregar = null" />
   }
 </div>

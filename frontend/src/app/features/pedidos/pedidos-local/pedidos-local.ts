@@ -5,6 +5,16 @@ import { AvisoSonoro } from '../../../core/services/aviso-sonoro';
 import { Auth } from '../../../core/services/auth';
 import { ConfirmarAccion } from '../../../shared/confirmar-accion/confirmar-accion';
 import { Recibo } from '../../../core/services/recibo';
+import {
+  LucideBell,
+  LucideBellRing,
+  LucideUser,
+  LucidePrinter,
+  LucideCheck,
+  LucideUtensils,
+  LucideLeaf,
+  LucideShoppingBag
+} from '@lucide/angular';
 
 const ETIQUETAS: { [key: string]: string } = {
   aceptado: 'Nuevo · sin imprimir',
@@ -22,7 +32,18 @@ type Filtro = 'activos' | 'hoy' | 'todos';
 
 @Component({
   selector: 'app-pedidos-local',
-  imports: [CommonModule, ConfirmarAccion],
+  imports: [
+    CommonModule,
+    ConfirmarAccion,
+    LucideBell,
+    LucideBellRing,
+    LucideUser,
+    LucidePrinter,
+    LucideCheck,
+    LucideUtensils,
+    LucideLeaf,
+    LucideShoppingBag
+  ],
   templateUrl: './pedidos-local.html',
   styleUrl: './pedidos-local.css',
 })

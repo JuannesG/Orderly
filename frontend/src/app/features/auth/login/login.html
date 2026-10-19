@@ -7,30 +7,58 @@
   </div>
 
   <div class="panel-form">
-    <span class="decoracion d1">🧑‍🍳</span>
-    <span class="decoracion d2">🍔</span>
-    <span class="decoracion d3">🍟</span>
-    <span class="decoracion d4">🔥</span>
+    <span class="decoracion d1"><svg lucideChefHat [size]="64"></svg></span>
+    <span class="decoracion d2"><svg lucideBeef [size]="56"></svg></span>
+    <span class="decoracion d3"><svg lucideUtensilsCrossed [size]="52"></svg></span>
+    <span class="decoracion d4"><svg lucideFlame [size]="44"></svg></span>
 
     <div class="form-contenedor">
-      <h1><span class="icono-titulo">👨‍🍳</span> Iniciar sesión</h1>
+      <div class="icono-titulo"><svg lucideChefHat [size]="26"></svg></div>
+      <h1>Iniciar sesión</h1>
       <p class="subtitulo">Accede a tu cuenta para continuar</p>
 
       <form (ngSubmit)="onSubmit()">
         <div class="field">
           <label for="username">Usuario</label>
-          <input id="username" type="text" name="username" [(ngModel)]="username" required />
+          <div class="input-icono">
+            <svg lucideUser [size]="18"></svg>
+            <input id="username" type="text" name="username" autocomplete="username"
+              [(ngModel)]="username" required />
+          </div>
         </div>
 
         <div class="field">
           <label for="password">Contraseña</label>
-          <input id="password" type="password" name="password" [(ngModel)]="password" required />
+          <div class="input-icono">
+            <svg lucideLock [size]="18"></svg>
+            <input id="password" name="password" autocomplete="current-password"
+              [type]="mostrarClave ? 'text' : 'password'" [(ngModel)]="password" required />
+            <button type="button" class="ver-clave"
+              [attr.aria-label]="mostrarClave ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+              (click)="mostrarClave = !mostrarClave">
+              @if (mostrarClave) {
+                <svg lucideEyeOff [size]="18"></svg>
+              } @else {
+                <svg lucideEye [size]="18"></svg>
+              }
+            </button>
+          </div>
         </div>
 
-        <button type="submit">Ingresar</button>
-
         @if (error) {
-        <p class="error-message">{{ error }}</p>
+          <p class="error-message">
+            <svg lucideCircleAlert [size]="18"></svg>
+            <span>{{ error }}</span>
+          </p>
+        }
+
+        <button type="submit" class="btn-ingresar" [disabled]="cargando">
+          <svg lucideLogIn [size]="18"></svg>
+          {{ cargando ? 'Ingresando...' : 'Ingresar' }}
+        </button>
+
+        @if (cargando) {
+          <p class="espera">Si el servidor estaba dormido, puede tardar hasta un minuto.</p>
         }
       </form>
     </div>
