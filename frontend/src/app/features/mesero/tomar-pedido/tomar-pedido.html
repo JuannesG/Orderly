@@ -1,159 +1,229 @@
 <div class="tomar-pedido">
   @if (pedidoEnviado) {
-  <div class="exito">
-    <div class="exito-icono">✔</div>
-    <h1>Pedido enviado</h1>
-    <p class="exito-destino">{{ pedidoEnviado.destino }}</p>
-    <p class="exito-total">Total ${{ formatPrecio(pedidoEnviado.total) }}</p>
-    <button class="btn-principal" (click)="nuevoPedido()">Tomar otro pedido</button>
-  </div>
+    <div class="exito">
+      <div class="exito-icono"><svg lucideCircleCheck [size]="40"></svg></div>
+      <h1>Pedido enviado</h1>
+      <p class="exito-destino">{{ pedidoEnviado.destino }}</p>
+      <p class="exito-total">Total ${{ formatPrecio(pedidoEnviado.total) }}</p>
+      <button class="btn-principal" (click)="nuevoPedido()">Tomar otro pedido</button>
+    </div>
+  } @else if (vista === 'resumen') {
+    <header class="cabecera con-volver">
+      <button class="btn-volver" aria-label="Volver al menú" (click)="volverAlMenu()">
+        <svg lucideArrowLeft [size]="22"></svg>
+      </button>
+      <div>
+        <h1>Resumen del pedido</h1>
+        <p class="subtitulo">{{ destino }}</p>
+      </div>
+    </header>
+
+    @if (carrito.lineasActuales.length === 0) {
+      <p class="mensaje">Ya no hay productos en el pedido.</p>
+      <button class="btn-secundario" (click)="volverAlMenu()">Volver al menú</button>
+    } @else {
+      <div class="resumen">
+        @for (linea of carrito.lineasActuales; track linea.id) {
+          <div class="linea">
+            <div class="linea-info">
+              @if (nombreCategoria(linea.producto)) {
+                <p class="linea-cat">{{ nombreCategoria(linea.producto) }}</p>
+              }
+              <p class="linea-nombre">{{ linea.producto.nombre }}</p>
+              @if (linea.adicionales.length > 0) {
+                <p class="linea-adic">+ {{ nombresAdicionales(linea) }}</p>
+              }
+              <p class="linea-precio">${{ formatPrecio(carrito.precioLinea(linea)) }}</p>
+            </div>
+            <div class="mini-stepper">
+              <button aria-label="Quitar uno" (click)="carrito.cambiarCantidad(linea.id, -1)">
+                <svg lucideMinus [size]="16"></svg>
+              </button>
+              <span>{{ linea.cantidad }}</span>
+              <button aria-label="Agregar uno" (click)="carrito.cambiarCantidad(linea.id, 1)">
+                <svg lucidePlus [size]="16"></svg>
+              </button>
+            </div>
+          </div>
+        }
+        <div class="total-fila">
+          <span>Total</span>
+          <strong>${{ formatPrecio(carrito.subtotal()) }}</strong>
+        </div>
+      </div>
+
+      <textarea class="input-nota observaciones" rows="2" maxlength="300" [(ngModel)]="observaciones"
+        placeholder="Observaciones (ej: sin cebolla)"></textarea>
+
+      @if (error) {
+        <p class="mensaje error">{{ error }}</p>
+      }
+
+      <button class="btn-principal" [disabled]="!puedeEnviar" (click)="enviar()">
+        {{ enviando ? 'Enviando...' : 'Enviar pedido' }}
+      </button>
+    }
   } @else {
-  <h1>Tomar pedido</h1>
+    <header class="cabecera">
+      <h1>Tomar pedido</h1>
+      <span class="subrayado"></span>
+      <p class="subtitulo">Selecciona la ubicación, la mesa y los productos para continuar.</p>
+    </header>
 
-  <p class="paso">1. ¿Dónde es el pedido?</p>
-  <div class="zonas">
-    <button [class.activo]="zona === 'salon'" (click)="elegirZona('salon')">🍽️ Salón</button>
-    <button [class.activo]="zona === 'terraza'" (click)="elegirZona('terraza')">🌿 Terraza</button>
-    <button [class.activo]="zona === 'para_llevar'" (click)="elegirZona('para_llevar')">🥡 Para llevar</button>
-  </div>
+    @if (!ubicacionConfirmada) {
+      <section class="bloque">
+        <p class="paso"><span class="num">1</span> ¿Dónde es el pedido?</p>
+        <div class="zonas">
+          <button [class.activo]="zona === 'salon'" (click)="elegirZona('salon')">
+            <svg lucideUtensils [size]="24"></svg>
+            <span>Salón</span>
+            @if (zona === 'salon') { <svg lucideCheck [size]="18" class="marca"></svg> }
+          </button>
+          <button [class.activo]="zona === 'terraza'" (click)="elegirZona('terraza')">
+            <svg lucideLeaf [size]="24"></svg>
+            <span>Terraza</span>
+            @if (zona === 'terraza') { <svg lucideCheck [size]="18" class="marca"></svg> }
+          </button>
+          <button [class.activo]="zona === 'para_llevar'" (click)="elegirZona('para_llevar')">
+            <svg lucideShoppingBag [size]="24"></svg>
+            <span>Para llevar</span>
+            @if (zona === 'para_llevar') { <svg lucideCheck [size]="18" class="marca"></svg> }
+          </button>
+        </div>
+      </section>
 
-  @if (zona === 'salon' || zona === 'terraza') {
-  <p class="paso">2. Elige la mesa</p>
-  <div class="mesas">
-    @for (m of mesas; track m) {
-    <button [class.activo]="mesa === m" (click)="elegirMesa(m)">{{ m }}</button>
-    }
-  </div>
-  }
+      @if (zona === 'salon' || zona === 'terraza') {
+        <section class="bloque">
+          <p class="paso"><span class="num">2</span> Elige la mesa</p>
+          <div class="mesas">
+            @for (m of mesas; track m) {
+              <button [class.activo]="mesa === m" (click)="elegirMesa(m)">{{ m }}</button>
+            }
+          </div>
+        </section>
+      }
 
-  @if (zona === 'para_llevar') {
-  <p class="paso">2. ¿Para quién es?</p>
-  <input type="text" class="input-nota" maxlength="100" [(ngModel)]="nota" placeholder="Ej: Carlos, moto roja">
-  <p class="ayuda">Obligatorio: escribe un nombre o referencia para entregarlo.</p>
-  }
+      @if (zona === 'para_llevar') {
+        <section class="bloque">
+          <p class="paso"><span class="num">2</span> ¿Para quién es?</p>
+          <input type="text" class="input-nota" maxlength="100" [(ngModel)]="nota"
+            placeholder="Ej: Carlos, moto roja">
+          <p class="ayuda">Obligatorio: escribe un nombre o referencia para entregarlo.</p>
+          <button class="btn-principal" [disabled]="nota.trim().length === 0" (click)="confirmarParaLlevar()">
+            Continuar
+          </button>
+        </section>
+      }
+    } @else {
+      <div class="ubicacion">
+        <span class="ubicacion-check"><svg lucideCheck [size]="16"></svg></span>
+        <span class="ubicacion-texto">{{ destino }}</span>
+        <button class="ubicacion-editar" aria-label="Cambiar ubicación" (click)="editarUbicacion()">
+          <svg lucidePencil [size]="18"></svg>
+        </button>
+      </div>
 
-  @if (listoParaPedir) {
-  <div class="listo">✔ {{ destino }}</div>
+      <section class="bloque">
+        <p class="paso"><span class="num">3</span> Elige los productos</p>
 
-  <p class="paso">3. Elige los productos</p>
+        <label class="buscador">
+          <svg lucideSearch [size]="18"></svg>
+          <input type="text" [(ngModel)]="busqueda" (ngModelChange)="onBuscar()" placeholder="Buscar producto">
+        </label>
 
-  <input type="text" class="input-nota" [(ngModel)]="busqueda" (ngModelChange)="onBuscar()"
-    placeholder="Buscar producto">
-
-  <div class="filtros-scroll">
-    <button [class.activo]="filtroActivo === null" (click)="setFiltro(null)">Todo</button>
-    @for (categoria of categorias; track categoria.id) {
-    <button [class.activo]="filtroActivo === categoria.id" (click)="setFiltro(categoria.id ?? null)">
-      {{ categoria.nombre }}
-    </button>
-    }
-  </div>
-
-  @if (cargandoMenu) {
-  <p class="mensaje">Cargando menú...</p>
-  }
-  @if (errorMenu) {
-  <p class="mensaje error">{{ errorMenu }}</p>
-  }
-
-  @for (categoria of categoriasVisibles; track categoria.id) {
-  <section class="categoria-sec">
-    <h2>{{ categoria.nombre }}</h2>
-    <div class="productos-col">
-      @for (producto of categoria.productos; track producto.id) {
-      <div class="producto-row" [class.agotado]="!producto.disponible" (click)="abrirDetalle(producto, categoria)">
-        <div class="producto-texto">
-          <h3>{{ producto.nombre }}</h3>
-          @if (producto.disponible) {
-          <p class="precio">${{ formatPrecio(producto.precio) }}</p>
-          } @else {
-          <p class="precio">Agotado</p>
+        <div class="filtros-scroll">
+          <button [class.activo]="filtroActivo === null" (click)="setFiltro(null)">Todo</button>
+          @for (categoria of categorias; track categoria.id) {
+            <button [class.activo]="filtroActivo === categoria.id" (click)="setFiltro(categoria.id ?? null)">
+              {{ categoria.nombre }}
+            </button>
           }
         </div>
-        @if (producto.disponible) {
-        <button class="btn-mas" (click)="$event.stopPropagation(); agregarRapido(producto)">+</button>
-        }
-      </div>
-      }
-    </div>
-  </section>
-  }
 
-  <p class="paso">4. Resumen del pedido</p>
-  @if (carrito.lineasActuales.length === 0) {
-  <p class="mensaje">Todavía no hay productos. Toca el + de un producto para agregarlo.</p>
-  } @else {
-  <div class="resumen">
-    @for (linea of carrito.lineasActuales; track linea.id) {
-    <div class="linea">
-      <div class="linea-info">
-        @if (nombreCategoria(linea.producto)) {
-        <p class="linea-cat">{{ nombreCategoria(linea.producto) }}</p>
+        @if (cargandoMenu) {
+          <p class="mensaje">Cargando menú...</p>
         }
-        <p class="linea-nombre">{{ linea.producto.nombre }}</p>
-        @if (linea.adicionales.length > 0) {
-        <p class="linea-adic">+ {{ nombresAdicionales(linea) }}</p>
+        @if (errorMenu) {
+          <p class="mensaje error">{{ errorMenu }}</p>
         }
-        <p class="linea-precio">${{ formatPrecio(carrito.precioLinea(linea)) }}</p>
+
+        @for (categoria of categoriasVisibles; track categoria.id) {
+          <section class="categoria-sec">
+            <h2>{{ categoria.nombre }}</h2>
+            <div class="productos-col">
+              @for (producto of categoria.productos; track producto.id) {
+                <div class="producto-row" [class.agotado]="!producto.disponible"
+                  (click)="abrirDetalle(producto, categoria)">
+                  @if (producto.imagen_url) {
+                    <img class="producto-img" [src]="producto.imagen_url" alt="">
+                  }
+                  <div class="producto-texto">
+                    <h3>{{ producto.nombre }}</h3>
+                    @if (producto.disponible) {
+                      <p class="precio">${{ formatPrecio(producto.precio) }}</p>
+                    } @else {
+                      <p class="precio">Agotado</p>
+                    }
+                  </div>
+                  @if (cantidadEnPedido(producto) > 0) {
+                    <span class="en-pedido">×{{ cantidadEnPedido(producto) }}</span>
+                  }
+                  @if (producto.disponible) {
+                    <button class="btn-mas" aria-label="Agregar"
+                      (click)="$event.stopPropagation(); agregarRapido(producto)">
+                      <svg lucidePlus [size]="20"></svg>
+                    </button>
+                  }
+                </div>
+              }
+            </div>
+          </section>
+        }
+      </section>
+
+      <div class="barra-pedido">
+        <button class="btn-ver-pedido" [disabled]="unidadesEnPedido === 0" (click)="verPedido()">
+          <svg lucideShoppingCart [size]="20"></svg>
+          <span>Ver pedido ({{ unidadesEnPedido }})</span>
+          <svg lucideChevronRight [size]="20"></svg>
+        </button>
       </div>
-      <div class="mini-stepper">
-        <button (click)="carrito.cambiarCantidad(linea.id, -1)">−</button>
-        <span>{{ linea.cantidad }}</span>
-        <button (click)="carrito.cambiarCantidad(linea.id, 1)">+</button>
-      </div>
-    </div>
     }
-    <div class="total-fila">
-      <span>Total</span>
-      <strong>${{ formatPrecio(carrito.subtotal()) }}</strong>
-    </div>
-  </div>
-  }
-
-  <textarea class="input-nota observaciones" rows="2" maxlength="300" [(ngModel)]="observaciones"
-    placeholder="Observaciones (ej: sin cebolla)"></textarea>
-
-  @if (error) {
-  <p class="mensaje error">{{ error }}</p>
-  }
-
-  <button class="btn-principal" [disabled]="!puedeEnviar" (click)="enviar()">
-    {{ enviando ? 'Enviando...' : 'Enviar pedido' }}
-  </button>
-  }
   }
 
   @if (productoDetalle) {
-  <div class="overlay" (click)="cerrarDetalle()">
-    <div class="sheet" (click)="$event.stopPropagation()">
-      <button class="cerrar-x" (click)="cerrarDetalle()">✕</button>
-      <h2>{{ productoDetalle.nombre }}</h2>
-      <p class="sheet-precio">${{ formatPrecio(productoDetalle.precio) }}</p>
-
-      @if (adiciones.length > 0 && permiteAdicionales) {
-      <h3 class="sheet-sub">Adicionales</h3>
-      <div class="sheet-adiciones">
-        @for (a of adiciones; track a.id) {
-        <label class="opcion-adicional">
-          <input type="checkbox" [checked]="tieneAdicionDetalle(a.id)" (change)="toggleAdicionDetalle(a)">
-          <span>{{ a.nombre }}</span>
-          <span class="precio-mini">+${{ formatPrecio(a.precio) }}</span>
-        </label>
-        }
-      </div>
-      }
-
-      <div class="sheet-footer">
-        <div class="mini-stepper grande">
-          <button (click)="cambiarCantidadDetalle(-1)">−</button>
-          <span>{{ cantidadDetalle }}</span>
-          <button (click)="cambiarCantidadDetalle(1)">+</button>
-        </div>
-        <button class="btn-agregar-total" (click)="agregarDesdeDetalle()">
-          Agregar ${{ formatPrecio(totalDetalle) }}
+    <div class="overlay" (click)="cerrarDetalle()">
+      <div class="sheet" (click)="$event.stopPropagation()">
+        <button class="cerrar-x" aria-label="Cerrar" (click)="cerrarDetalle()">
+          <svg lucideX [size]="18"></svg>
         </button>
+        <h2>{{ productoDetalle.nombre }}</h2>
+        <p class="sheet-precio">${{ formatPrecio(productoDetalle.precio) }}</p>
+
+        @if (adiciones.length > 0 && permiteAdicionales) {
+          <h3 class="sheet-sub">Adicionales</h3>
+          <div class="sheet-adiciones">
+            @for (a of adiciones; track a.id) {
+              <label class="opcion-adicional">
+                <input type="checkbox" [checked]="tieneAdicionDetalle(a.id)" (change)="toggleAdicionDetalle(a)">
+                <span>{{ a.nombre }}</span>
+                <span class="precio-mini">+${{ formatPrecio(a.precio) }}</span>
+              </label>
+            }
+          </div>
+        }
+
+        <div class="sheet-footer">
+          <div class="mini-stepper grande">
+            <button aria-label="Menos" (click)="cambiarCantidadDetalle(-1)"><svg lucideMinus [size]="18"></svg></button>
+            <span>{{ cantidadDetalle }}</span>
+            <button aria-label="Más" (click)="cambiarCantidadDetalle(1)"><svg lucidePlus [size]="18"></svg></button>
+          </div>
+          <button class="btn-agregar-total" (click)="agregarDesdeDetalle()">
+            Agregar ${{ formatPrecio(totalDetalle) }}
+          </button>
+        </div>
       </div>
     </div>
-  </div>
   }
 </div>

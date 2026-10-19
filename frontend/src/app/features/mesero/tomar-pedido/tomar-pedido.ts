@@ -1,28 +1,61 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import {
+  LucideUtensils,
+  LucideLeaf,
+  LucideShoppingBag,
+  LucideCheck,
+  LucidePencil,
+  LucideSearch,
+  LucidePlus,
+  LucideMinus,
+  LucideShoppingCart,
+  LucideChevronRight,
+  LucideArrowLeft,
+  LucideX,
+  LucideCircleCheck
+} from '@lucide/angular';
 import { Menu, Categoria, Producto, Adicion } from '../../../core/services/menu';
 import { CarritoMesera, LineaMesera } from '../../../core/services/carrito-mesera';
 import { Pedido, PedidoLocalPayload } from '../../../core/services/pedido';
 
 type Zona = 'salon' | 'terraza' | 'para_llevar';
+type Vista = 'menu' | 'resumen';
 
 const CATEGORIAS_SIN_ADICIONALES = ['bebida'];
 
 @Component({
   selector: 'app-tomar-pedido',
-  imports: [FormsModule],
+  imports: [
+    FormsModule,
+    LucideUtensils,
+    LucideLeaf,
+    LucideShoppingBag,
+    LucideCheck,
+    LucidePencil,
+    LucideSearch,
+    LucidePlus,
+    LucideMinus,
+    LucideShoppingCart,
+    LucideChevronRight,
+    LucideArrowLeft,
+    LucideX,
+    LucideCircleCheck
+  ],
   templateUrl: './tomar-pedido.html',
   styleUrl: './tomar-pedido.css'
 })
 export class TomarPedido implements OnInit {
-  // Paso 1 y 2: dónde es el pedido
+  // Ubicación
   zona: Zona | null = null;
   mesa = '';
   nota = '';
+  ubicacionConfirmada = false;
 
   readonly mesasSalon = Array.from({ length: 17 }, (_, i) => String(i + 1));
   readonly mesasTerraza = Array.from({ length: 11 }, (_, i) => `A${i + 1}`);
 
+  // Menú
   categorias: Categoria[] = [];
   categoriasVisibles: Categoria[] = [];
   adiciones: Adicion[] = [];
@@ -31,11 +64,14 @@ export class TomarPedido implements OnInit {
   cargandoMenu = true;
   errorMenu = '';
 
+  // Ventana de detalle
   productoDetalle: Producto | null = null;
   permiteAdicionales = true;
   cantidadDetalle = 1;
   adicionesDetalle: Adicion[] = [];
 
+  // Resumen y envío
+  vista: Vista = 'menu';
   observaciones = '';
   enviando = false;
   error = '';
@@ -73,7 +109,7 @@ export class TomarPedido implements OnInit {
     });
   }
 
-  // ---------- Zona y mesa ----------
+  // ---------- Ubicación ----------
 
   get mesas(): string[] {
     if (this.zona === 'salon') return this.mesasSalon;
@@ -82,13 +118,26 @@ export class TomarPedido implements OnInit {
   }
 
   elegirZona(zona: Zona) {
+    if (zona === this.zona) return;
     this.zona = zona;
     this.mesa = '';
     this.nota = '';
+    this.ubicacionConfirmada = false;
   }
 
+  // Al tocar una mesa, el paso se da por completado y se recoge.
   elegirMesa(mesa: string) {
     this.mesa = mesa;
+    this.ubicacionConfirmada = true;
+  }
+
+  confirmarParaLlevar() {
+    if (this.nota.trim().length === 0) return;
+    this.ubicacionConfirmada = true;
+  }
+
+  editarUbicacion() {
+    this.ubicacionConfirmada = false;
   }
 
   get listoParaPedir(): boolean {
@@ -143,6 +192,16 @@ export class TomarPedido implements OnInit {
     this.carrito.agregar(producto, 1, []);
   }
 
+  cantidadEnPedido(producto: Producto): number {
+    return this.carrito.lineasActuales
+      .filter((l) => l.producto.id === producto.id)
+      .reduce((suma, l) => suma + l.cantidad, 0);
+  }
+
+  get unidadesEnPedido(): number {
+    return this.carrito.lineasActuales.reduce((suma, l) => suma + l.cantidad, 0);
+  }
+
   // ---------- Ventana de detalle ----------
 
   abrirDetalle(producto: Producto, categoria: Categoria) {
@@ -193,6 +252,18 @@ export class TomarPedido implements OnInit {
     this.cerrarDetalle();
   }
 
+  // ---------- Resumen y envío ----------
+
+  verPedido() {
+    if (this.unidadesEnPedido === 0) return;
+    this.error = '';
+    this.vista = 'resumen';
+  }
+
+  volverAlMenu() {
+    this.vista = 'menu';
+  }
+
   nombresAdicionales(linea: LineaMesera): string {
     return linea.adicionales.map((a) => a.nombre).join(', ');
   }
@@ -202,13 +273,8 @@ export class TomarPedido implements OnInit {
     return categoria?.nombre ?? '';
   }
 
-
   get puedeEnviar(): boolean {
-    return (
-      this.listoParaPedir &&
-      this.carrito.lineasActuales.length > 0 &&
-      !this.enviando
-    );
+    return this.listoParaPedir && this.carrito.lineasActuales.length > 0 && !this.enviando;
   }
 
   enviar() {
@@ -266,6 +332,8 @@ export class TomarPedido implements OnInit {
     this.zona = null;
     this.mesa = '';
     this.nota = '';
+    this.ubicacionConfirmada = false;
+    this.vista = 'menu';
     this.observaciones = '';
     this.error = '';
     this.busqueda = '';
