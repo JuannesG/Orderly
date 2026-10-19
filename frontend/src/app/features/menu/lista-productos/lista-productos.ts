@@ -1,7 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Menu, Categoria } from '../../../core/services/menu';
+import { Menu, Categoria, Producto } from '../../../core/services/menu';
 
 @Component({
   selector: 'app-lista-productos',
@@ -75,6 +75,20 @@ export class ListaProductos implements OnInit {
     this.menuService.eliminarProducto(id).subscribe({
       next: () => this.cargarMenu(),
       error: (err) => alert(this.mensajeError(err, 'No se pudo eliminar el producto.'))
+    });
+  }
+
+  cambiarDisponibilidad(producto: Producto) {
+    if (!producto.id) return;
+
+    const nuevoValor = !producto.disponible;
+
+    this.menuService.cambiarDisponibilidad(producto.id, nuevoValor).subscribe({
+      next: () => {
+        producto.disponible = nuevoValor;
+        this.cdr.detectChanges();
+      },
+      error: (err) => alert(this.mensajeError(err, 'No se pudo cambiar la disponibilidad.'))
     });
   }
 
