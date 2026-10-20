@@ -9,6 +9,8 @@ export interface Cliente {
   nombre: string;
   direccion: string;
   referencia?: string;
+  latitud?: number | null;
+  longitud?: number | null;
 }
 
 @Injectable({

@@ -60,6 +60,12 @@
         @if (pedido.cliente_referencia) {
         <span class="ref">Ref: {{ pedido.cliente_referencia }}</span>
         }
+        @if (pedido.cliente_latitud != null && pedido.cliente_longitud != null) {
+        <a class="ver-mapa" [href]="urlMapa(pedido)" target="_blank" rel="noopener">
+          <svg lucideMap [size]="16"></svg>
+          Ver en el mapa
+        </a>
+        }
       </div>
 
       <div class="items">

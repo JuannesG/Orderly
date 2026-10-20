@@ -398,3 +398,15 @@
     grid-template-columns: repeat(4, 1fr);
   }
 }
+
+.ver-mapa {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  align-self: flex-start;
+  margin: 4px 0 0 22px;
+  color: var(--naranja);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-decoration: none;
+}

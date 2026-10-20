@@ -7,6 +7,8 @@ class Cliente(models.Model):
     nombre = models.CharField(max_length=150)
     direccion = models.CharField(max_length=255)
     referencia = models.CharField(max_length=255, blank=True)
+    latitud = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    longitud = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     creado_en = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

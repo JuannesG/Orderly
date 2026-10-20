@@ -152,6 +152,8 @@ class PedidoListSerializer(serializers.ModelSerializer):
     cliente_telefono = serializers.CharField(source='cliente.telefono', read_only=True)
     cliente_direccion = serializers.CharField(source='cliente.direccion', read_only=True)
     cliente_referencia = serializers.CharField(source='cliente.referencia', read_only=True)
+    cliente_latitud = serializers.FloatField(source='cliente.latitud', read_only=True)
+    cliente_longitud = serializers.FloatField(source='cliente.longitud', read_only=True)
     detalles = DetallePedidoDetailSerializer(many=True, read_only=True)
     pago = PagoAnidadoSerializer(read_only=True)
 
@@ -159,7 +161,7 @@ class PedidoListSerializer(serializers.ModelSerializer):
         model = Pedido
         fields = [
             'id', 'token_seguimiento', 'estado','tipo', 'cliente_nombre', 'cliente_telefono',
-            'cliente_direccion', 'cliente_referencia', 'subtotal', 'costo_domicilio',
+            'cliente_direccion',  'cliente_latitud', 'cliente_longitud', 'cliente_referencia', 'subtotal', 'costo_domicilio',
             'total', 'observaciones', 'paga_con', 'detalles', 'pago', 'creado_en'
         ]
 

@@ -1,34 +1,78 @@
 <div class="reg-page">
-  <div class="reg-hero">
+  <div class="reg-card">
     <img src="/assets/logo-mr-lucho.png" alt="Mr Lucho" class="reg-logo">
-  </div>
 
-  <div class="reg-body">
     <h1>Hagamos tu pedido</h1>
     <p class="sub">Cuéntanos a dónde lo llevamos</p>
 
     <form (ngSubmit)="onSubmit()">
-      <div class="field">
-        <label>Nombre completo</label>
-        <input type="text" [(ngModel)]="nombre" name="nombre" required>
+      <div class="campos">
+        <div class="input-icono">
+          <svg lucideUser [size]="18"></svg>
+          <input type="text" name="nombre" autocomplete="name" placeholder="Nombre completo"
+            aria-label="Nombre completo" [(ngModel)]="nombre" required>
+        </div>
+
+        <div class="input-icono">
+          <svg lucidePhone [size]="18"></svg>
+          <input type="tel" name="telefono" autocomplete="tel" placeholder="Teléfono"
+            aria-label="Teléfono" [(ngModel)]="telefono" required>
+        </div>
+
+        <div class="input-icono">
+          <svg lucideHouse [size]="18"></svg>
+          <input type="text" name="direccion" autocomplete="street-address"
+            placeholder="Dirección. Ej: Calle 45 # 20-10"
+            aria-label="Dirección" [(ngModel)]="direccion" required>
+        </div>
+
+        @if (!tieneUbicacion) {
+          <button type="button" class="btn-ubicacion" [disabled]="buscandoUbicacion" (click)="usarMiUbicacion()">
+            <svg lucideLocateFixed [size]="16"></svg>
+            {{ buscandoUbicacion ? 'Buscando tu ubicación...' : 'Compartir mi ubicación' }}
+          </button>
+        } @else {
+          <div class="ubicacion-ok">
+            <span class="ok-texto">
+              <svg lucideCircleCheck [size]="16"></svg>
+              Ubicación guardada
+            </span>
+            <button type="button" class="btn-quitar" (click)="quitarUbicacion()">
+              <svg lucideX [size]="14"></svg>
+              Quitar
+            </button>
+          </div>
+        }
+
+        @if (errorUbicacion) {
+          <p class="aviso-error">
+            <svg lucideCircleAlert [size]="16"></svg>
+            <span>{{ errorUbicacion }}</span>
+          </p>
+        }
+
+        <div class="input-icono">
+          <svg lucideMapPin [size]="18"></svg>
+          <input type="text" name="referencia" placeholder="Referencia (opcional)"
+            aria-label="Referencia, opcional" [(ngModel)]="referencia">
+        </div>
       </div>
 
-      <div class="field">
-        <label>Teléfono</label>
-        <input type="tel" [(ngModel)]="telefono" name="telefono" required>
-      </div>
+      @if (error) {
+        <p class="aviso-error grande">
+          <svg lucideCircleAlert [size]="18"></svg>
+          <span>{{ error }}</span>
+        </p>
+      }
 
-      <div class="field">
-        <label>Dirección</label>
-        <input type="text" [(ngModel)]="direccion" name="direccion" required>
-      </div>
+      <button type="submit" class="btn-continuar" [disabled]="enviando">
+        {{ enviando ? 'Guardando...' : 'Continuar' }}
+        @if (!enviando) {
+          <svg lucideArrowRight [size]="18"></svg>
+        }
+      </button>
 
-      <div class="field">
-        <label>Referencia (opcional)</label>
-        <input type="text" [(ngModel)]="referencia" name="referencia" placeholder="Casa, apto, etc.">
-      </div>
-
-      <button type="submit">Continuar</button>
+      <p class="privado">Tu ubicación solo la ve el personal del restaurante para llegar más fácil.</p>
     </form>
   </div>
 </div>

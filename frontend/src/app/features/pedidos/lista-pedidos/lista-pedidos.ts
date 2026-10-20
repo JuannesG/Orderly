@@ -16,7 +16,8 @@ import {
   LucideBanknote,
   LucideCircleCheck,
   LucideRotateCcw,
-  LucideX
+  LucideX,
+  LucideMap
 } from '@lucide/angular';
 
 const ETIQUETAS: { [key: string]: string } = {
@@ -52,7 +53,8 @@ const FINALES = ['entregado', 'rechazado'];
     LucideBanknote,
     LucideCircleCheck,
     LucideRotateCcw,
-    LucideX
+    LucideX,
+    LucideMap
   ],
   templateUrl: './lista-pedidos.html',
   styleUrl: './lista-pedidos.css',
@@ -148,6 +150,10 @@ export class ListaPedidos implements OnInit, OnDestroy {
   urlComprobante(pedido: any): string | null {
     const pago = pedido.pago;
     return pago?.comprobante_url || pago?.comprobante || null;
+  }
+
+  urlMapa(pedido: any): string {
+    return `https://www.google.com/maps?q=${pedido.cliente_latitud},${pedido.cliente_longitud}`;
   }
 
   verComprobante(url: string) {
