@@ -2,10 +2,11 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Menu, Categoria, Producto } from '../../../core/services/menu';
+import { LucidePlus, LucidePencil, LucideTrash2 } from '@lucide/angular';
 
 @Component({
   selector: 'app-lista-productos',
-  imports: [FormsModule],
+  imports: [FormsModule, LucidePlus, LucidePencil, LucideTrash2],
   templateUrl: './lista-productos.html',
   styleUrl: './lista-productos.css'
 })

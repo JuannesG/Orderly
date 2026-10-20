@@ -2,10 +2,11 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Menu, Categoria, Producto } from '../../../core/services/menu';
+import { LucideArrowLeft } from '@lucide/angular';
 
 @Component({
   selector: 'app-producto-form',
-  imports: [FormsModule],
+  imports: [FormsModule, LucideArrowLeft],
   templateUrl: './producto-form.html',
   styleUrl: './producto-form.css',
 })

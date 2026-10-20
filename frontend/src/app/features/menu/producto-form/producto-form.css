@@ -1,35 +1,51 @@
 .form-page {
   max-width: 520px;
   margin: 0 auto;
-  font-family: 'Nunito', sans-serif;
-  color: #1A1A1A;
+  font-family: var(--fuente-texto);
+  color: var(--texto);
 }
 
 .fp-head {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 14px;
+  margin-bottom: 16px;
 }
 
 .fp-head h1 {
-  font-family: 'Baloo 2', 'Nunito', sans-serif;
-  font-size: 1.3rem;
+  font-family: var(--fuente-titulo);
+  font-size: 1.5rem;
   margin: 0;
 }
 
+.subrayado {
+  display: block;
+  width: 36px;
+  height: 3px;
+  border-radius: 2px;
+  background-color: var(--naranja);
+  margin-top: 6px;
+}
+
 .btn-atras {
-  background: none;
-  border: none;
-  font-size: 1.3rem;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--blanco);
+  border: 2px solid var(--borde);
+  border-radius: 12px;
+  color: var(--texto-suave);
   cursor: pointer;
 }
 
 .producto-form {
-  background-color: #FFFFFF;
+  background-color: var(--blanco);
   border-radius: 18px;
   padding: 18px;
-  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
+  box-shadow: var(--sombra);
 }
 
 .field {
@@ -47,13 +63,13 @@
 .field input,
 .field select,
 .field textarea {
-  background-color: #F8F8F8;
+  background-color: var(--fondo);
   border: 2px solid transparent;
   border-radius: 12px;
   padding: 12px;
   font-size: 0.95rem;
   font-family: inherit;
-  color: #1A1A1A;
+  color: var(--texto);
   outline: none;
 }
 
@@ -65,8 +81,8 @@
 .field input:focus,
 .field select:focus,
 .field textarea:focus {
-  border-color: #E85A2A;
-  background-color: #FFFFFF;
+  border-color: var(--naranja);
+  background-color: var(--blanco);
 }
 
 .precio-input-wrapper {
@@ -78,7 +94,7 @@
   left: 14px;
   top: 50%;
   transform: translateY(-50%);
-  color: #9B9B9B;
+  color: var(--gris);
   font-weight: 700;
   pointer-events: none;
 }
@@ -112,6 +128,7 @@
   border: none;
   border-radius: 12px;
   padding: 13px;
+  font-family: inherit;
   font-weight: 700;
   font-size: 0.9rem;
   cursor: pointer;
@@ -119,10 +136,10 @@
 
 .btn-cancelar {
   background-color: #F3F3F3;
-  color: #1A1A1A;
+  color: var(--texto);
 }
 
 .btn-guardar {
-  background-color: #E85A2A;
+  background-color: var(--naranja);
   color: #FFFFFF;
 }

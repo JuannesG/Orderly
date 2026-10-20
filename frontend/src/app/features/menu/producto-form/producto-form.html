@@ -1,6 +1,12 @@
 <div class="form-page">
   <div class="fp-head">
-    <h1>{{ productoEditandoId ? 'Editar producto' : 'Nuevo producto' }}</h1>
+    <button type="button" class="btn-atras" aria-label="Volver al menú" (click)="cancelar()">
+      <svg lucideArrowLeft [size]="20"></svg>
+    </button>
+    <div>
+      <h1>{{ productoEditandoId ? 'Editar producto' : 'Nuevo producto' }}</h1>
+      <span class="subrayado"></span>
+    </div>
   </div>
 
   <form (ngSubmit)="onSubmit()" class="producto-form">
@@ -27,14 +33,15 @@
       <select [(ngModel)]="categoriaForm" name="categoriaForm" required>
         <option value="" disabled>Selecciona una categoría</option>
         @for (categoria of categorias; track categoria.id) {
-          <option [value]="categoria.id">{{ categoria.nombre }}</option>
+        <option [value]="categoria.id">{{ categoria.nombre }}</option>
         }
       </select>
     </div>
 
     <div class="botones">
       <button type="button" class="btn-cancelar" (click)="cancelar()">Cancelar</button>
-      <button type="submit" class="btn-guardar">{{ productoEditandoId ? 'Guardar cambios' : 'Agregar producto' }}</button>
+      <button type="submit" class="btn-guardar">{{ productoEditandoId ? 'Guardar cambios' : 'Agregar producto'
+        }}</button>
     </div>
   </form>
 </div>
