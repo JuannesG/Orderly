@@ -1,5 +1,13 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Menu } from '../../../core/services/menu';
+import {
+  LucideShoppingBag,
+  LucideBanknote,
+  LucideCalendarDays,
+  LucideFlame,
+  LucideTrendingUp,
+  LucideTrendingDown
+} from '@lucide/angular';
 
 const ETIQUETAS: { [key: string]: string } = {
   pendiente_verificacion: 'Pendiente',
@@ -10,9 +18,25 @@ const ETIQUETAS: { [key: string]: string } = {
   rechazado: 'Rechazado'
 };
 
+const ESTADOS_LISTA = [
+  { clave: 'pendiente_verificacion', nombre: 'Pendientes' },
+  { clave: 'aceptado', nombre: 'Aceptados' },
+  { clave: 'en_preparacion', nombre: 'En preparación' },
+  { clave: 'en_camino', nombre: 'En camino' },
+  { clave: 'entregado', nombre: 'Entregados' },
+  { clave: 'rechazado', nombre: 'Rechazados' }
+];
+
 @Component({
   selector: 'app-inicio',
-  imports: [],
+  imports: [
+    LucideShoppingBag,
+    LucideBanknote,
+    LucideCalendarDays,
+    LucideFlame,
+    LucideTrendingUp,
+    LucideTrendingDown
+  ],
   templateUrl: './inicio.html',
   styleUrl: './inicio.css'
 })
@@ -21,6 +45,7 @@ export class Inicio implements OnInit {
   abierto = true;
   cargando = true;
   resumen: any = null;
+  estadosLista = ESTADOS_LISTA;
 
   constructor(private menuService: Menu, private cdr: ChangeDetectorRef) {}
 
