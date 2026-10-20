@@ -1,0 +1,241 @@
+<div class="equipo-page">
+  <header class="cabecera">
+    <div>
+      <h1>Equipo</h1>
+      <span class="subrayado"></span>
+    </div>
+    <button class="btn-nuevo" (click)="abrirCrear()">
+      <svg lucideUserPlus [size]="18"></svg>
+      Nuevo trabajador
+    </button>
+  </header>
+
+  @if (aviso) {
+    <p class="aviso aviso-ok">
+      <svg lucideCircleCheck [size]="18"></svg>
+      <span>{{ aviso }}</span>
+    </p>
+  }
+
+  @if (error) {
+    <p class="aviso aviso-error">
+      <svg lucideCircleAlert [size]="18"></svg>
+      <span>{{ error }}</span>
+    </p>
+  }
+
+  @if (cargando) {
+    <p class="mensaje">Cargando equipo...</p>
+  }
+
+  @if (!cargando && usuarios.length === 0 && !error) {
+    <p class="mensaje">Todavía no hay trabajadores. Crea el primero con el botón de arriba.</p>
+  }
+
+  <div class="lista">
+    @for (u of usuarios; track u.id) {
+      <div class="card" [class.inactivo]="!u.is_active">
+        <div class="card-top">
+          <span class="avatar"><svg lucideUser [size]="20"></svg></span>
+          <div class="datos">
+            <h3>
+              {{ u.nombre_completo }}
+              @if (u.es_yo) {
+                <span class="tu">Tú</span>
+              }
+            </h3>
+            <p class="usuario">&#64;{{ u.username }}</p>
+          </div>
+          <div class="badges">
+            <span [class]="'badge-rol ' + rolClase(u.rol)">{{ etiquetaRol(u.rol) }}</span>
+            <span class="badge-estado" [class.off]="!u.is_active">
+              {{ u.is_active ? 'Activa' : 'Desactivada' }}
+            </span>
+          </div>
+        </div>
+
+        <p class="ingreso">
+          @if (u.last_login) {
+            Último ingreso: {{ u.last_login | date:'dd/MM/y h:mm a' }}
+          } @else {
+            Aún no ha ingresado
+          }
+        </p>
+
+        <div class="acciones">
+          <button class="btn-accion" (click)="abrirEditar(u)">
+            <svg lucidePencil [size]="16"></svg>
+            Editar
+          </button>
+          <button class="btn-accion" (click)="abrirClave(u)">
+            <svg lucideKeyRound [size]="16"></svg>
+            Contraseña
+          </button>
+          @if (!u.es_yo) {
+            @if (u.is_active) {
+              <button class="btn-accion aviso-btn" (click)="pedirDesactivar(u)">
+                <svg lucideUserX [size]="16"></svg>
+                Desactivar
+              </button>
+            } @else {
+              <button class="btn-accion ok" (click)="reactivar(u)">
+                <svg lucideUserCheck [size]="16"></svg>
+                Reactivar
+              </button>
+            }
+            <button class="btn-accion peligro" (click)="pedirEliminar(u)">
+              <svg lucideTrash2 [size]="16"></svg>
+              Eliminar
+            </button>
+          }
+        </div>
+      </div>
+    }
+  </div>
+
+  @if (formAbierto) {
+    <div class="overlay" (click)="cerrarFormulario()">
+      <div class="modal" (click)="$event.stopPropagation()">
+        <div class="modal-head">
+          <h2>{{ editando ? 'Editar trabajador' : 'Nuevo trabajador' }}</h2>
+          <button type="button" class="cerrar" aria-label="Cerrar" (click)="cerrarFormulario()">
+            <svg lucideX [size]="18"></svg>
+          </button>
+        </div>
+
+        <form (ngSubmit)="guardar()">
+          <div class="fila-doble">
+            <div class="campo">
+              <label for="nombre">Nombre</label>
+              <input id="nombre" type="text" name="nombre" autocomplete="off" [(ngModel)]="nombre">
+            </div>
+            <div class="campo">
+              <label for="apellido">Apellido</label>
+              <input id="apellido" type="text" name="apellido" autocomplete="off" [(ngModel)]="apellido">
+            </div>
+          </div>
+
+          <div class="campo">
+            <label for="username">Usuario</label>
+            <input id="username" type="text" name="username" autocomplete="off"
+              autocapitalize="none" [(ngModel)]="username" [disabled]="!!editando">
+            @if (editando) {
+              <small>El usuario no se puede cambiar.</small>
+            }
+          </div>
+
+          <div class="campo">
+            <label for="rol">Rol</label>
+            <select id="rol" name="rol" [(ngModel)]="rol" [disabled]="!!editando?.es_yo">
+              @for (r of roles; track r.valor) {
+                <option [value]="r.valor">{{ r.etiqueta }}</option>
+              }
+            </select>
+            @if (editando?.es_yo) {
+              <small>No puedes cambiar tu propio rol.</small>
+            }
+          </div>
+
+          @if (!editando) {
+            <div class="campo">
+              <label for="clave">Contraseña temporal</label>
+              <div class="clave-fila">
+                <div class="input-clave">
+                  <input id="clave" name="clave" autocomplete="new-password"
+                    [type]="mostrarClave ? 'text' : 'password'" [(ngModel)]="clave">
+                  <button type="button" class="ver-clave"
+                    [attr.aria-label]="mostrarClave ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+                    (click)="mostrarClave = !mostrarClave">
+                    @if (mostrarClave) {
+                      <svg lucideEyeOff [size]="18"></svg>
+                    } @else {
+                      <svg lucideEye [size]="18"></svg>
+                    }
+                  </button>
+                </div>
+                <button type="button" class="btn-generar" (click)="generarClave()">Generar</button>
+              </div>
+              <small>Anótala y entrégasela al trabajador. Después no se puede volver a ver.</small>
+            </div>
+          }
+
+          @if (errorForm) {
+            <p class="aviso aviso-error">
+              <svg lucideCircleAlert [size]="18"></svg>
+              <span>{{ errorForm }}</span>
+            </p>
+          }
+
+          <div class="modal-botones">
+            <button type="button" class="btn-cancelar" (click)="cerrarFormulario()">Cancelar</button>
+            <button type="submit" class="btn-guardar" [disabled]="guardando">
+              {{ guardando ? 'Guardando...' : (editando ? 'Guardar cambios' : 'Crear cuenta') }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+
+  @if (claveDe) {
+    <div class="overlay" (click)="cerrarClave()">
+      <div class="modal" (click)="$event.stopPropagation()">
+        <div class="modal-head">
+          <h2>Contraseña nueva</h2>
+          <button type="button" class="cerrar" aria-label="Cerrar" (click)="cerrarClave()">
+            <svg lucideX [size]="18"></svg>
+          </button>
+        </div>
+
+        <p class="modal-texto">Para <strong>{{ claveDe.nombre_completo }}</strong>. La contraseña anterior deja de funcionar.</p>
+
+        <form (ngSubmit)="guardarClave()">
+          <div class="campo">
+            <label for="nuevaClave">Contraseña nueva</label>
+            <div class="clave-fila">
+              <div class="input-clave">
+                <input id="nuevaClave" name="nuevaClave" autocomplete="new-password"
+                  [type]="mostrarNuevaClave ? 'text' : 'password'" [(ngModel)]="nuevaClave">
+                <button type="button" class="ver-clave"
+                  [attr.aria-label]="mostrarNuevaClave ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+                  (click)="mostrarNuevaClave = !mostrarNuevaClave">
+                  @if (mostrarNuevaClave) {
+                    <svg lucideEyeOff [size]="18"></svg>
+                  } @else {
+                    <svg lucideEye [size]="18"></svg>
+                  }
+                </button>
+              </div>
+              <button type="button" class="btn-generar" (click)="generarNuevaClave()">Generar</button>
+            </div>
+            <small>Anótala y entrégasela al trabajador. Después no se puede volver a ver.</small>
+          </div>
+
+          @if (errorClave) {
+            <p class="aviso aviso-error">
+              <svg lucideCircleAlert [size]="18"></svg>
+              <span>{{ errorClave }}</span>
+            </p>
+          }
+
+          <div class="modal-botones">
+            <button type="button" class="btn-cancelar" (click)="cerrarClave()">Cancelar</button>
+            <button type="submit" class="btn-guardar" [disabled]="guardandoClave">
+              {{ guardandoClave ? 'Guardando...' : 'Guardar contraseña' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+
+  @if (accion) {
+    <app-confirmar-accion
+      [titulo]="tituloConfirmacion"
+      [mensaje]="mensajeConfirmacion"
+      [textoConfirmar]="textoConfirmacion"
+      [peligro]="true"
+      (confirmar)="confirmarAccion()"
+      (cancelar)="cancelarAccion()" />
+  }
+</div>
