@@ -13,6 +13,7 @@ from reservas.views import ReservaViewSet
 from core.views import ping, dashboard_resumen
 from django.conf import settings
 from django.conf.urls.static import static
+from usuarios.views import UsuarioViewSet
 
 router = DefaultRouter()
 router.register(r'categorias', CategoriaViewSet)
@@ -23,6 +24,7 @@ router.register(r'pagos', PagoViewSet)
 router.register(r'adiciones', AdicionViewSet)
 router.register(r'restaurantes', RestauranteViewSet)
 router.register(r'reservas', ReservaViewSet)
+router.register(r'usuarios', UsuarioViewSet, basename='usuario')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
