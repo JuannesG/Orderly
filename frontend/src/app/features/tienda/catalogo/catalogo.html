@@ -49,10 +49,13 @@
   <div class="categorias-wrap">
     @for (categoria of categoriasVisibles; track categoria.id) {
     <section class="categoria-sec">
-      <h2>{{ categoria.nombre }}</h2>
-      <div class="productos-col">
+      <h2>
+        {{ categoria.nombre }}
+        <span class="contador-cat">{{ categoria.productos?.length ?? 0 }}</span>
+      </h2>
+      <div class="productos-grid">
         @for (producto of categoria.productos; track producto.id) {
-        <div class="producto-row" [class.agotado]="!producto.disponible" (click)="abrirDetalle(producto)">
+        <div class="producto-card" [class.agotado]="!producto.disponible" (click)="abrirDetalle(producto)">
           @if (producto.imagen_url) {
           <img class="producto-img" [src]="producto.imagen_url" alt="">
           }
@@ -61,31 +64,31 @@
             @if (producto.descripcion) {
             <p class="desc">{{ producto.descripcion }}</p>
             }
+          </div>
+          <div class="producto-pie">
             @if (producto.disponible) {
             <p class="precio">${{ formatPrecio(producto.precio) }}</p>
+            <div class="producto-accion" (click)="$event.stopPropagation()">
+              @if (carrito.obtenerCantidad(producto.id) === 0) {
+              <button class="btn-mas" aria-label="Agregar" [disabled]="!tiendaAbierta" (click)="agregar(producto)">
+                <svg lucidePlus [size]="18"></svg>
+              </button>
+              } @else {
+              <div class="mini-stepper">
+                <button aria-label="Quitar uno" [disabled]="!tiendaAbierta" (click)="quitar(producto)">
+                  <svg lucideMinus [size]="14"></svg>
+                </button>
+                <span>{{ carrito.obtenerCantidad(producto.id) }}</span>
+                <button aria-label="Agregar uno" [disabled]="!tiendaAbierta" (click)="agregar(producto)">
+                  <svg lucidePlus [size]="14"></svg>
+                </button>
+              </div>
+              }
+            </div>
             } @else {
             <p class="precio agotado-txt">Agotado</p>
             }
           </div>
-          @if (producto.disponible) {
-          <div class="producto-accion" (click)="$event.stopPropagation()">
-            @if (carrito.obtenerCantidad(producto.id) === 0) {
-            <button class="btn-mas" aria-label="Agregar" [disabled]="!tiendaAbierta" (click)="agregar(producto)">
-              <svg lucidePlus [size]="18"></svg>
-            </button>
-            } @else {
-            <div class="mini-stepper">
-              <button aria-label="Quitar uno" [disabled]="!tiendaAbierta" (click)="quitar(producto)">
-                <svg lucideMinus [size]="14"></svg>
-              </button>
-              <span>{{ carrito.obtenerCantidad(producto.id) }}</span>
-              <button aria-label="Agregar uno" [disabled]="!tiendaAbierta" (click)="agregar(producto)">
-                <svg lucidePlus [size]="14"></svg>
-              </button>
-            </div>
-            }
-          </div>
-        }
         </div>
         }
       </div>

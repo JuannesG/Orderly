@@ -173,8 +173,6 @@ export class Catalogo implements OnInit {
     this.productoDetalle = null;
   }
 
-  // Las bebidas (y las categorías de la lista de arriba) no ofrecen adicionales.
-  // La categoría del producto se busca en la lista que ya cargó el catálogo.
   get detallePermiteAdicionales(): boolean {
     if (!this.productoDetalle) return false;
 
