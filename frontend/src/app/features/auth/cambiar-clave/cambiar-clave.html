@@ -1,0 +1,75 @@
+<div class="cambio-page">
+  <div class="cambio-card">
+    <img src="/assets/logo-mr-lucho.png" alt="Mr Lucho" class="cambio-logo">
+
+    @if (obligatorio) {
+      <h1>Crea tu contraseña</h1>
+      <p class="subtitulo">
+        Hola, {{ nombre }}. Por seguridad, elige tu propia contraseña antes de continuar.
+        La que te dieron solo sirve para este primer ingreso.
+      </p>
+    } @else {
+      <h1>Cambiar contraseña</h1>
+      <p class="subtitulo">Escribe tu contraseña actual y la nueva.</p>
+    }
+
+    <form (ngSubmit)="onSubmit()">
+      <div class="campos">
+        <div class="input-icono">
+          <svg lucideLock [size]="18"></svg>
+          <input name="claveActual" autocomplete="current-password"
+            [placeholder]="obligatorio ? 'Contraseña que te dieron' : 'Contraseña actual'"
+            [attr.aria-label]="obligatorio ? 'Contraseña que te dieron' : 'Contraseña actual'"
+            [type]="mostrarClaves ? 'text' : 'password'" [(ngModel)]="claveActual">
+        </div>
+
+        <div class="input-icono">
+          <svg lucideLock [size]="18"></svg>
+          <input name="claveNueva" autocomplete="new-password"
+            placeholder="Contraseña nueva" aria-label="Contraseña nueva"
+            [type]="mostrarClaves ? 'text' : 'password'" [(ngModel)]="claveNueva">
+        </div>
+
+        <div class="input-icono">
+          <svg lucideLock [size]="18"></svg>
+          <input name="claveRepetida" autocomplete="new-password"
+            placeholder="Repite la contraseña nueva" aria-label="Repite la contraseña nueva"
+            [type]="mostrarClaves ? 'text' : 'password'" [(ngModel)]="claveRepetida">
+        </div>
+      </div>
+
+      <button type="button" class="ver-todas" (click)="mostrarClaves = !mostrarClaves">
+        @if (mostrarClaves) {
+          <svg lucideEyeOff [size]="16"></svg>
+          Ocultar contraseñas
+        } @else {
+          <svg lucideEye [size]="16"></svg>
+          Mostrar contraseñas
+        }
+      </button>
+
+      <p class="ayuda">Mínimo 8 caracteres. Evita contraseñas muy comunes o solo con números.</p>
+
+      @if (error) {
+        <p class="error-message">
+          <svg lucideCircleAlert [size]="18"></svg>
+          <span>{{ error }}</span>
+        </p>
+      }
+
+      <button type="submit" class="btn-guardar" [disabled]="cargando">
+        @if (!cargando) {
+          <svg lucideCheck [size]="18"></svg>
+        }
+        {{ cargando ? 'Guardando...' : 'Guardar contraseña' }}
+      </button>
+    </form>
+
+    <div class="enlaces">
+      @if (!obligatorio) {
+        <button type="button" (click)="volver()">Volver</button>
+      }
+      <button type="button" (click)="salir()">Cerrar sesión</button>
+    </div>
+  </div>
+</div>

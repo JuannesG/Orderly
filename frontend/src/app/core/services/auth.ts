@@ -9,6 +9,7 @@ interface TokenResponse {
   refresh: string;
   rol: string;
   nombre: string;
+  debe_cambiar_clave?: boolean;
 }
 
 @Injectable({
@@ -20,14 +21,18 @@ export class Auth {
   constructor(private http: HttpClient) {}
 
   login(username: string, password: string): Observable<TokenResponse> {
-    return this.http.post<TokenResponse>(`${this.apiUrl}/token/`, { username, password }).pipe(
-      tap((respuesta) => {
-        localStorage.setItem('access_token', respuesta.access);
-        localStorage.setItem('refresh_token', respuesta.refresh);
-        localStorage.setItem('rol', respuesta.rol);
-        localStorage.setItem('nombre', respuesta.nombre);
-      }),
-    );
+    return this.http
+      .post<TokenResponse>(`${this.apiUrl}/token/`, { username, password })
+      .pipe(tap((respuesta) => this.guardarSesion(respuesta)));
+  }
+
+  cambiarClave(claveActual: string, claveNueva: string): Observable<TokenResponse> {
+    return this.http
+      .post<TokenResponse>(`${this.apiUrl}/cuenta/clave/`, {
+        clave_actual: claveActual,
+        clave_nueva: claveNueva,
+      })
+      .pipe(tap((respuesta) => this.guardarSesion(respuesta)));
   }
 
   refreshToken(): Observable<any> {
@@ -42,6 +47,7 @@ export class Auth {
     localStorage.removeItem('refresh_token');
     localStorage.removeItem('rol');
     localStorage.removeItem('nombre');
+    localStorage.removeItem('debe_cambiar_clave');
   }
 
   isAuthenticated(): boolean {
@@ -56,7 +62,14 @@ export class Auth {
     return localStorage.getItem('nombre') ?? '';
   }
 
+  debeCambiarClave(): boolean {
+    return localStorage.getItem('debe_cambiar_clave') === 'true';
+  }
+
   rutaInicio(): string {
+    if (this.debeCambiarClave()) {
+      return '/cambiar-clave';
+    }
     switch (this.rol()) {
       case 'dueño':
         return '/dashboard';
@@ -67,5 +80,13 @@ export class Auth {
       default:
         return '/login';
     }
+  }
+
+  private guardarSesion(respuesta: TokenResponse): void {
+    localStorage.setItem('access_token', respuesta.access);
+    localStorage.setItem('refresh_token', respuesta.refresh);
+    localStorage.setItem('rol', respuesta.rol);
+    localStorage.setItem('nombre', respuesta.nombre);
+    localStorage.setItem('debe_cambiar_clave', respuesta.debe_cambiar_clave ? 'true' : 'false');
   }
 }

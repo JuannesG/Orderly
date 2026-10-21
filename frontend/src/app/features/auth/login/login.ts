@@ -2,10 +2,6 @@ import { Component, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import {
-  LucideChefHat,
-  LucideBeef,
-  LucideUtensilsCrossed,
-  LucideFlame,
   LucideUser,
   LucideLock,
   LucideEye,
@@ -19,10 +15,6 @@ import { Auth } from '../../../core/services/auth';
   selector: 'app-login',
   imports: [
     FormsModule,
-    LucideChefHat,
-    LucideBeef,
-    LucideUtensilsCrossed,
-    LucideFlame,
     LucideUser,
     LucideLock,
     LucideEye,

@@ -17,6 +17,7 @@ import {
 } from '@lucide/angular';
 import { UsuarioService, UsuarioEquipo } from '../../../core/services/usuario';
 import { ConfirmarAccion } from '../../../shared/confirmar-accion/confirmar-accion';
+import { Router } from '@angular/router';
 
 const ROLES = [
   { valor: 'dueño', etiqueta: 'Dueño' },
@@ -82,6 +83,7 @@ export class ListaEquipo implements OnInit {
 
   constructor(
     private usuarioService: UsuarioService,
+    private router: Router,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -208,10 +210,11 @@ export class ListaEquipo implements OnInit {
   // ---------- Contraseña nueva ----------
 
   abrirClave(u: UsuarioEquipo) {
+    if (u.es_yo) {
+      this.router.navigate(['/cambiar-clave']);
+      return;
+    }
     this.claveDe = u;
-    this.nuevaClave = '';
-    this.mostrarNuevaClave = false;
-    this.errorClave = '';
   }
 
   cerrarClave() {

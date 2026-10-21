@@ -13,6 +13,7 @@ export interface UsuarioEquipo {
   is_active: boolean;
   last_login: string | null;
   es_yo: boolean;
+  debe_cambiar_clave: boolean;
 }
 
 export interface UsuarioNuevo {

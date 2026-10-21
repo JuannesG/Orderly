@@ -19,9 +19,11 @@ import { rolGuard } from './core/guards/rol-guard';
 import { TomarPedido } from './features/mesero/tomar-pedido/tomar-pedido';
 import { PedidosPanel } from './features/pedidos/pedidos-panel/pedidos-panel';
 import { ListaEquipo } from './features/equipo/lista-equipo/lista-equipo';
+import { CambiarClave } from './features/auth/cambiar-clave/cambiar-clave';
 
 export const routes: Routes = [
   { path: 'login', component: Login, title: 'Mr Lucho Panel' },
+  { path: 'cambiar-clave', component: CambiarClave, canActivate: [authGuard], title: 'Mr Lucho Panel' },
   {
     path: '',
     component: AppLayout,

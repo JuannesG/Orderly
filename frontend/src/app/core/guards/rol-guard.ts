@@ -12,6 +12,10 @@ export const rolGuard: CanActivateFn = (route) => {
     router.navigate(['/login']);
     return false;
   }
+  if (auth.debeCambiarClave()) {
+    router.navigate(['/cambiar-clave']);
+    return false;
+  }
 
   const permitidos: string[] = route.data['roles'] ?? [];
   if (permitidos.includes(rol)) {
