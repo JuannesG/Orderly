@@ -175,3 +175,77 @@ class UsuariosTests(BaseAPITestCase):
         sin_historial = self.client.delete(f'{URL}{self.domicilios.id}/')
         self.assertEqual(sin_historial.status_code, 204)
         self.assertFalse(Usuario.objects.filter(pk=self.domicilios.pk).exists())
+
+    def test_sesion_se_cierra_al_cambiar_clave(self):
+        self.salir()
+        entrada = self.login('mesera1', CLAVE)
+        acceso, refresco = entrada.data['access'], entrada.data['refresh']
+
+        self.entrar_como_dueno()
+        cambio = self.client.post(
+            f'{URL}{self.mesera.id}/clave/', {'password': 'Nueva-Clave-9876'}, format='json'
+        )
+        self.assertEqual(cambio.status_code, 200)
+
+        self.salir()
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {acceso}')
+        self.assertSinAcceso(self.client.get('/api/pedidos/en-local/'))
+        self.client.credentials()
+
+        renovar = self.client.post('/api/token/refresh/', {'refresh': refresco}, format='json')
+        self.assertEqual(renovar.status_code, 401)
+
+    def test_primer_ingreso_obliga_a_cambiar_la_clave(self):
+        self.client.post(URL, self.datos(), format='json')
+        self.salir()
+
+        entrada = self.login('nueva', 'Tr0pical-2026-xyz')
+        self.assertTrue(entrada.data['debe_cambiar_clave'])
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {entrada.data['access']}")
+
+        # Con la clave temporal solo puede usar la ruta de cambio.
+        self.assertSinAcceso(self.client.get('/api/pedidos/en-local/'))
+
+        ruta = '/api/cuenta/clave/'
+        mala = self.client.post(
+            ruta, {'clave_actual': 'equivocada', 'clave_nueva': 'Mi-Clave-Propia-77'}, format='json'
+        )
+        self.assertEqual(mala.status_code, 400)
+
+        igual = self.client.post(
+            ruta, {'clave_actual': 'Tr0pical-2026-xyz', 'clave_nueva': 'Tr0pical-2026-xyz'}, format='json'
+        )
+        self.assertEqual(igual.status_code, 400)
+
+        debil = self.client.post(
+            ruta, {'clave_actual': 'Tr0pical-2026-xyz', 'clave_nueva': '1234'}, format='json'
+        )
+        self.assertEqual(debil.status_code, 400)
+
+        buena = self.client.post(
+            ruta, {'clave_actual': 'Tr0pical-2026-xyz', 'clave_nueva': 'Mi-Clave-Propia-77'}, format='json'
+        )
+        self.assertEqual(buena.status_code, 200)
+        self.assertFalse(buena.data['debe_cambiar_clave'])
+
+        # Con los tokens nuevos ya tiene acceso normal.
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {buena.data['access']}")
+        self.assertEqual(self.client.get('/api/pedidos/en-local/').status_code, 200)
+        self.client.credentials()
+
+        self.assertEqual(self.login('nueva', 'Tr0pical-2026-xyz').status_code, 401)
+        nueva_entrada = self.login('nueva', 'Mi-Clave-Propia-77')
+        self.assertEqual(nueva_entrada.status_code, 200)
+        self.assertFalse(nueva_entrada.data['debe_cambiar_clave'])
+
+    def test_clave_puesta_por_el_dueno_obliga_a_cambiarla_pero_la_propia_no(self):
+        self.client.post(
+            f'{URL}{self.mesera.id}/clave/', {'password': 'Nueva-Clave-9876'}, format='json'
+        )
+        self.client.post(
+            f'{URL}{self.dueno.id}/clave/', {'password': 'Parrilla-Mixta-5521'}, format='json'
+        )
+        self.salir()
+
+        self.assertTrue(self.login('mesera1', 'Nueva-Clave-9876').data['debe_cambiar_clave'])
+        self.assertFalse(self.login('dueno', 'Parrilla-Mixta-5521').data['debe_cambiar_clave'])        

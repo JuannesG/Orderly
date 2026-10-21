@@ -21,7 +21,7 @@ class UsuarioListSerializer(serializers.ModelSerializer):
         model = Usuario
         fields = [
             'id', 'username', 'first_name', 'last_name', 'nombre_completo',
-            'rol', 'is_active', 'last_login', 'es_yo',
+            'rol', 'is_active', 'last_login', 'es_yo', 'debe_cambiar_clave',
         ]
 
     def get_nombre_completo(self, usuario):
@@ -55,7 +55,11 @@ class UsuarioCreateSerializer(serializers.ModelSerializer):
 
     def create(self, datos):
         clave = datos.pop('password')
-        usuario = Usuario(**datos, restaurante=self.context['restaurante'])
+        usuario = Usuario(
+            **datos,
+            restaurante=self.context['restaurante'],
+            debe_cambiar_clave=True,
+        )
         usuario.set_password(clave)
         usuario.save()
         return usuario
@@ -84,3 +88,22 @@ class ClaveSerializer(serializers.Serializer):
         if errores:
             raise serializers.ValidationError(errores)
         return valor
+
+class CambioClavePropioSerializer(serializers.Serializer):
+    clave_actual = serializers.CharField(write_only=True, trim_whitespace=False)
+    clave_nueva = serializers.CharField(write_only=True, trim_whitespace=False)
+
+    def validate_clave_actual(self, valor):
+        if not self.context['usuario'].check_password(valor):
+            raise serializers.ValidationError('La contraseña actual no es correcta.')
+        return valor
+
+    def validate(self, datos):
+        if datos['clave_nueva'] == datos['clave_actual']:
+            raise serializers.ValidationError(
+                {'clave_nueva': ['La contraseña nueva debe ser distinta a la actual.']}
+            )
+        errores = errores_de_clave(datos['clave_nueva'], self.context['usuario'])
+        if errores:
+            raise serializers.ValidationError({'clave_nueva': errores})
+        return datos    

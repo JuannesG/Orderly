@@ -10,6 +10,7 @@ class Usuario(AbstractUser):
     ]
     restaurante = models.ForeignKey(Restaurante, on_delete=models.CASCADE, related_name='usuarios', null=True, blank=True)
     rol = models.CharField(max_length=20, choices=ROLES)
+    debe_cambiar_clave = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.username} ({self.rol})"

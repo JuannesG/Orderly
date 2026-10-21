@@ -2,8 +2,7 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from core.views import ping
-from rest_framework_simplejwt.views import TokenRefreshView
-from core.tokens import TokenConRolView
+from core.tokens import TokenConRolView, RefrescoConSesionView
 from menu.views import CategoriaViewSet, ProductoViewSet, AdicionViewSet
 from clientes.views import ClienteViewSet
 from pedidos.views import PedidoViewSet
@@ -13,7 +12,7 @@ from reservas.views import ReservaViewSet
 from core.views import ping, dashboard_resumen
 from django.conf import settings
 from django.conf.urls.static import static
-from usuarios.views import UsuarioViewSet
+from usuarios.views import UsuarioViewSet, CambiarClavePropiaView
 
 router = DefaultRouter()
 router.register(r'categorias', CategoriaViewSet)
@@ -30,8 +29,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/ping/', ping),
     path('api/token/', TokenConRolView.as_view(), name='token_obtain_pair'),
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-        path('api/dashboard/resumen/', dashboard_resumen),
+    path('api/token/refresh/', RefrescoConSesionView.as_view(), name='token_refresh'),
+    path('api/cuenta/clave/', CambiarClavePropiaView.as_view(), name='cuenta_clave'),
+    path('api/dashboard/resumen/', dashboard_resumen),
     path('api/', include(router.urls)),
 ]
 

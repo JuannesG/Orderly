@@ -1,12 +1,16 @@
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import APIException, ValidationError
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from core.permissions import EsDueno
+from core.tokens import datos_de_sesion
 from restaurantes.models import Restaurante
 from .models import Usuario
 from .serializers import (
+    CambioClavePropioSerializer,
     ClaveSerializer,
     UsuarioCreateSerializer,
     UsuarioListSerializer,
@@ -99,5 +103,22 @@ class UsuarioViewSet(viewsets.ModelViewSet):
         serializer = ClaveSerializer(data=request.data, context={'usuario': usuario})
         serializer.is_valid(raise_exception=True)
         usuario.set_password(serializer.validated_data['password'])
-        usuario.save(update_fields=['password'])
+        usuario.debe_cambiar_clave = usuario.pk != request.user.pk
+        usuario.save(update_fields=['password', 'debe_cambiar_clave'])
         return Response({'detail': 'Contraseña actualizada.'})
+
+class CambiarClavePropiaView(APIView):
+    """Cada persona cambia su propia contraseña. Es también la única ruta que puede usar
+    quien todavía debe crear la suya (ver core/authentication.py)."""
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        usuario = request.user
+        serializer = CambioClavePropioSerializer(
+            data=request.data, context={'usuario': usuario}
+        )
+        serializer.is_valid(raise_exception=True)
+        usuario.set_password(serializer.validated_data['clave_nueva'])
+        usuario.debe_cambiar_clave = False
+        usuario.save(update_fields=['password', 'debe_cambiar_clave'])
+        return Response(datos_de_sesion(usuario))    
