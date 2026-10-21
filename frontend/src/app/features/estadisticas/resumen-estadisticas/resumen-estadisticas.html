@@ -6,84 +6,144 @@
 
   <div class="segmentado">
     @for (p of periodos; track p.clave) {
-      <button type="button" [class.activo]="periodo === p.clave" (click)="elegirPeriodo(p.clave)">
-        {{ p.nombre }}
-      </button>
+    <button type="button" [class.activo]="periodo === p.clave" (click)="elegirPeriodo(p.clave)">
+      {{ p.nombre }}
+    </button>
     }
   </div>
 
   @if (periodo === 'rango') {
-    <div class="rango">
-      <label>
-        <span>Desde</span>
-        <input type="date" name="desde" [(ngModel)]="desde">
-      </label>
-      <label>
-        <span>Hasta</span>
-        <input type="date" name="hasta" [(ngModel)]="hasta">
-      </label>
-      <button type="button" class="btn-aplicar" (click)="aplicarRango()">Aplicar</button>
-    </div>
+  <div class="rango">
+    <label>
+      <span>Desde</span>
+      <input type="date" name="desde" [(ngModel)]="desde">
+    </label>
+    <label>
+      <span>Hasta</span>
+      <input type="date" name="hasta" [(ngModel)]="hasta">
+    </label>
+    <button type="button" class="btn-aplicar" (click)="aplicarRango()">Aplicar</button>
+  </div>
   }
 
   @if (error) {
-    <p class="aviso-error">{{ error }}</p>
+  <p class="aviso-error">{{ error }}</p>
   }
 
   @if (cargando) {
-    <p class="mensaje">Cargando estadísticas...</p>
+  <p class="mensaje">Cargando estadísticas...</p>
   }
 
   @if (!cargando && resumen) {
-    <p class="nota">Solo se cuentan pedidos entregados.</p>
+  <p class="nota">Solo se cuentan pedidos entregados.</p>
 
-    @if (resumen.pedidos_entregados === 0) {
-      <p class="mensaje">No hay pedidos entregados en este periodo.</p>
-    } @else {
-      <div class="tarjetas-grid">
-        <div class="tarjeta">
-          <span class="tarjeta-icono"><svg lucideBanknote [size]="20"></svg></span>
-          <p class="tarjeta-label">Ventas</p>
-          <p class="tarjeta-valor">${{ formatPrecio(resumen.ventas_total) }}</p>
-        </div>
+  @if (resumen.pedidos_entregados === 0) {
+  <p class="mensaje">No hay pedidos entregados en este periodo.</p>
+  } @else {
+  <div class="tarjetas-grid">
+    <div class="tarjeta">
+      <span class="tarjeta-icono"><svg lucideBanknote [size]="20"></svg></span>
+      <p class="tarjeta-label">Ventas</p>
+      <p class="tarjeta-valor">${{ formatPrecio(resumen.ventas_total) }}</p>
+    </div>
 
-        <div class="tarjeta">
-          <span class="tarjeta-icono"><svg lucideShoppingBag [size]="20"></svg></span>
-          <p class="tarjeta-label">Pedidos entregados</p>
-          <p class="tarjeta-valor">{{ resumen.pedidos_entregados }}</p>
-        </div>
+    <div class="tarjeta">
+      <span class="tarjeta-icono"><svg lucideShoppingBag [size]="20"></svg></span>
+      <p class="tarjeta-label">Pedidos entregados</p>
+      <p class="tarjeta-valor">{{ resumen.pedidos_entregados }}</p>
+    </div>
 
-        <div class="tarjeta">
-          <span class="tarjeta-icono"><svg lucideReceipt [size]="20"></svg></span>
-          <p class="tarjeta-label">Ticket promedio</p>
-          <p class="tarjeta-valor">${{ formatPrecio(resumen.ticket_promedio) }}</p>
-        </div>
-      </div>
+    <div class="tarjeta">
+      <span class="tarjeta-icono"><svg lucideReceipt [size]="20"></svg></span>
+      <p class="tarjeta-label">Ticket promedio</p>
+      <p class="tarjeta-valor">${{ formatPrecio(resumen.ticket_promedio) }}</p>
+    </div>
+  </div>
 
-      <div class="bloque">
-        <h2>Domicilios contra local</h2>
+  <div class="bloque">
+    <h2>Domicilios contra local</h2>
 
-        <div class="division">
-          <div class="division-dom" [style.width.%]="porcentaje(resumen.por_tipo.domicilio.ventas)"></div>
-          <div class="division-local" [style.width.%]="100 - porcentaje(resumen.por_tipo.domicilio.ventas)"></div>
-        </div>
+    <div class="division">
+      <div class="division-dom" [style.width.%]="porcentaje(resumen.por_tipo.domicilio.ventas)"></div>
+      <div class="division-local" [style.width.%]="100 - porcentaje(resumen.por_tipo.domicilio.ventas)"></div>
+    </div>
 
-        <div class="tipo-fila">
-          <span class="tipo-nombre"><span class="dot dom"></span><svg lucideBike [size]="16"></svg> Domicilios</span>
-          <span class="tipo-datos">
-            {{ resumen.por_tipo.domicilio.pedidos }} pedidos · ${{ formatPrecio(resumen.por_tipo.domicilio.ventas) }}
-            ({{ porcentaje(resumen.por_tipo.domicilio.ventas) }}%)
-          </span>
-        </div>
+    <div class="tipo-fila">
+      <span class="tipo-nombre"><span class="dot dom"></span><svg lucideBike [size]="16"></svg> Domicilios</span>
+      <span class="tipo-datos">
+        {{ resumen.por_tipo.domicilio.pedidos }} pedidos · ${{ formatPrecio(resumen.por_tipo.domicilio.ventas) }}
+        ({{ porcentaje(resumen.por_tipo.domicilio.ventas) }}%)
+      </span>
+    </div>
 
-        <div class="tipo-fila">
-          <span class="tipo-nombre"><span class="dot local"></span><svg lucideStore [size]="16"></svg> En el local</span>
-          <span class="tipo-datos">
-            {{ resumen.por_tipo.local.pedidos }} pedidos · ${{ formatPrecio(resumen.por_tipo.local.ventas) }}
-            ({{ porcentaje(resumen.por_tipo.local.ventas) }}%)
-          </span>
-        </div>
-      </div>
+    <div class="tipo-fila">
+      <span class="tipo-nombre"><span class="dot local"></span><svg lucideStore [size]="16"></svg> En el local</span>
+      <span class="tipo-datos">
+        {{ resumen.por_tipo.local.pedidos }} pedidos · ${{ formatPrecio(resumen.por_tipo.local.ventas) }}
+        ({{ porcentaje(resumen.por_tipo.local.ventas) }}%)
+      </span>
+    </div>
+  </div>
+  @if (detalle) {
+  <div class="bloque">
+    <h2>Horas pico</h2>
+
+    @if (horaPico) {
+    <p class="pico-texto">
+      <svg lucideClock [size]="16"></svg>
+      Hora pico: <strong>{{ etiquetaHora(horaPico.hora) }}</strong>
+      con {{ horaPico.pedidos }} {{ horaPico.pedidos === 1 ? 'pedido' : 'pedidos' }}
+    </p>
     }
+
+    <div class="grafica">
+      @for (h of horasVisibles; track h.hora) {
+      <div class="barra-columna">
+        <div class="barra" [class.pico]="horaPico?.hora === h.hora" [style.height.%]="alturaHora(h.pedidos)">
+          @if (h.pedidos > 0) {
+          <span class="barra-valor">{{ h.pedidos }}</span>
+          }
+        </div>
+        <span class="barra-label">
+          @if (horasVisibles.length <= 12 || h.hora % 2===0) { {{ etiquetaCorta(h.hora) }} } </span>
+      </div>
+      }
+    </div>
+  </div>
+
+  <div class="seccion-doble">
+    <div class="bloque">
+      <h2>Más vendidos</h2>
+      @if (detalle.mas_vendidos.length === 0) {
+      <p class="mensaje">Todavía no hay productos vendidos.</p>
+      }
+      <ol class="ranking">
+        @for (p of detalle.mas_vendidos; track $index; let i = $index) {
+        <li>
+          <span class="pos">{{ i + 1 }}</span>
+          <span class="prod-nombre">{{ p.nombre }}</span>
+          <span class="prod-unidades">{{ p.unidades }} {{ p.unidades === 1 ? 'unidad' : 'unidades' }}</span>
+        </li>
+        }
+      </ol>
+    </div>
+
+    <div class="bloque">
+      <h2>Menos vendidos</h2>
+      <ol class="ranking">
+        @for (p of detalle.menos_vendidos; track $index; let i = $index) {
+        <li>
+          <span class="pos">{{ i + 1 }}</span>
+          <span class="prod-nombre">{{ p.nombre }}</span>
+          <span class="prod-unidades" [class.cero]="p.unidades === 0">
+            {{ p.unidades }} {{ p.unidades === 1 ? 'unidad' : 'unidades' }}
+          </span>
+        </li>
+        }
+      </ol>
+    </div>
+  </div>
+  }
+  }
   }
 </div>

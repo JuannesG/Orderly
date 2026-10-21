@@ -20,6 +20,24 @@ export interface ResumenVentas {
   };
 }
 
+export interface ProductoVendido {
+  nombre: string;
+  unidades: number;
+}
+
+export interface HoraPedidos {
+  hora: number;
+  pedidos: number;
+}
+
+export interface DetalleEstadisticas {
+  desde: string;
+  hasta: string;
+  mas_vendidos: ProductoVendido[];
+  menos_vendidos: ProductoVendido[];
+  horas: HoraPedidos[];
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -30,6 +48,12 @@ export class EstadisticasService {
 
   getResumen(desde: string, hasta: string): Observable<ResumenVentas> {
     return this.http.get<ResumenVentas>(`${this.apiUrl}/estadisticas/resumen/`, {
+      params: { desde, hasta }
+    });
+  }
+
+  getDetalle(desde: string, hasta: string): Observable<DetalleEstadisticas> {
+    return this.http.get<DetalleEstadisticas>(`${this.apiUrl}/estadisticas/detalle/`, {
       params: { desde, hasta }
     });
   }

@@ -1,13 +1,20 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { forkJoin } from 'rxjs';
 import {
   LucideBanknote,
   LucideShoppingBag,
   LucideReceipt,
   LucideBike,
-  LucideStore
+  LucideStore,
+  LucideClock
 } from '@lucide/angular';
-import { EstadisticasService, ResumenVentas } from '../../../core/services/estadisticas';
+import {
+  EstadisticasService,
+  ResumenVentas,
+  DetalleEstadisticas,
+  HoraPedidos
+} from '../../../core/services/estadisticas';
 
 type Periodo = 'hoy' | '7dias' | 'mes' | 'rango';
 
@@ -20,7 +27,7 @@ const PERIODOS: { clave: Periodo; nombre: string }[] = [
 
 @Component({
   selector: 'app-resumen-estadisticas',
-  imports: [FormsModule, LucideBanknote, LucideShoppingBag, LucideReceipt, LucideBike, LucideStore],
+  imports: [FormsModule, LucideBanknote, LucideShoppingBag, LucideReceipt, LucideBike, LucideStore, LucideClock],
   templateUrl: './resumen-estadisticas.html',
   styleUrl: './resumen-estadisticas.css'
 })
@@ -31,6 +38,7 @@ export class ResumenEstadisticas implements OnInit {
   hasta = '';
 
   resumen: ResumenVentas | null = null;
+  detalle: DetalleEstadisticas | null = null;
   cargando = true;
   error = '';
 
@@ -87,9 +95,13 @@ export class ResumenEstadisticas implements OnInit {
     this.cargando = true;
     this.error = '';
 
-    this.estadisticasService.getResumen(this.desde, this.hasta).subscribe({
-      next: (data) => {
-        this.resumen = data;
+    forkJoin({
+      resumen: this.estadisticasService.getResumen(this.desde, this.hasta),
+      detalle: this.estadisticasService.getDetalle(this.desde, this.hasta)
+    }).subscribe({
+      next: ({ resumen, detalle }) => {
+        this.resumen = resumen;
+        this.detalle = detalle;
         this.cargando = false;
         this.cdr.detectChanges();
       },
@@ -108,5 +120,41 @@ export class ResumenEstadisticas implements OnInit {
   porcentaje(parte: number): number {
     if (!this.resumen || !this.resumen.ventas_total) return 0;
     return Math.round((parte * 100) / this.resumen.ventas_total);
+  }
+
+
+  get horasVisibles(): HoraPedidos[] {
+    if (!this.detalle) return [];
+    const conPedidos = this.detalle.horas.filter(h => h.pedidos > 0);
+    if (conPedidos.length === 0) return [];
+
+    const primera = Math.max(conPedidos[0].hora - 1, 0);
+    const ultima = Math.min(conPedidos[conPedidos.length - 1].hora + 1, 23);
+    return this.detalle.horas.filter(h => h.hora >= primera && h.hora <= ultima);
+  }
+
+  get horaPico(): HoraPedidos | null {
+    if (!this.detalle) return null;
+    let pico: HoraPedidos | null = null;
+    for (const h of this.detalle.horas) {
+      if (h.pedidos > 0 && (!pico || h.pedidos > pico.pedidos)) {
+        pico = h;
+      }
+    }
+    return pico;
+  }
+
+  alturaHora(pedidos: number): number {
+    const maximo = Math.max(...this.horasVisibles.map(h => h.pedidos), 1);
+    return (pedidos / maximo) * 100;
+  }
+
+  etiquetaHora(hora: number): string {
+    const sufijo = hora >= 12 ? 'p. m.' : 'a. m.';
+    return `${hora % 12 || 12} ${sufijo}`;
+  }
+
+  etiquetaCorta(hora: number): string {
+    return `${hora % 12 || 12}${hora >= 12 ? 'p' : 'a'}`;
   }
 }
