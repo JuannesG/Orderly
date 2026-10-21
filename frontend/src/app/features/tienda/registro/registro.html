@@ -15,60 +15,77 @@
 
         <div class="input-icono">
           <svg lucidePhone [size]="18"></svg>
-          <input type="tel" name="telefono" autocomplete="tel" placeholder="Teléfono"
-            aria-label="Teléfono" [(ngModel)]="telefono" required>
+          <input type="tel" name="telefono" autocomplete="tel" placeholder="Teléfono" aria-label="Teléfono"
+            [(ngModel)]="telefono" required>
         </div>
 
         <div class="input-icono">
           <svg lucideHouse [size]="18"></svg>
           <input type="text" name="direccion" autocomplete="street-address"
-            placeholder="Dirección. Ej: Calle 45 # 20-10"
-            aria-label="Dirección" [(ngModel)]="direccion" required>
+            placeholder="Dirección. Ej: Calle 45 # 20-10" aria-label="Dirección" [(ngModel)]="direccion" required>
         </div>
 
-        @if (!tieneUbicacion) {
-          <button type="button" class="btn-ubicacion" [disabled]="buscandoUbicacion" (click)="usarMiUbicacion()">
-            <svg lucideLocateFixed [size]="16"></svg>
-            {{ buscandoUbicacion ? 'Buscando tu ubicación...' : 'Compartir mi ubicación' }}
-          </button>
+        @if (!mostrarMapa) {
+        <button type="button" class="btn-ubicacion" (click)="abrirMapa()">
+          <svg lucideLocateFixed [size]="16"></svg>
+          Marcar mi ubicación en el mapa
+        </button>
         } @else {
-          <div class="ubicacion-ok">
-            <span class="ok-texto">
-              <svg lucideCircleCheck [size]="16"></svg>
-              Ubicación guardada
-            </span>
+        <div class="mapa-bloque">
+          <p class="mapa-ayuda">Mueve el mapa hasta que el pin quede sobre tu casa.</p>
+
+          <div class="mapa-wrap">
+            <div id="mapa-registro" class="mapa"></div>
+            <div class="pin-centro">
+              <svg lucideMapPin [size]="40"></svg>
+            </div>
+          </div>
+
+          <div class="mapa-acciones">
+            <button type="button" class="btn-mini" [disabled]="buscandoUbicacion" (click)="usarMiUbicacion()">
+              <svg lucideLocateFixed [size]="14"></svg>
+              {{ buscandoUbicacion ? 'Buscando...' : 'Centrar en mi ubicación' }}
+            </button>
             <button type="button" class="btn-quitar" (click)="quitarUbicacion()">
               <svg lucideX [size]="14"></svg>
               Quitar
             </button>
           </div>
+
+          @if (tieneUbicacion) {
+          <p class="ok-texto">
+            <svg lucideCircleCheck [size]="16"></svg>
+            Ubicación guardada
+          </p>
+          }
+        </div>
         }
 
         @if (errorUbicacion) {
-          <p class="aviso-error">
-            <svg lucideCircleAlert [size]="16"></svg>
-            <span>{{ errorUbicacion }}</span>
-          </p>
+        <p class="aviso-error">
+          <svg lucideCircleAlert [size]="16"></svg>
+          <span>{{ errorUbicacion }}</span>
+        </p>
         }
 
         <div class="input-icono">
           <svg lucideMapPin [size]="18"></svg>
-          <input type="text" name="referencia" placeholder="Referencia (opcional)"
-            aria-label="Referencia, opcional" [(ngModel)]="referencia">
+          <input type="text" name="referencia" placeholder="Referencia (opcional)" aria-label="Referencia, opcional"
+            [(ngModel)]="referencia">
         </div>
       </div>
 
       @if (error) {
-        <p class="aviso-error grande">
-          <svg lucideCircleAlert [size]="18"></svg>
-          <span>{{ error }}</span>
-        </p>
+      <p class="aviso-error grande">
+        <svg lucideCircleAlert [size]="18"></svg>
+        <span>{{ error }}</span>
+      </p>
       }
 
       <button type="submit" class="btn-continuar" [disabled]="enviando">
         {{ enviando ? 'Guardando...' : 'Continuar' }}
         @if (!enviando) {
-          <svg lucideArrowRight [size]="18"></svg>
+        <svg lucideArrowRight [size]="18"></svg>
         }
       </button>
 

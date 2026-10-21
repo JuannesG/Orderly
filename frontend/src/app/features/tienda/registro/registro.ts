@@ -1,4 +1,5 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import * as L from 'leaflet';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import {
@@ -41,6 +42,10 @@ export class Registro implements OnInit {
   longitud: number | null = null;
   buscandoUbicacion = false;
   errorUbicacion = '';
+  mostrarMapa = false;
+  private mapa: L.Map | null = null;
+  // Centro inicial si el GPS no responde: Barranquilla
+  private readonly CENTRO_INICIAL: L.LatLngTuple = [10.9685, -74.7813];
 
   error = '';
   enviando = false;
@@ -75,8 +80,11 @@ export class Registro implements OnInit {
 
     navigator.geolocation.getCurrentPosition(
       (pos) => {
-        this.latitud = Number(pos.coords.latitude.toFixed(6));
-        this.longitud = Number(pos.coords.longitude.toFixed(6));
+        const lat = Number(pos.coords.latitude.toFixed(6));
+        const lng = Number(pos.coords.longitude.toFixed(6));
+        this.latitud = lat;
+        this.longitud = lng;
+        this.mapa?.setView([lat, lng], 17);
         this.buscandoUbicacion = false;
         this.cdr.detectChanges();
       },
@@ -96,9 +104,39 @@ export class Registro implements OnInit {
   }
 
   quitarUbicacion() {
+    this.mapa?.remove();
+    this.mapa = null;
+    this.mostrarMapa = false;
     this.latitud = null;
     this.longitud = null;
     this.errorUbicacion = '';
+  }
+
+  abrirMapa() {
+    if (this.mapa) return;
+    this.mostrarMapa = true;
+    this.cdr.detectChanges(); // para que el div del mapa ya exista
+
+    this.mapa = L.map('mapa-registro', { center: this.CENTRO_INICIAL, zoom: 15 });
+
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; OpenStreetMap'
+    }).addTo(this.mapa);
+
+    // Cada vez que el mapa deja de moverse, el centro es la ubicación
+    this.mapa.on('moveend', () => {
+      const centro = this.mapa!.getCenter();
+      this.latitud = Number(centro.lat.toFixed(6));
+      this.longitud = Number(centro.lng.toFixed(6));
+      this.cdr.detectChanges();
+    });
+
+    this.usarMiUbicacion();
+  }
+
+  ngOnDestroy() {
+    this.mapa?.remove();
   }
 
   onSubmit() {
