@@ -1,11 +1,11 @@
 from datetime import timedelta
 from decimal import Decimal
-
 from django.contrib.auth import get_user_model
 from django.utils import timezone
-
 from core.testing import BaseAPITestCase
 from pedidos.models import Pedido
+from menu.models import Producto
+from pedidos.models import DetallePedido, Pedido
 
 URL = '/api/estadisticas/resumen/'
 
@@ -76,3 +76,65 @@ class EstadisticasResumenTests(BaseAPITestCase):
         self.assertEqual(
             self.client.get(URL, {'desde': '2026-10-20', 'hasta': '2026-10-01'}).status_code, 400
         )
+        
+class EstadisticasDetalleTests(BaseAPITestCase):
+    URL = '/api/estadisticas/detalle/'
+
+    def setUp(self):
+        super().setUp()
+        self.doble = Producto.objects.create(
+            categoria=self.categoria, nombre='Doble', precio=Decimal('30000')
+        )
+        self.perro = Producto.objects.create(
+            categoria=self.categoria, nombre='Perro', precio=Decimal('15000')
+        )
+
+    def pedido_con(self, producto, cantidad, estado='entregado'):
+        pedido = Pedido.objects.create(
+            restaurante=self.restaurante, estado=estado,
+            subtotal=Decimal('1000'), total=Decimal('1000'),
+        )
+        DetallePedido.objects.create(
+            pedido=pedido, producto=producto, cantidad=cantidad,
+            precio_unitario=producto.precio,
+        )
+        return pedido
+
+    def test_sin_sesion_no_entra(self):
+        self.assertSinAcceso(self.client.get(self.URL))
+
+    def test_mas_vendidos_solo_cuenta_entregados(self):
+        self.pedido_con(self.producto, 3)
+        self.pedido_con(self.doble, 1)
+        self.pedido_con(self.doble, 10, estado='rechazado')
+
+        self.entrar_como_dueno()
+        datos = self.client.get(self.URL).data
+
+        self.assertEqual(
+            datos['mas_vendidos'],
+            [{'nombre': 'Sencilla', 'unidades': 3}, {'nombre': 'Doble', 'unidades': 1}]
+        )
+
+    def test_menos_vendidos_incluye_los_que_no_se_vendieron(self):
+        self.pedido_con(self.producto, 3)
+        self.pedido_con(self.doble, 1)
+
+        self.entrar_como_dueno()
+        datos = self.client.get(self.URL).data
+
+        nombres = [p['nombre'] for p in datos['menos_vendidos']]
+        self.assertEqual(nombres, ['Perro', 'Doble', 'Sencilla'])
+        self.assertEqual(datos['menos_vendidos'][0]['unidades'], 0)
+
+    def test_horas_pico(self):
+        pedido = self.pedido_con(self.producto, 1)
+        dos_y_media = timezone.localtime().replace(hour=14, minute=30, second=0, microsecond=0)
+        Pedido.objects.filter(pk=pedido.pk).update(creado_en=dos_y_media)
+
+        self.entrar_como_dueno()
+        datos = self.client.get(self.URL).data
+
+        self.assertEqual(len(datos['horas']), 24)
+        self.assertEqual(datos['horas'][14], {'hora': 14, 'pedidos': 1})
+        self.assertEqual(datos['horas'][15]['pedidos'], 0)        

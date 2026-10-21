@@ -14,6 +14,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from usuarios.views import UsuarioViewSet, CambiarClavePropiaView
 from core.estadisticas import estadisticas_resumen
+from core.estadisticas import estadisticas_resumen, estadisticas_detalle
 
 router = DefaultRouter()
 router.register(r'categorias', CategoriaViewSet)
@@ -34,6 +35,7 @@ urlpatterns = [
     path('api/cuenta/clave/', CambiarClavePropiaView.as_view(), name='cuenta_clave'),
     path('api/dashboard/resumen/', dashboard_resumen),
     path('api/estadisticas/resumen/', estadisticas_resumen),
+    path('api/estadisticas/detalle/', estadisticas_detalle),
     path('api/', include(router.urls)),
 ]
 
