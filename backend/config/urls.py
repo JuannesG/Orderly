@@ -13,6 +13,7 @@ from core.views import ping, dashboard_resumen
 from django.conf import settings
 from django.conf.urls.static import static
 from usuarios.views import UsuarioViewSet, CambiarClavePropiaView
+from core.estadisticas import estadisticas_resumen
 
 router = DefaultRouter()
 router.register(r'categorias', CategoriaViewSet)
@@ -32,6 +33,7 @@ urlpatterns = [
     path('api/token/refresh/', RefrescoConSesionView.as_view(), name='token_refresh'),
     path('api/cuenta/clave/', CambiarClavePropiaView.as_view(), name='cuenta_clave'),
     path('api/dashboard/resumen/', dashboard_resumen),
+    path('api/estadisticas/resumen/', estadisticas_resumen),
     path('api/', include(router.urls)),
 ]
 
