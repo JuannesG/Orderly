@@ -1,0 +1,89 @@
+<div class="est-page">
+  <header class="cabecera">
+    <h1>Estadísticas</h1>
+    <span class="subrayado"></span>
+  </header>
+
+  <div class="segmentado">
+    @for (p of periodos; track p.clave) {
+      <button type="button" [class.activo]="periodo === p.clave" (click)="elegirPeriodo(p.clave)">
+        {{ p.nombre }}
+      </button>
+    }
+  </div>
+
+  @if (periodo === 'rango') {
+    <div class="rango">
+      <label>
+        <span>Desde</span>
+        <input type="date" name="desde" [(ngModel)]="desde">
+      </label>
+      <label>
+        <span>Hasta</span>
+        <input type="date" name="hasta" [(ngModel)]="hasta">
+      </label>
+      <button type="button" class="btn-aplicar" (click)="aplicarRango()">Aplicar</button>
+    </div>
+  }
+
+  @if (error) {
+    <p class="aviso-error">{{ error }}</p>
+  }
+
+  @if (cargando) {
+    <p class="mensaje">Cargando estadísticas...</p>
+  }
+
+  @if (!cargando && resumen) {
+    <p class="nota">Solo se cuentan pedidos entregados.</p>
+
+    @if (resumen.pedidos_entregados === 0) {
+      <p class="mensaje">No hay pedidos entregados en este periodo.</p>
+    } @else {
+      <div class="tarjetas-grid">
+        <div class="tarjeta">
+          <span class="tarjeta-icono"><svg lucideBanknote [size]="20"></svg></span>
+          <p class="tarjeta-label">Ventas</p>
+          <p class="tarjeta-valor">${{ formatPrecio(resumen.ventas_total) }}</p>
+        </div>
+
+        <div class="tarjeta">
+          <span class="tarjeta-icono"><svg lucideShoppingBag [size]="20"></svg></span>
+          <p class="tarjeta-label">Pedidos entregados</p>
+          <p class="tarjeta-valor">{{ resumen.pedidos_entregados }}</p>
+        </div>
+
+        <div class="tarjeta">
+          <span class="tarjeta-icono"><svg lucideReceipt [size]="20"></svg></span>
+          <p class="tarjeta-label">Ticket promedio</p>
+          <p class="tarjeta-valor">${{ formatPrecio(resumen.ticket_promedio) }}</p>
+        </div>
+      </div>
+
+      <div class="bloque">
+        <h2>Domicilios contra local</h2>
+
+        <div class="division">
+          <div class="division-dom" [style.width.%]="porcentaje(resumen.por_tipo.domicilio.ventas)"></div>
+          <div class="division-local" [style.width.%]="100 - porcentaje(resumen.por_tipo.domicilio.ventas)"></div>
+        </div>
+
+        <div class="tipo-fila">
+          <span class="tipo-nombre"><span class="dot dom"></span><svg lucideBike [size]="16"></svg> Domicilios</span>
+          <span class="tipo-datos">
+            {{ resumen.por_tipo.domicilio.pedidos }} pedidos · ${{ formatPrecio(resumen.por_tipo.domicilio.ventas) }}
+            ({{ porcentaje(resumen.por_tipo.domicilio.ventas) }}%)
+          </span>
+        </div>
+
+        <div class="tipo-fila">
+          <span class="tipo-nombre"><span class="dot local"></span><svg lucideStore [size]="16"></svg> En el local</span>
+          <span class="tipo-datos">
+            {{ resumen.por_tipo.local.pedidos }} pedidos · ${{ formatPrecio(resumen.por_tipo.local.ventas) }}
+            ({{ porcentaje(resumen.por_tipo.local.ventas) }}%)
+          </span>
+        </div>
+      </div>
+    }
+  }
+</div>

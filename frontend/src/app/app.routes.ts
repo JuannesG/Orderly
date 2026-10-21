@@ -20,6 +20,7 @@ import { TomarPedido } from './features/mesero/tomar-pedido/tomar-pedido';
 import { PedidosPanel } from './features/pedidos/pedidos-panel/pedidos-panel';
 import { ListaEquipo } from './features/equipo/lista-equipo/lista-equipo';
 import { CambiarClave } from './features/auth/cambiar-clave/cambiar-clave';
+import { ResumenEstadisticas } from './features/estadisticas/resumen-estadisticas/resumen-estadisticas';
 
 export const routes: Routes = [
   { path: 'login', component: Login, title: 'Mr Lucho Panel' },
@@ -36,6 +37,7 @@ export const routes: Routes = [
       { path: 'menu/editar/:id', component: ProductoForm, canActivate: [rolGuard], data: { roles: ['dueño'] } },
       { path: 'pedidos', component: PedidosPanel, canActivate: [rolGuard], data: { roles: ['dueño', 'domicilios', 'mesera'] } },
       { path: 'reservas', component: ListaReservas, canActivate: [rolGuard], data: { roles: ['dueño'] } },
+      { path: 'estadisticas', component: ResumenEstadisticas, canActivate: [rolGuard], data: { roles: ['dueño'] } },
       { path: 'equipo', component: ListaEquipo, canActivate: [rolGuard], data: { roles: ['dueño'] } },
       { path: 'mesera', component: TomarPedido, canActivate: [rolGuard], data: { roles: ['dueño', 'mesera'] } },
     ]

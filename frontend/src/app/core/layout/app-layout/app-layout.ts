@@ -9,13 +9,14 @@ import {
   LucideCalendarDays,
   LucideLogOut,
   LucideUser,
-  LucideUsers
+  LucideUsers,
+  LucideChartColumn
 } from '@lucide/angular';
 
 @Component({
   selector: 'app-app-layout',
   imports: [RouterOutlet, RouterLink, RouterLinkActive, LucideHouse, LucideBookOpen, LucideClipboardList, LucideUtensils,
-    LucideCalendarDays, LucideLogOut, LucideUser, LucideUsers],
+    LucideCalendarDays, LucideLogOut, LucideUser, LucideUsers, LucideChartColumn],
   templateUrl: './app-layout.html',
   styleUrl: './app-layout.css'
 })
