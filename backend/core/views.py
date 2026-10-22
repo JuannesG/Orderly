@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from restaurantes.models import Restaurante
 from pedidos.models import Pedido
 from reservas.models import Reserva
+from django.utils import timezone
 
 @api_view(['GET'])
 @permission_classes([EsDueno])
@@ -16,7 +17,7 @@ def dashboard_resumen(request):
     if not restaurante:
         return Response({'detail': 'No hay restaurante configurado.'}, status=404)
 
-    hoy = date.today()
+    hoy = timezone.localdate()
     ayer = hoy - timedelta(days=1)
 
     pedidos_hoy_qs = Pedido.objects.filter(restaurante=restaurante, creado_en__date=hoy)
