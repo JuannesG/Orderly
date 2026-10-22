@@ -144,6 +144,95 @@
     </div>
   </div>
   }
+  @if (extra) {
+  <div class="seccion-doble">
+    <div class="bloque">
+      <h2>Métodos de pago</h2>
+      <p class="subtitulo">Solo domicilios</p>
+
+      @if (extra.metodos_pago.length === 0) {
+      <p class="mensaje">No hubo domicilios entregados.</p>
+      }
+
+      @for (m of extra.metodos_pago; track m.metodo) {
+      <div class="metodo-fila">
+        <div class="metodo-cabeza">
+          <span class="tipo-nombre">{{ m.nombre }}</span>
+          <span class="tipo-datos">
+            {{ m.pedidos }} {{ m.pedidos === 1 ? 'pedido' : 'pedidos' }} · ${{ formatPrecio(m.ventas) }}
+            ({{ m.porcentaje }}%)
+          </span>
+        </div>
+        <div class="metodo-barra"><span [style.width.%]="m.porcentaje"></span></div>
+      </div>
+      }
+    </div>
+
+    <div class="bloque">
+      <h2>Pedidos rechazados</h2>
+      <p class="rechazo-valor">{{ extra.rechazados.rechazados }}</p>
+      <p class="rechazo-texto">
+        {{ extra.rechazados.porcentaje }}% de los {{ extra.rechazados.recibidos }}
+        {{ extra.rechazados.recibidos === 1 ? 'pedido recibido' : 'pedidos recibidos' }} en este periodo
+      </p>
+    </div>
+  </div>
+
+  <div class="seccion-doble">
+    <div class="bloque">
+      <h2>Desempeño por mesera</h2>
+      <p class="subtitulo">Pedidos del local entregados</p>
+
+      @if (extra.meseras.length === 0) {
+      <p class="mensaje">No hubo pedidos del local entregados.</p>
+      }
+
+      <ol class="ranking">
+        @for (m of extra.meseras; track $index; let i = $index) {
+        <li>
+          <span class="pos">{{ i + 1 }}</span>
+          <span class="prod-nombre">{{ m.nombre }}</span>
+          <span class="prod-unidades">{{ m.pedidos }} · ${{ formatPrecio(m.ventas) }}</span>
+        </li>
+        }
+      </ol>
+    </div>
+
+    <div class="bloque">
+      <h2>Clientes</h2>
+
+      <div class="mini-stats">
+        <div class="mini-stat">
+          <strong>{{ extra.clientes.atendidos }}</strong>
+          <span>Atendidos</span>
+        </div>
+        <div class="mini-stat">
+          <strong>{{ extra.clientes.nuevos }}</strong>
+          <span>Nuevos</span>
+        </div>
+        <div class="mini-stat">
+          <strong>{{ extra.clientes.repiten }}</strong>
+          <span>Repiten</span>
+        </div>
+      </div>
+
+      @if (extra.clientes.top.length === 0) {
+      <p class="mensaje">Todavía no hay clientes con pedidos entregados.</p>
+      } @else {
+      <p class="subtitulo">Los que más piden</p>
+      <ol class="ranking">
+        @for (c of extra.clientes.top; track $index; let i = $index) {
+        <li>
+          <span class="pos">{{ i + 1 }}</span>
+          <span class="prod-nombre">{{ c.nombre }}</span>
+          <span class="prod-unidades">{{ c.pedidos }} {{ c.pedidos === 1 ? 'pedido' : 'pedidos' }}</span>
+        </li>
+        }
+      </ol>
+      }
+    </div>
+  </div>
+  }
   }
   }
 </div>

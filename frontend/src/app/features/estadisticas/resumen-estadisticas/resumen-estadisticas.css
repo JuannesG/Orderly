@@ -93,6 +93,13 @@
   margin: 14px 0 10px;
 }
 
+.subtitulo {
+  color: var(--gris);
+  font-size: 0.75rem;
+  font-weight: 700;
+  margin: -8px 0 10px;
+}
+
 .tarjetas-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -282,7 +289,7 @@
   white-space: nowrap;
 }
 
-/* ---------- Rankings de productos ---------- */
+/* ---------- Rankings ---------- */
 
 .seccion-doble {
   display: grid;
@@ -341,6 +348,89 @@
 
 .prod-unidades.cero {
   color: #B91C1C;
+}
+
+/* ---------- Métodos de pago ---------- */
+
+.metodo-fila {
+  padding: 10px 0;
+  border-bottom: 1px solid #F3F3F3;
+  font-size: 0.88rem;
+}
+
+.metodo-fila:last-child {
+  border-bottom: none;
+}
+
+.metodo-cabeza {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 4px 12px;
+}
+
+.metodo-barra {
+  height: 8px;
+  margin-top: 8px;
+  border-radius: 4px;
+  background-color: var(--fondo);
+  overflow: hidden;
+}
+
+.metodo-barra span {
+  display: block;
+  height: 100%;
+  border-radius: 4px;
+  background-color: var(--naranja);
+}
+
+/* ---------- Rechazados ---------- */
+
+.rechazo-valor {
+  font-family: var(--fuente-titulo);
+  font-size: 2rem;
+  font-weight: 700;
+  color: #B91C1C;
+  margin: 0 0 4px;
+}
+
+.rechazo-texto {
+  font-size: 0.85rem;
+  color: var(--texto-suave);
+  margin: 0;
+}
+
+/* ---------- Clientes ---------- */
+
+.mini-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.mini-stat {
+  background-color: var(--fondo);
+  border-radius: 12px;
+  padding: 10px 6px;
+  text-align: center;
+}
+
+.mini-stat strong {
+  display: block;
+  font-family: var(--fuente-titulo);
+  font-size: 1.3rem;
+}
+
+.mini-stat span {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--gris);
+}
+
+.mini-stats + .subtitulo {
+  margin: 0 0 6px;
 }
 
 @media (min-width: 700px) {

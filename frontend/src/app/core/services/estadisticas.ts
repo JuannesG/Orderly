@@ -38,6 +38,48 @@ export interface DetalleEstadisticas {
   horas: HoraPedidos[];
 }
 
+export interface MetodoPago {
+  metodo: string;
+  nombre: string;
+  pedidos: number;
+  ventas: number;
+  porcentaje: number;
+}
+
+export interface ResumenRechazados {
+  recibidos: number;
+  rechazados: number;
+  porcentaje: number;
+}
+
+export interface VentasMesera {
+  nombre: string;
+  pedidos: number;
+  ventas: number;
+}
+
+export interface ClienteTop {
+  nombre: string;
+  pedidos: number;
+  ventas: number;
+}
+
+export interface ResumenClientes {
+  atendidos: number;
+  nuevos: number;
+  repiten: number;
+  top: ClienteTop[];
+}
+
+export interface PagosClientes {
+  desde: string;
+  hasta: string;
+  metodos_pago: MetodoPago[];
+  rechazados: ResumenRechazados;
+  meseras: VentasMesera[];
+  clientes: ResumenClientes;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -54,6 +96,12 @@ export class EstadisticasService {
 
   getDetalle(desde: string, hasta: string): Observable<DetalleEstadisticas> {
     return this.http.get<DetalleEstadisticas>(`${this.apiUrl}/estadisticas/detalle/`, {
+      params: { desde, hasta }
+    });
+  }
+
+  getPagosClientes(desde: string, hasta: string): Observable<PagosClientes> {
+    return this.http.get<PagosClientes>(`${this.apiUrl}/estadisticas/pagos-y-clientes/`, {
       params: { desde, hasta }
     });
   }

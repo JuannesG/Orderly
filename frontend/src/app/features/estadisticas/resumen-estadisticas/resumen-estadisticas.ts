@@ -13,7 +13,8 @@ import {
   EstadisticasService,
   ResumenVentas,
   DetalleEstadisticas,
-  HoraPedidos
+  HoraPedidos,
+  PagosClientes
 } from '../../../core/services/estadisticas';
 
 type Periodo = 'hoy' | '7dias' | 'mes' | 'rango';
@@ -39,6 +40,7 @@ export class ResumenEstadisticas implements OnInit {
 
   resumen: ResumenVentas | null = null;
   detalle: DetalleEstadisticas | null = null;
+  extra: PagosClientes | null = null;
   cargando = true;
   error = '';
 
@@ -97,11 +99,13 @@ export class ResumenEstadisticas implements OnInit {
 
     forkJoin({
       resumen: this.estadisticasService.getResumen(this.desde, this.hasta),
-      detalle: this.estadisticasService.getDetalle(this.desde, this.hasta)
+      detalle: this.estadisticasService.getDetalle(this.desde, this.hasta),
+      extra: this.estadisticasService.getPagosClientes(this.desde, this.hasta)
     }).subscribe({
-      next: ({ resumen, detalle }) => {
+      next: ({ resumen, detalle, extra }) => {
         this.resumen = resumen;
         this.detalle = detalle;
+        this.extra = extra;
         this.cargando = false;
         this.cdr.detectChanges();
       },
