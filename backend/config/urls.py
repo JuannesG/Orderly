@@ -13,8 +13,7 @@ from core.views import ping, dashboard_resumen
 from django.conf import settings
 from django.conf.urls.static import static
 from usuarios.views import UsuarioViewSet, CambiarClavePropiaView
-from core.estadisticas import estadisticas_resumen
-from core.estadisticas import estadisticas_resumen, estadisticas_detalle
+from core.estadisticas import estadisticas_resumen, estadisticas_detalle, estadisticas_pagos_clientes
 
 router = DefaultRouter()
 router.register(r'categorias', CategoriaViewSet)
@@ -36,6 +35,7 @@ urlpatterns = [
     path('api/dashboard/resumen/', dashboard_resumen),
     path('api/estadisticas/resumen/', estadisticas_resumen),
     path('api/estadisticas/detalle/', estadisticas_detalle),
+    path('api/estadisticas/pagos-y-clientes/', estadisticas_pagos_clientes),
     path('api/', include(router.urls)),
 ]
 

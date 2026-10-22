@@ -15,6 +15,17 @@ from restaurantes.models import Restaurante
 MAX_DIAS = 366
 TOP = 5
 
+ETIQUETAS_METODO = {
+    'nequi': 'Nequi',
+    'bancolombia': 'Bancolombia',
+    'efectivo': 'Efectivo contraentrega',
+}
+
+
+def nombre_usuario(nombre, apellido, usuario):
+    completo = f"{nombre or ''} {apellido or ''}".strip()
+    return completo or usuario
+
 
 def leer_fecha(texto):
     try:
@@ -127,4 +138,104 @@ def estadisticas_detalle(request):
         'mas_vendidos': mas_vendidos,
         'menos_vendidos': menos_vendidos,
         'horas': horas,
+    })
+
+@api_view(['GET'])
+@permission_classes([EsDueno])
+def estadisticas_pagos_clientes(request):
+    restaurante = Restaurante.objects.first()
+    if not restaurante:
+        return Response({'detail': 'No hay restaurante configurado.'}, status=404)
+
+    desde, hasta, error = leer_rango(request)
+    if error:
+        return error
+
+    entregados = pedidos_entregados(restaurante, desde, hasta)
+
+    # Métodos de pago: solo domicilios (en el local se cobra en caja)
+    filas_pago = list(
+        entregados.filter(tipo='domicilio')
+        .values('pago__metodo')
+        .annotate(pedidos=Count('id'), ventas=Sum('total'))
+        .order_by('-ventas')
+    )
+    total_domicilios = sum(int(f['ventas'] or 0) for f in filas_pago)
+    metodos_pago = []
+    for fila in filas_pago:
+        clave = fila['pago__metodo']
+        ventas = int(fila['ventas'] or 0)
+        metodos_pago.append({
+            'metodo': clave or 'sin_metodo',
+            'nombre': ETIQUETAS_METODO.get(clave, 'Sin método'),
+            'pedidos': fila['pedidos'],
+            'ventas': ventas,
+            'porcentaje': round(ventas * 100 / total_domicilios) if total_domicilios else 0,
+        })
+
+    # Rechazados: se miden contra TODOS los pedidos recibidos, no solo los entregados
+    recibidos_qs = Pedido.objects.filter(
+        restaurante=restaurante,
+        creado_en__date__gte=desde,
+        creado_en__date__lte=hasta,
+    )
+    recibidos = recibidos_qs.count()
+    rechazados = recibidos_qs.filter(estado='rechazado').count()
+
+    # Desempeño por mesera: pedidos del local entregados
+    meseras = []
+    filas_mesera = (
+        entregados.filter(tipo='local')
+        .values('mesera', 'mesera__first_name', 'mesera__last_name', 'mesera__username')
+        .annotate(pedidos=Count('id'), ventas=Sum('total'))
+        .order_by('-ventas')
+    )
+    for fila in filas_mesera:
+        if fila['mesera'] is None:
+            nombre = 'Sin asignar'
+        else:
+            nombre = nombre_usuario(
+                fila['mesera__first_name'], fila['mesera__last_name'], fila['mesera__username']
+            )
+        meseras.append({
+            'nombre': nombre,
+            'pedidos': fila['pedidos'],
+            'ventas': int(fila['ventas'] or 0),
+        })
+
+    # Clientes: quiénes pidieron, cuántos son nuevos y cuántos repiten
+    por_cliente = list(
+        entregados.exclude(cliente__isnull=True)
+        .values('cliente', 'cliente__nombre', 'cliente__creado_en')
+        .annotate(pedidos=Count('id'), ventas=Sum('total'))
+    )
+    nuevos = sum(
+        1 for c in por_cliente
+        if desde <= timezone.localtime(c['cliente__creado_en']).date() <= hasta
+    )
+    repiten = sum(1 for c in por_cliente if c['pedidos'] >= 2)
+    top_clientes = sorted(
+        por_cliente,
+        key=lambda c: (-c['pedidos'], -(c['ventas'] or 0), c['cliente__nombre'])
+    )[:TOP]
+
+    return Response({
+        'desde': desde.isoformat(),
+        'hasta': hasta.isoformat(),
+        'metodos_pago': metodos_pago,
+        'rechazados': {
+            'recibidos': recibidos,
+            'rechazados': rechazados,
+            'porcentaje': round(rechazados * 100 / recibidos) if recibidos else 0,
+        },
+        'meseras': meseras,
+        'clientes': {
+            'atendidos': len(por_cliente),
+            'nuevos': nuevos,
+            'repiten': repiten,
+            'top': [
+                {'nombre': c['cliente__nombre'], 'pedidos': c['pedidos'], 'ventas': int(c['ventas'] or 0)}
+                for c in top_clientes
+            ],
+        },
     })

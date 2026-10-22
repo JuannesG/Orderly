@@ -6,6 +6,8 @@ from core.testing import BaseAPITestCase
 from pedidos.models import Pedido
 from menu.models import Producto
 from pedidos.models import DetallePedido, Pedido
+from clientes.models import Cliente
+from pagos.models import Pago
 
 URL = '/api/estadisticas/resumen/'
 
@@ -137,4 +139,80 @@ class EstadisticasDetalleTests(BaseAPITestCase):
 
         self.assertEqual(len(datos['horas']), 24)
         self.assertEqual(datos['horas'][14], {'hora': 14, 'pedidos': 1})
-        self.assertEqual(datos['horas'][15]['pedidos'], 0)        
+        self.assertEqual(datos['horas'][15]['pedidos'], 0)
+
+class EstadisticasPagosClientesTests(BaseAPITestCase):
+    URL = '/api/estadisticas/pagos-y-clientes/'
+
+    def hacer(self, total, estado='entregado', tipo='domicilio', cliente=None, mesera=None, metodo=None):
+        pedido = Pedido.objects.create(
+            restaurante=self.restaurante, estado=estado, tipo=tipo,
+            subtotal=Decimal(total), total=Decimal(total),
+            cliente=cliente, mesera=mesera,
+        )
+        if metodo:
+            Pago.objects.create(pedido=pedido, metodo=metodo)
+        return pedido
+
+    def test_sin_sesion_no_entra(self):
+        self.assertSinAcceso(self.client.get(self.URL))
+
+    def test_metodos_de_pago_solo_domicilios_entregados(self):
+        self.hacer('30000', metodo='nequi')
+        self.hacer('10000', metodo='efectivo')
+        self.hacer('99000', tipo='local')
+        self.hacer('50000', estado='rechazado', metodo='nequi')
+
+        self.entrar_como_dueno()
+        datos = self.client.get(self.URL).data
+
+        nequi = datos['metodos_pago'][0]
+        self.assertEqual(nequi['metodo'], 'nequi')
+        self.assertEqual(nequi['ventas'], 30000)
+        self.assertEqual(nequi['porcentaje'], 75)
+        self.assertEqual(datos['metodos_pago'][1]['porcentaje'], 25)
+        self.assertEqual(len(datos['metodos_pago']), 2)
+
+    def test_rechazados_se_miden_contra_todos_los_pedidos(self):
+        self.hacer('10000')
+        self.hacer('10000', estado='pendiente_verificacion')
+        self.hacer('10000', estado='rechazado')
+
+        self.entrar_como_dueno()
+        datos = self.client.get(self.URL).data
+
+        self.assertEqual(datos['rechazados'], {'recibidos': 3, 'rechazados': 1, 'porcentaje': 33})
+
+    def test_desempeno_por_mesera(self):
+        laura = get_user_model().objects.create_user(
+            username='laura', first_name='Laura', password='clave-segura-123',
+            restaurante=self.restaurante, rol='mesera'
+        )
+        self.hacer('20000', tipo='local', mesera=laura)
+        self.hacer('15000', tipo='local', mesera=laura)
+        self.hacer('40000', tipo='local')
+        self.hacer('99000', tipo='domicilio')
+
+        self.entrar_como_dueno()
+        datos = self.client.get(self.URL).data
+
+        self.assertEqual(datos['meseras'], [
+            {'nombre': 'Sin asignar', 'pedidos': 1, 'ventas': 40000},
+            {'nombre': 'Laura', 'pedidos': 2, 'ventas': 35000},
+        ])
+
+    def test_clientes_nuevos_y_que_repiten(self):
+        beto = Cliente.objects.create(telefono='3009998877', nombre='Beto', direccion='Calle 9')
+        Cliente.objects.filter(pk=beto.pk).update(creado_en=timezone.now() - timedelta(days=60))
+
+        self.hacer('10000', cliente=self.cliente)
+        self.hacer('20000', cliente=beto)
+        self.hacer('20000', cliente=beto)
+
+        self.entrar_como_dueno()
+        datos = self.client.get(self.URL).data['clientes']
+
+        self.assertEqual(datos['atendidos'], 2)
+        self.assertEqual(datos['nuevos'], 1)
+        self.assertEqual(datos['repiten'], 1)
+        self.assertEqual(datos['top'][0], {'nombre': 'Beto', 'pedidos': 2, 'ventas': 40000})                
