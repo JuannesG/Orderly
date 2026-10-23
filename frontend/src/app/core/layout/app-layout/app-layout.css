@@ -125,12 +125,14 @@
   font-size: 0.68rem;
   font-weight: 700;
   text-decoration: none;
+  text-align: center;
   cursor: pointer;
   padding: 4px 8px;
   border-radius: 12px;
 }
 
-.nav-admin a.activo {
+.nav-admin a.activo,
+.nav-admin .btn-mas.activo {
   color: var(--naranja);
 }
 
@@ -144,11 +146,61 @@
   display: block;
 }
 
+/* Tarjeta flotante de "Más" (celular) */
+.grupo-mas {
+  display: none;
+  position: fixed;
+  right: 12px;
+  bottom: calc(82px + env(safe-area-inset-bottom, 0px));
+  z-index: 25;
+  min-width: 210px;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px;
+  background-color: var(--blanco);
+  border: 1px solid var(--borde);
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
+}
+
+.grupo-mas.abierto {
+  display: flex;
+}
+
+.grupo-mas a,
+.grupo-mas .btn-salir {
+  flex-direction: row;
+  gap: 12px;
+  font-size: 0.9rem;
+  padding: 12px 14px;
+}
+
+.grupo-mas a.activo {
+  background-color: var(--naranja-suave);
+}
+
+.grupo-mas .btn-salir {
+  margin-top: 6px;
+  background-color: var(--rojo-suave);
+  color: #991B1B;
+}
+
+.fondo-mas {
+  position: fixed;
+  inset: 0;
+  z-index: 15;
+  background-color: rgba(0, 0, 0, 0.25);
+}
+
 /* ---------- Pantalla grande: menú lateral ---------- */
 
 @media (min-width: 900px) {
   .top-admin {
     padding: 0 24px;
+  }
+
+  .usuario-nombre {
+    max-width: 160px;
   }
 
   .contenido {
@@ -188,7 +240,24 @@
     background-color: var(--naranja-suave);
   }
 
-  .nav-admin button {
+  /* "Más" no existe en pantalla grande: sus enlaces quedan en el menú */
+  .nav-admin .btn-mas {
+    display: none;
+  }
+
+  .grupo-mas,
+  .grupo-mas.abierto {
+    display: contents;
+  }
+
+  .fondo-mas {
+    display: none;
+  }
+
+  /* "Salir" vuelve a ser un botón simple al fondo del menú lateral */
+  .nav-admin .grupo-mas .btn-salir {
     margin-top: auto;
+    background: none;
+    color: var(--gris);
   }
 }

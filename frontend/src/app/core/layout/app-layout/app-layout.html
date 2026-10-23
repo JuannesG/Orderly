@@ -32,15 +32,27 @@
     <a routerLink="/mesera" routerLinkActive="activo"><span class="ico"><svg lucideUtensils
           [size]="22"></svg></span><span>Tomar pedido</span></a>
     }
-    @if (esDueno) {
-    <a routerLink="/reservas" routerLinkActive="activo"><span class="ico"><svg lucideCalendarDays
-          [size]="22"></svg></span><span>Reservas</span></a>
-    <a routerLink="/estadisticas" routerLinkActive="activo"><span class="ico"><svg lucideChartColumn
-          [size]="22"></svg></span><span>Estadísticas</span></a>
-    <a routerLink="/equipo" routerLinkActive="activo"><span class="ico"><svg lucideUsers
-          [size]="22"></svg></span><span>Equipo</span></a>
-    }
-    <button (click)="cerrarSesion()"><span class="ico"><svg lucideLogOut
-          [size]="22"></svg></span><span>Salir</span></button>
+
+    <button type="button" class="btn-mas" [class.activo]="masAbierto || enSecundaria"
+      [attr.aria-expanded]="masAbierto" (click)="alternarMas()">
+      <span class="ico"><svg lucideEllipsis [size]="22"></svg></span><span>Más</span>
+    </button>
+
+    <div class="grupo-mas" [class.abierto]="masAbierto">
+      @if (esDueno) {
+      <a routerLink="/reservas" routerLinkActive="activo"><span class="ico"><svg lucideCalendarDays
+            [size]="22"></svg></span><span>Reservas</span></a>
+      <a routerLink="/estadisticas" routerLinkActive="activo"><span class="ico"><svg lucideChartColumn
+            [size]="22"></svg></span><span>Estadísticas</span></a>
+      <a routerLink="/equipo" routerLinkActive="activo"><span class="ico"><svg lucideUsers
+            [size]="22"></svg></span><span>Equipo</span></a>
+      }
+      <button type="button" class="btn-salir" (click)="cerrarSesion()"><span class="ico"><svg lucideLogOut
+            [size]="22"></svg></span><span>Salir</span></button>
+    </div>
   </nav>
+
+  @if (masAbierto) {
+  <div class="fondo-mas" (click)="cerrarMas()"></div>
+  }
 </div>
